@@ -15,7 +15,6 @@ import torch.nn.functional as functional
 import load_trace
 import fixed_env as env
 
-import src.weights_helper as exp_weight
 from src import reward as mor
 from src import video_state
 from src.model import model_Pensieve as model
@@ -24,7 +23,7 @@ import src.config as config
 VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
 M_IN_K = 1000.0
 
-TEST_TRACES = './data/generated_traces/'
+TEST_TRACES = './data/generated_traces/val'
 
 # log in format of time_stamp bit_rate buffer_size rebuffer_time chunk_size download_time reward
 

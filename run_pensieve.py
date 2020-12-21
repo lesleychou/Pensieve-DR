@@ -17,15 +17,15 @@ import load_trace
 
 import src.config as config
 from src import reward as mor
-# import src.weights_helper as weights_helper
-import src.weights_helper as exp_weight
+
 from src.agent import A3C_Pensieve
+from src.trace_generator import TraceGenerator
 
 VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
 HD_REWARD = [1, 2, 3, 12, 15, 20]
 M_IN_K = 1000.0
 
-TRAIN_TRACES = './data/generated_traces/'
+TRAIN_TRACES = './data/generated_traces/train'
 
 IS_CENTRAL = True
 NO_CENTRAL = False
@@ -167,13 +167,6 @@ def central_agent(args, net_params_queues, exp_queues):
         for i in range(args.NUM_AGENTS):
             # net_params_queues[i].put([actor_net_params,critic_net_params])
             net_params_queues[i].put(actor_net_params)
-            # Note: this is synchronous version of the parallel training,
-            # which is easier to understand and probe. The framework can be
-            # fairly easily modified to support asynchronous training.
-            # Some practices of asynchronous training (lock-free SGD at
-            # its core) are nicely explained in the following two papers:
-            # https://arxiv.org/abs/1602.01783
-            # https://arxiv.org/abs/1106.5730
 
         # record average reward and td loss change
         # in the experiences from the agents
@@ -183,10 +176,6 @@ def central_agent(args, net_params_queues, exp_queues):
         total_entropy = 0.0
         total_agents = 0.0
         total_loss = 0.0
-
-        # assemble experiences from the agents
-        actor_gradient_batch = []
-        critic_gradient_batch = []
 
         for i in range(args.NUM_AGENTS):
             s_batch, a_batch, r_batch, terminal, info = exp_queues[i].get()
@@ -355,8 +344,9 @@ def main(args):
 
     # create result directory
     args.start_time = time.strftime("%Y%m%d_%H%M%S")
-    subdir = config.results_subdir(args)
-    #results_dir = './results/pensieve/' + subdir + '/'
+    # use timestamp as result_dir
+    # subdir = config.results_subdir(args)
+    # results_dir = './results/pensieve/' + subdir + '/'
     results_dir = './results/pensieve/retrain/'
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
@@ -385,6 +375,10 @@ def main(args):
     coordinator.start()
 
     all_cooked_time, all_cooked_bw, _ = load_trace.load_trace(TRAIN_TRACES)
+    # generate trace
+    # Trace = TraceGenerator( T_l=5 ,T_s=10 ,cov=0.1 ,duration=10 ,steps=10 ,min_throughput=0.2 ,max_throughput=10 )
+    # all_cooked_time, all_cooked_bw = Trace.generate_trace()
+
     agents = []
     for i in range(args.NUM_AGENTS):
         agents.append(mp.Process(target=agent,
