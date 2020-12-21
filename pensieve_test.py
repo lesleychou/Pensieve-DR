@@ -106,7 +106,6 @@ def main(args):
             bit_rate = args.DEFAULT_QUALITY  # use the default action here
 
             state = torch.zeros((args.S_INFO, args.S_LEN)).to(device=args.device)
-
             video_count += 1
 
             if video_count >= len(all_file_names):
@@ -115,6 +114,31 @@ def main(args):
             log_path = test_dir + "log_sim_rl" + '_' + all_file_names[net_env.trace_idx]
             log_file = open(log_path, 'w')
 
+    plot_files = os.listdir( test_dir )
+
+    reward_0 = given_string_mean_reward( plot_files, test_dir, str='BW_0-20')
+    reward_1 = given_string_mean_reward( plot_files, test_dir, str='BW_0-40')
+    reward_2 = given_string_mean_reward( plot_files, test_dir, str='BW_0-60')
+    reward_3 = given_string_mean_reward( plot_files, test_dir, str='BW_0-80')
+    reward_4 = given_string_mean_reward( plot_files, test_dir, str='BW_0-100')
+
+    rl_mean_reward = {'0-20': reward_0,
+                      '0-40': reward_1,
+                      '0-60': reward_2,
+                      '0-80': reward_3,
+                      '0-100': reward_4}
+
+def given_string_mean_reward(plot_files, test_dir, str):
+    matching = [s for s in plot_files if str in s]
+    for log_file in matching:
+        reward = []
+        with open( test_dir + log_file ,'r' ) as f:
+            for line in f:
+                parse = line.split()
+                if len( parse ) <= 1:
+                    break
+                reward.append( float( parse[6] ) )
+        return np.mean( reward[1:] )
 
 if __name__ == '__main__':
     args = config.parse_args()
