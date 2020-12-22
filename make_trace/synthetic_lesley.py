@@ -1,6 +1,6 @@
 import argparse
 import csv
-# import os
+import os
 import random
 import time as time_module
 
@@ -29,6 +29,13 @@ def parse_args():
 
     return parser.parse_args()
 
+def empty(value):
+    try:
+        value = float(value)
+    except ValueError:
+        pass
+    return bool(value)
+
 def main():
     args = parse_args()
     T_s = args.T_s
@@ -45,19 +52,19 @@ def main():
     last_val = round(np.random.uniform(min_tp, max_tp), round_digit)
 
     while time < time_length:
-        if cnt <= 0:
+        if cnt == 0:
             bw_val = round( np.random.uniform( min_tp ,max_tp ) ,round_digit )
-            cnt = np.random.randint(1, T_s+1)
-        elif cnt >= 1:
-            bw_val = last_val
+            #cnt = np.random.randint(1, T_s+1)
         else:
-            bw_val = round(np.random.uniform(min_tp, max_tp), round_digit)
-
-        cnt -= 1
-        output_writer.writerow([time, bw_val])
-
-        last_val = bw_val
+            bw_val = last_val
+        # else:
+        #     bw_val = round(np.random.uniform(min_tp, max_tp), round_digit)
         time += 1
+        cnt -= 1
+
+        output_writer.writerow([time, bw_val])
+        last_val = bw_val
+
 
 
 if __name__ == "__main__":

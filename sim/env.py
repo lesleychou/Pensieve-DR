@@ -33,6 +33,7 @@ class Environment:
 
         # pick a random trace file
         self.trace_idx = 0 if fixed else np.random.randint(len(self.all_cooked_time))
+        print(self.trace_idx, "------idx")
         self.cooked_time = self.all_cooked_time[self.trace_idx]
         self.cooked_bw = self.all_cooked_bw[self.trace_idx]
         self.mahimahi_start_ptr = 1

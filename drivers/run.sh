@@ -21,13 +21,13 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../DR-results/one/model_saved/nn_model_ep_7300.ckpt"
+NN_MODELS="../DR-results/lesley-random/model_saved/nn_model_ep_5600.ckpt"
 
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
-for (( i_folder=1; i_folder<=99; i_folder++ )); do
-        TRACE_PATH="../data/synthetic_test/${i_folder}"
-        SUMMARY_DIR="../results/pensieve-mpc/test-on-${i_folder}"
+for (( i_folder=11; i_folder<=99; i_folder++ )); do
+        TRACE_PATH="../data/synthetic_test_lesley/${i_folder}"
+        SUMMARY_DIR="../results/pensieve-mpc-lesley/test-on-${i_folder}"
 
         #for ((i=0;i<${#NN_MODELS[@]};++i)); do
             python ${SIMULATOR_DIR}/rl_test.py \
@@ -50,14 +50,14 @@ for (( i_folder=1; i_folder<=99; i_folder++ )); do
 #                   --NUMBER_PICK=0 \
 #                   --duration ${DURATION} &
 ####
-            python ${SIMULATOR_DIR}/mpc.py \
-                 --test_trace_dir ${TRACE_PATH} \
-                   --summary_dir ${SUMMARY_DIR}/seed_1\
-                 --random_seed=1  \
-                 --ROBUST_NOISE=0 \
-                 --SAMPLE_LENGTH=0 \
-                 --NUMBER_PICK=0 \
-                 --duration ${DURATION}
+#            python ${SIMULATOR_DIR}/mpc.py \
+#                 --test_trace_dir ${TRACE_PATH} \
+#                   --summary_dir ${SUMMARY_DIR}/seed_1\
+#                 --random_seed=1  \
+#                 --ROBUST_NOISE=0 \
+#                 --SAMPLE_LENGTH=0 \
+#                 --NUMBER_PICK=0 \
+#                 --duration ${DURATION}
 ##          #done
 
 done

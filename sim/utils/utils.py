@@ -15,12 +15,12 @@ def load_traces(cooked_trace_folder):
         for file in files:
             # print os.path.join(subdir, file)
             file_path = subdir + os.sep + file
-            #print(file_path)
             val_folder_name = os.path.basename( os.path.normpath( subdir ) )
             #print( val_folder_name, "-----")
             cooked_time = []
             cooked_bw = []
             with open(file_path, 'rb') as phile:
+                print( file_path )
                 for line in phile:
                     parse = line.split()
                     cooked_time.append(float(parse[0]))

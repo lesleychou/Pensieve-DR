@@ -29,8 +29,8 @@ CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc'
-TEST_TRACE = '../data/generated_traces/val/'
+TEST_RESULT = '../results/mpc-lesley'
+TEST_TRACE = '../data/generated_traces_lesley/val/'
 
 @jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
@@ -278,8 +278,8 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
 
 
 def main():
-    # MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
-    # MPC.run()
+    MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
+    MPC.run()
 
     test_dir = TEST_RESULT
     plot_files = os.listdir( test_dir )
