@@ -1,10 +1,3 @@
-'''
-Fixed environment for testing.
-
-* Does not have noise added.
-* Does not alter the index of the network traces (starts from 0).
-'''
-
 import numpy as np
 
 MILLISECONDS_IN_SECOND = 1000.0
@@ -19,30 +12,33 @@ DRAIN_BUFFER_SLEEP_TIME = 500.0  # millisec
 PACKET_PAYLOAD_PORTION = 0.95
 LINK_RTT = 80  # millisec
 PACKET_SIZE = 1500  # bytes
-VIDEO_SIZE_FILE = './data/video_size_6_larger/video_size_'
+NOISE_LOW = 0.9
+NOISE_HIGH = 1.1
+VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 
 
 class Environment:
-    def __init__(self, all_cooked_time, all_cooked_bw, random_seed=RANDOM_SEED):
+    def __init__(self, all_cooked_time, all_cooked_bw, all_file_names=None,
+                 random_seed=RANDOM_SEED, fixed=False):
         assert len(all_cooked_time) == len(all_cooked_bw)
 
         np.random.seed(random_seed)
-
+        self.fixed = fixed
         self.all_cooked_time = all_cooked_time
         self.all_cooked_bw = all_cooked_bw
+        self.all_file_names = all_file_names
 
         self.video_chunk_counter = 0
         self.buffer_size = 0
 
         # pick a random trace file
-        self.trace_idx = 0
+        self.trace_idx = 0 if fixed else np.random.randint(len(self.all_cooked_time))
         self.cooked_time = self.all_cooked_time[self.trace_idx]
         self.cooked_bw = self.all_cooked_bw[self.trace_idx]
-
         self.mahimahi_start_ptr = 1
+        self.mahimahi_ptr = 1 if fixed else np.random.randint(1, len(self.cooked_bw))
         # randomize the start point of the trace
         # note: trace file starts with time 0
-        self.mahimahi_ptr = 1
         self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         self.video_size = {}  # in bytes
@@ -58,6 +54,7 @@ class Environment:
         assert quality < BITRATE_LEVELS
 
         video_chunk_size = self.video_size[quality][self.video_chunk_counter]
+        #print(video_chunk_size, "----video_chunk_size---")
 
         # use the delivery opportunity in mahimahi
         delay = 0.0  # in ms
@@ -65,22 +62,26 @@ class Environment:
 
         while True:  # download video chunk over mahimahi
             throughput = self.cooked_bw[self.mahimahi_ptr] \
-                         * B_IN_MB / BITS_IN_BYTE
+                         * B_IN_MB / BITS_IN_BYTE  # throughput = bytes per ms
+            #print(self.cooked_bw[self.mahimahi_ptr], "bw")
             duration = self.cooked_time[self.mahimahi_ptr] \
                        - self.last_mahimahi_time
 
             packet_payload = throughput * duration * PACKET_PAYLOAD_PORTION
 
             if video_chunk_counter_sent + packet_payload > video_chunk_size:
-
                 fractional_time = (video_chunk_size - video_chunk_counter_sent) / \
                                   throughput / PACKET_PAYLOAD_PORTION
                 delay += fractional_time
+                #print( delay ,"--------fractional_time------" )
                 self.last_mahimahi_time += fractional_time
+                assert(self.last_mahimahi_time <= self.cooked_time[self.mahimahi_ptr])
                 break
 
             video_chunk_counter_sent += packet_payload
             delay += duration
+            #print(delay, "--------fractional_time + duration------")
+
             self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr]
             self.mahimahi_ptr += 1
 
@@ -90,8 +91,17 @@ class Environment:
                 self.mahimahi_ptr = 1
                 self.last_mahimahi_time = 0
 
+
+        #print( delay ,"--------before------" )
         delay *= MILLISECONDS_IN_SECOND
+        #print( delay ,"--------MILLISECONDS_IN_SECOND------" )
+
         delay += LINK_RTT
+        #print( delay ,"--------RTT------" )
+
+        # add a multiplicative noise to the delay
+        if not self.fixed:
+            delay *= np.random.uniform(NOISE_LOW, NOISE_HIGH)
 
         # rebuffer time
         rebuf = np.maximum(delay - self.buffer_size, 0.0)
@@ -143,17 +153,20 @@ class Environment:
             end_of_video = True
             self.buffer_size = 0
             self.video_chunk_counter = 0
-            
-            self.trace_idx += 1
-            if self.trace_idx >= len(self.all_cooked_time):
-                self.trace_idx = 0            
 
+            if self.fixed:
+                self.trace_idx += 1
+                if self.trace_idx >= len(self.all_cooked_time):
+                    self.trace_idx = 0
+            else:
+                # pick a random trace file
+                self.trace_idx = np.random.randint(len(self.all_cooked_time))
             self.cooked_time = self.all_cooked_time[self.trace_idx]
             self.cooked_bw = self.all_cooked_bw[self.trace_idx]
 
             # randomize the start point of the video
             # note: trace file starts with time 0
-            self.mahimahi_ptr = self.mahimahi_start_ptr
+            self.mahimahi_ptr = self.mahimahi_start_ptr if self.fixed else np.random.randint(1, len(self.cooked_bw))
             self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         next_video_chunk_sizes = []

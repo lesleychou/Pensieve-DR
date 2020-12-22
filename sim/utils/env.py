@@ -1,12 +1,9 @@
-'''
-Simulated environment for network video streaming.
-'''
-
 import numpy as np
 
 MILLISECONDS_IN_SECOND = 1000.0
 B_IN_MB = 1000000.0
 BITS_IN_BYTE = 8.0
+RANDOM_SEED = 42
 VIDEO_CHUNCK_LEN = 4000.0  # millisec, every time add this amount to buffer
 BITRATE_LEVELS = 6
 TOTAL_VIDEO_CHUNCK = 48
@@ -17,18 +14,15 @@ LINK_RTT = 80  # millisec
 PACKET_SIZE = 1500  # bytes
 NOISE_LOW = 0.9
 NOISE_HIGH = 1.1
-VIDEO_SIZE_FILE = './data/video_size_6_larger/video_size_'
+VIDEO_SIZE_FILE = '../data/video_sizes/video_size_'
+
 
 class Environment:
-    '''
-    A simulated environment for video streaming.
-    '''
-    def __init__(self, all_cooked_time, all_cooked_bw, random_seed):
+    def __init__(self, all_cooked_time, all_cooked_bw, random_seed=RANDOM_SEED, fixed=False):
         assert len(all_cooked_time) == len(all_cooked_bw)
-        assert(len(all_cooked_time) > 0)
-        
-        np.random.seed(random_seed)
 
+        np.random.seed(random_seed)
+        self.fixed = fixed
         self.all_cooked_time = all_cooked_time
         self.all_cooked_bw = all_cooked_bw
 
@@ -36,26 +30,23 @@ class Environment:
         self.buffer_size = 0
 
         # pick a random trace file
-        self.trace_idx = np.random.randint(len(self.all_cooked_time))
+        self.trace_idx = 0 if fixed else np.random.randint(len(self.all_cooked_time))
         self.cooked_time = self.all_cooked_time[self.trace_idx]
         self.cooked_bw = self.all_cooked_bw[self.trace_idx]
-
+        self.mahimahi_start_ptr = 1
+        self.mahimahi_ptr = 1 if fixed else np.random.randint(1, len(self.cooked_bw))
         # randomize the start point of the trace
         # note: trace file starts with time 0
-        self.mahimahi_ptr = np.random.randint(1, len(self.cooked_bw))
         self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         self.video_size = {}  # in bytes
         for bitrate in range(BITRATE_LEVELS):
             self.video_size[bitrate] = []
-            with open(VIDEO_SIZE_FILE + str(bitrate)) as phile:
-                for line in phile:
+            with open(VIDEO_SIZE_FILE + str(bitrate)) as f:
+                for line in f:
                     self.video_size[bitrate].append(int(line.split()[0]))
 
     def get_video_chunk(self, quality):
-        '''
-        Simulated request of video chunk at specified bitrate `quality`.
-        '''
 
         assert quality >= 0
         assert quality < BITRATE_LEVELS
@@ -68,7 +59,7 @@ class Environment:
 
         while True:  # download video chunk over mahimahi
             throughput = self.cooked_bw[self.mahimahi_ptr] \
-                         * B_IN_MB / BITS_IN_BYTE
+                         * B_IN_MB / BITS_IN_BYTE  # throughput = bytes per ms
             duration = self.cooked_time[self.mahimahi_ptr] \
                        - self.last_mahimahi_time
 
@@ -97,8 +88,10 @@ class Environment:
         delay *= MILLISECONDS_IN_SECOND
         delay += LINK_RTT
 
-	# add a multiplicative noise to the delay
-        delay *= np.random.uniform(NOISE_LOW, NOISE_HIGH)
+        # add a multiplicative noise to the delay
+        if not self.fixed:
+            delay *= np.random.uniform(NOISE_LOW, NOISE_HIGH)
+
         # rebuffer time
         rebuf = np.maximum(delay - self.buffer_size, 0.0)
 
@@ -150,14 +143,19 @@ class Environment:
             self.buffer_size = 0
             self.video_chunk_counter = 0
 
-            # pick a random trace file
-            self.trace_idx = np.random.randint(len(self.all_cooked_time))
+            if self.fixed:
+                self.trace_idx += 1
+                if self.trace_idx >= len(self.all_cooked_time):
+                    self.trace_idx = 0
+            else:
+                # pick a random trace file
+                self.trace_idx = np.random.randint(len(self.all_cooked_time))
             self.cooked_time = self.all_cooked_time[self.trace_idx]
             self.cooked_bw = self.all_cooked_bw[self.trace_idx]
 
             # randomize the start point of the video
             # note: trace file starts with time 0
-            self.mahimahi_ptr = np.random.randint(1, len(self.cooked_bw))
+            self.mahimahi_ptr = self.mahimahi_start_ptr if self.fixed else np.random.randint(1, len(self.cooked_bw))
             self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         next_video_chunk_sizes = []
@@ -172,14 +170,3 @@ class Environment:
             next_video_chunk_sizes, \
             end_of_video, \
             video_chunk_remain
-
-    def set_environment_pointer(self, pointer_trace_index, pointer_index):
-        self.trace_idx = pointer_trace_index
-        self.cooked_time = self.all_cooked_time[self.trace_idx]
-        self.cooked_bw = self.all_cooked_bw[self.trace_idx]
-        self.video_chunk_counter = 0
-        self.buffer_size = 0
-        # randomize the start point of the trace
-        # note: trace file starts with time 0
-        self.mahimahi_ptr = pointer_index % len(self.cooked_bw)
-        self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
