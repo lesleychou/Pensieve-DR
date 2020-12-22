@@ -219,20 +219,20 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     plot_files = os.listdir( test_dir )
 
     reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-20' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-40' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-60' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-80' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-100' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_20-40' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_40-60' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_60-80' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_80-100' )
 
     rl_mean_reward = {'0-20': reward_0 ,
-                      '0-40': reward_1 ,
-                      '0-60': reward_2 ,
-                      '0-80': reward_3 ,
-                      '0-100': reward_4}
+                      '20-40': reward_1 ,
+                      '40-60': reward_2 ,
+                      '60-80': reward_3 ,
+                      '80-100': reward_4}
 
-    mpc_mean_reward = {'0-20': 6.695744680851064, '0-40': 12.192553191489361,
-                       '0-60': 27.150591683894845, '0-80': 35.30755868832238,
-                       '0-100': 5.051469025552244}
+    mpc_mean_reward = {'0-20': -19.80165934207423, '20-40': -15.66196308318172,
+                       '40-60': 0.8598232908998139, '60-80': 4.991133928477234,
+                       '80-100': 10.59380991105914}
 
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
@@ -243,17 +243,21 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
 
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
-        matching = [s for s in plot_files if str in s]
-        for log_file in matching:
-            print(log_file)
-            reward = []
-            with open( test_dir +'/'+ log_file ,'r' ) as f:
-                for line in f:
-                    parse = line.split()
-                    if len( parse ) <= 1:
-                        break
-                    reward.append( float( parse[6] ) )
-        return np.mean( reward[1:] )
+    matching = [s for s in plot_files if str in s]
+    reward = []
+    count=0
+    for log_file in matching:
+        count+=1
+        #print(log_file)
+        with open( test_dir +'/'+ log_file ,'r' ) as f:
+            for line in f:
+                parse = line.split()
+                if len( parse ) <= 1:
+                    break
+                reward.append( float( parse[6] ) )
+    print(count)
+    return np.mean( reward[1:] )
+
 
 
 def testing(args, epoch, actor, log_file, trace_dir, test_log_folder, noise,

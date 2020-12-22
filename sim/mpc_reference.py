@@ -261,31 +261,34 @@ class MPC_ref(object):
                 #print("mpc test done on", all_file_names[net_env.trace_idx])
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
-        matching = [s for s in plot_files if str in s]
-        for log_file in matching:
-            print(log_file)
-            reward = []
-            with open( test_dir +'/'+ log_file ,'r' ) as f:
-                for line in f:
-                    parse = line.split()
-                    if len( parse ) <= 1:
-                        break
-                    reward.append( float( parse[6] ) )
-        return np.mean( reward[1:] )
+    matching = [s for s in plot_files if str in s]
+    reward = []
+    count=0
+    for log_file in matching:
+        count+=1
+        print(log_file)
+        with open( test_dir +'/'+ log_file ,'r' ) as f:
+            for line in f:
+                parse = line.split()
+                if len( parse ) <= 1:
+                    break
+                reward.append( float( parse[6] ) )
+    print(count)
+    return np.mean( reward[1:] )
 
 
 def main():
-    MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
-    MPC.run()
+    # MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
+    # MPC.run()
 
     test_dir = TEST_RESULT
     plot_files = os.listdir( test_dir )
 
     reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-20' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-40' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-60' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-80' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-100' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_20-40' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_40-60' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_60-80' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_80-100' )
 
     mpc_mean_reward = {'0-20': reward_0 ,
                       '0-40': reward_1 ,
@@ -293,7 +296,7 @@ def main():
                       '0-80': reward_3 ,
                       '0-100': reward_4}
 
-    print( mpc_mean_reward ,"-----rl_mean_reward-----" )
+    print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 
 
 if __name__ == '__main__':

@@ -26,6 +26,7 @@ VAL_TRACE_PATH="../data/generated_traces/val"
 # VAL_TRACE_PATH="../data/constant_trace/val"
 # TEST_TRACE_PATH="../data/constant_trace/test"
 SIMULATOR_DIR="../sim"
+#--nn_model='../DR-results/fifth/model_saved/nn_model_ep_1100.ckpt'\
 
 
 LOG_FILES=( '0' '1' '2' '3' )
@@ -40,17 +41,16 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../DR-results/sixth/"
+    SUMMARY_DIR="../DR-results/one/"
     python ${SIMULATOR_DIR}/multi_agent.py \
         --NUM_AGENT=8\
         --A_DIM=3\
         --S_LEN=6\
-        --nn_model='../DR-results/fifth/model_saved/nn_model_ep_1100.ckpt'\
         --train_trace_dir ${TRAIN_TRACE_PATH} \
         --val_trace_dir ${VAL_TRACE_PATH} \
         --summary_dir ${SUMMARY_DIR} \
         --noise ${NOISE} \
         --duration ${DURATION} \
-        --description="Pensieve-BW-2"
+        --description="Pensieve-DR-BW"
 
 done
