@@ -12,7 +12,7 @@ from sympy import N, Symbol, solve
 # os.makedirs(TRAIN_TRACE_DIR, exist_ok=True)
 # os.makedirs(VAL_TRACE_DIR, exist_ok=True)
 
-TEST_TRACE_DIR = "../data/synthetic_test_lesley_2"
+TEST_TRACE_DIR = "../data/synthetic_test_lesley_3"
 os.makedirs(TEST_TRACE_DIR, exist_ok=True)
 
 # T_s_min = 10

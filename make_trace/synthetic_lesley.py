@@ -47,7 +47,8 @@ def main():
     while time < time_length:
         if cnt <= 0:
             bw_val = round( np.random.uniform( min_tp ,max_tp ) ,round_digit )
-            cnt = np.random.randint(1, T_s+1)
+            #cnt = np.random.randint(1, T_s+1)
+            cnt=5
         elif cnt >= 1:
             bw_val = last_val
         else:

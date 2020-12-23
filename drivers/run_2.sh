@@ -25,7 +25,7 @@ NN_MODELS="../DR-results/lesley-random/model_saved/nn_model_ep_7100.ckpt"
 
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
-for (( i_folder=1; i_folder<=20; i_folder++ )); do
+for (( i_folder=21; i_folder<=40; i_folder++ )); do
         TRACE_PATH="../data/synthetic_test_lesley_3/${i_folder}"
         SUMMARY_DIR="../results/pensieve-mpc-lesley-test-3/test-on-${i_folder}"
 
