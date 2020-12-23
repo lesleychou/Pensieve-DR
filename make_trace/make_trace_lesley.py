@@ -12,7 +12,7 @@ from sympy import N, Symbol, solve
 # os.makedirs(TRAIN_TRACE_DIR, exist_ok=True)
 # os.makedirs(VAL_TRACE_DIR, exist_ok=True)
 
-TEST_TRACE_DIR = "../data/synthetic_test_lesley"
+TEST_TRACE_DIR = "../data/synthetic_test_lesley_2"
 os.makedirs(TEST_TRACE_DIR, exist_ok=True)
 
 # T_s_min = 10
@@ -73,26 +73,45 @@ processes = []
 #                 T_l, T_s, cov, duration, max_throughput, min_throughput, name)
 #     cmds.append(cmd.split(" "))
 
-for x in range(11, 100):
+for x in range(1, 100):
     MAX_THROUGHPUT_HIGH = x
+    MAX_THROUGHPUT_LOW = x
     for i in range(0, 50):
-        os.makedirs(TEST_TRACE_DIR+"/"+str(x), exist_ok=True)
+        os.makedirs( TEST_TRACE_DIR + "/" + str( x ) ,exist_ok=True )
         name = os.path.join(TEST_TRACE_DIR+"/"+str(x), f"trace{i}.txt")
         print("create ", name)
         T_s = T_s
         T_l = T_l
         cov = cov
         duration = duration
-        #max_throughput = round(random.uniform(MIN_THROUGHPUT, MAX_THROUGHPUT),1)
-        #for T_s experiment:
+        max_throughput = round(random.uniform(MAX_THROUGHPUT_LOW, MAX_THROUGHPUT_HIGH))
         min_throughput = MIN_THROUGHPUT
-        max_throughput = MAX_THROUGHPUT_HIGH
         cmd = "python synthetic_lesley.py --T_l {} --T_s {} --cov {} " \
-                    "--duration {} --max-throughput {} " \
-                    "--min-throughput {} --output_file {}".format(
-                        T_l, T_s, cov, duration, max_throughput, min_throughput, name)
+            "--duration {} --max-throughput {} " \
+            "--min-throughput {} --output_file {}".format(
+                    T_l, T_s, cov, duration, max_throughput, min_throughput, name)
         cmds.append(cmd.split(" "))
-        cmds.append(cmd.split(' '))
+
+# for x in range(1, 100):
+#     MAX_THROUGHPUT_HIGH = x
+#     for i in range(0, 50):
+#         os.makedirs(TEST_TRACE_DIR+"/"+str(x), exist_ok=True)
+#         name = os.path.join(TEST_TRACE_DIR+"/"+str(x), f"trace{i}.txt")
+#         print("create ", name)
+#         T_s = T_s
+#         T_l = T_l
+#         cov = cov
+#         duration = duration
+#         #max_throughput = round(random.uniform(MIN_THROUGHPUT, MAX_THROUGHPUT),1)
+#         #for T_s experiment:
+#         min_throughput = MIN_THROUGHPUT
+#         max_throughput = MAX_THROUGHPUT_HIGH
+#         cmd = "python synthetic_lesley.py --T_l {} --T_s {} --cov {} " \
+#             "--duration {} --steps {} --switch-parameter {} --max-throughput {} " \
+#             "--min-throughput {} --output_file {}".format(
+#                     T_l, T_s, cov, duration, STEPS, switch_parameter,
+#                     max_throughput, min_throughput, name)
+#         cmds.append(cmd.split(' '))
 
 while True:
     while cmds and len(processes) < MAX_TASK_CNT:
