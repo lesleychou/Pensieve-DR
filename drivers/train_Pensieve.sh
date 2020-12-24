@@ -41,7 +41,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../DR-results/huge-BW-0-500/"
+    SUMMARY_DIR="../DR-results/huge-BW-0-500-add100moreon-0-300/"
     python ${SIMULATOR_DIR}/multi_agent.py \
         --NUM_AGENT=8\
         --A_DIM=3\
@@ -52,7 +52,7 @@ for NOISE in 0 ; do
         --noise ${NOISE} \
         --duration ${DURATION} \
         --description="Pensieve-DR-BW" \
-        --nn_model='../DR-results/huge-BW/model_saved/nn_model_ep_500.ckpt'
+        --nn_model='../DR-results/huge-BW-0-500/model_saved/nn_model_ep_600.ckpt'
 
 
 done

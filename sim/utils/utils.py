@@ -22,6 +22,7 @@ def load_traces(cooked_trace_folder):
             cooked_time = []
             cooked_bw = []
             with open(file_path, 'rb') as phile:
+                #print(file_path)
                 for line in phile:
                     parse = line.split()
                     cooked_time.append(float(parse[0]))
