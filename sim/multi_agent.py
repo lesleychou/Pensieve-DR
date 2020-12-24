@@ -218,33 +218,33 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     test_dir = log_output_dir
     plot_files = os.listdir( test_dir )
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-20' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_20-40' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_40-60' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_60-80' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_80-100' )
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
 
-    rl_mean_reward = {'0-20': reward_0 ,
-                      '20-40': reward_1 ,
-                      '40-60': reward_2 ,
-                      '60-80': reward_3 ,
-                      '80-100': reward_4}
+    rl_mean_reward = {'0-500': reward_0 ,
+                       '500-1k': reward_1 ,
+                       '1k-240k': reward_2 ,
+                       '240k-640k': reward_3 ,
+                       '640k-1000k': reward_4}
 
     # # step=5, original synthetic generator
     # mpc_mean_reward = {'0-20': -19.80165934207423, '20-40': -15.66196308318172,
     #                    '40-60': 0.8598232908998139, '60-80': 4.991133928477234,
     #                    '80-100': 10.59380991105914}
 
-    mpc_mean_reward = {'0-20': -4.422510592233943, '0-40': 8.022513680646652,
-                       '0-60': 19.71390537021711, '0-80': 24.275123048128005,
-                       '0-100': 28.714679939014342}
+    # mpc_mean_reward = {'0-20': -4.422510592233943, '0-40': 8.022513680646652,
+    #                    '0-60': 19.71390537021711, '0-80': 24.275123048128005,
+    #                    '0-100': 28.714679939014342}
 
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
-    d3 = {key: rl_mean_reward[key] - mpc_mean_reward.get( key ,0 ) for key in rl_mean_reward}
+    # d3 = {key: rl_mean_reward[key] - mpc_mean_reward.get( key ,0 ) for key in rl_mean_reward}
 
-    rl_file.write(str( d3 ) + '\n' )
-    print( d3 ,"-----rl - mpc-----" )
+    rl_file.write(str( rl_mean_reward ) + '\n' )
+    print( rl_mean_reward ,"-----rl - mpc-----" )
 
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
