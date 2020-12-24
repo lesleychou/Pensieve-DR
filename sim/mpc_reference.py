@@ -29,8 +29,8 @@ CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc-huge'
-TEST_TRACE = '../data/generated_traces_huge/val/'
+TEST_RESULT = '../results/mpc-huge-val-0-500'
+TEST_TRACE = '../data/generated_traces_huge/train_0-500/'
 
 @jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
@@ -278,23 +278,23 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
 
 
 def main():
-    MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
-    MPC.run()
+    # MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
+    # MPC.run()
 
     test_dir = TEST_RESULT
     plot_files = os.listdir( test_dir )
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
 
-    mpc_mean_reward = {'0-500': reward_0 ,
-                      '500-1k': reward_1 ,
-                      '1k-240k': reward_2 ,
-                      '240k-640k': reward_3 ,
-                      '640k-1000k': reward_4}
+    mpc_mean_reward = {'0-150': reward_0 ,
+                      '150-250': reward_1 ,
+                      '250-350': reward_2 ,
+                      '350-450': reward_3 ,
+                      '450-550': reward_4}
 
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 

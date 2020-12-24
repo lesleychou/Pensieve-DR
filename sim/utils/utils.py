@@ -12,6 +12,8 @@ def load_traces(cooked_trace_folder):
     all_cooked_bw = []
     all_file_names = []
     for subdir ,dirs ,files in os.walk( cooked_trace_folder ):
+        files = [f for f in files if not f[0] == '.']
+        dirs[:] = [d for d in dirs if not d[0] == '.']
         for file in files:
             # print os.path.join(subdir, file)
             file_path = subdir + os.sep + file
@@ -20,7 +22,6 @@ def load_traces(cooked_trace_folder):
             cooked_time = []
             cooked_bw = []
             with open(file_path, 'rb') as phile:
-                #print( file_path )
                 for line in phile:
                     parse = line.split()
                     cooked_time.append(float(parse[0]))

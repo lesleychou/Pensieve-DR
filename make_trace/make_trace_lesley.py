@@ -7,10 +7,11 @@ from sympy import N, Symbol, solve
 
 # 68 files with 2000 seconds, 205 files with 320 seconds
 
-TRAIN_TRACE_DIR = "../data/generated_traces_huge/train/train_BW_80-100"
-VAL_TRACE_DIR = "../data/generated_traces_huge/val/val_BW_640k-1000k"
+TRAIN_TRACE_DIR = "../data/generated_traces_huge/train_0-500/train_BW_400-500"
 os.makedirs(TRAIN_TRACE_DIR, exist_ok=True)
-os.makedirs(VAL_TRACE_DIR, exist_ok=True)
+
+#VAL_TRACE_DIR = "../data/generated_traces_huge/val_0-500/val_BW_450-550"
+#os.makedirs(VAL_TRACE_DIR, exist_ok=True)
 
 # TEST_TRACE_DIR = "../data/synthetic_test_lesley_3"
 # os.makedirs(TEST_TRACE_DIR, exist_ok=True)
@@ -43,46 +44,46 @@ cov = 0.01
 duration = 250
 MAX_TASK_CNT = 32
 MIN_THROUGHPUT = 0.2
-MAX_THROUGHPUT_LOW = 640000
-MAX_THROUGHPUT_HIGH = 1000000
+MAX_THROUGHPUT_LOW = 400
+MAX_THROUGHPUT_HIGH = 500
 STEPS = 15
 
 cmds = []
 processes = []
 
-# for i in range(0, 200):
-#     name = os.path.join(TRAIN_TRACE_DIR, f"trace{i}.txt")
-#     print("create ", name)
-#     T_s = T_s
-#     T_l = T_l
-#     cov = cov
-#     duration = duration
-#     max_throughput = round( random.uniform( MAX_THROUGHPUT_LOW ,MAX_THROUGHPUT_HIGH ) )
-#     # for T_s experiment:
-#     # max_throughput = MAX_THROUGHPUT
-#     min_throughput = MIN_THROUGHPUT
-#     cmd = "python synthetic_lesley.py --T_l {} --T_s {} --cov {} " \
-#           "--duration {} --max-throughput {} " \
-#           "--min-throughput {} --output_file {}".format(
-#         T_l ,T_s ,cov ,duration ,max_throughput ,min_throughput ,name )
-#     cmds.append( cmd.split( " " ) )
-
-for i in range(200, 700):
-    name = os.path.join(VAL_TRACE_DIR, f"trace{i}.txt")
+for i in range(0, 50):
+    name = os.path.join(TRAIN_TRACE_DIR, f"trace{i}.txt")
     print("create ", name)
     T_s = T_s
     T_l = T_l
     cov = cov
     duration = duration
-    max_throughput = round(random.uniform(MAX_THROUGHPUT_LOW, MAX_THROUGHPUT_HIGH))
+    max_throughput = round( random.uniform( MAX_THROUGHPUT_LOW ,MAX_THROUGHPUT_HIGH ) )
     # for T_s experiment:
-    #max_throughput = MAX_THROUGHPUT
+    # max_throughput = MAX_THROUGHPUT
     min_throughput = MIN_THROUGHPUT
     cmd = "python synthetic_lesley.py --T_l {} --T_s {} --cov {} " \
-        "--duration {} --max-throughput {} " \
-        "--min-throughput {} --output_file {}".format(
-                T_l, T_s, cov, duration, max_throughput, min_throughput, name)
-    cmds.append(cmd.split(" "))
+          "--duration {} --max-throughput {} " \
+          "--min-throughput {} --output_file {}".format(
+        T_l ,T_s ,cov ,duration ,max_throughput ,min_throughput ,name )
+    cmds.append( cmd.split( " " ) )
+
+# for i in range(100, 200):
+#     name = os.path.join(VAL_TRACE_DIR, f"trace{i}.txt")
+#     print("create ", name)
+#     T_s = T_s
+#     T_l = T_l
+#     cov = cov
+#     duration = duration
+#     max_throughput = round(random.uniform(MAX_THROUGHPUT_LOW, MAX_THROUGHPUT_HIGH))
+#     # for T_s experiment:
+#     #max_throughput = MAX_THROUGHPUT
+#     min_throughput = MIN_THROUGHPUT
+#     cmd = "python synthetic_lesley.py --T_l {} --T_s {} --cov {} " \
+#         "--duration {} --max-throughput {} " \
+#         "--min-throughput {} --output_file {}".format(
+#                 T_l, T_s, cov, duration, max_throughput, min_throughput, name)
+#     cmds.append(cmd.split(" "))
 
 # for x in range(1, 100):
 #     MAX_THROUGHPUT_HIGH = x
