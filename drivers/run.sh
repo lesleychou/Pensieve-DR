@@ -21,11 +21,11 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../DR-results/huge-BW-0-500-add100moreon-100-300/model_saved/nn_model_ep_11300.ckpt"
+NN_MODELS="../DR-results/huge-BW-0-1T-train-cut/model_saved/nn_model_ep_2200.ckpt"
 
 
-TRACE_PATH="../data/generated_traces_huge/val"
-SUMMARY_DIR="../results/pensieve-on-val-huge"
+TRACE_PATH="../data/generated_traces_huge/val_0-500"
+SUMMARY_DIR="../results/pensieve-on-val-0-500"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do

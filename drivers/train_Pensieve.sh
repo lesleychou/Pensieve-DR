@@ -5,7 +5,7 @@ set -e
 
 NOISE=0
 DURATION=1
-TRAIN_TRACE_PATH="../data/generated_traces_huge/train_cut_big"
+TRAIN_TRACE_PATH="../data/generated_traces_huge/train"
 VAL_TRACE_PATH="../data/generated_traces_huge/val_cut_big"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
@@ -41,7 +41,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../DR-results/huge-BW-0-1T-train-cut/"
+    SUMMARY_DIR="../tmp/DR-results/huge-BW-0-1T-train-cut/"
     python ${SIMULATOR_DIR}/multi_agent.py \
         --RANDOM_SEED=171 \
         --NUM_AGENT=8\

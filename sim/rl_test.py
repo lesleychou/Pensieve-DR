@@ -225,19 +225,19 @@ def main():
             test_dir = summary_dir
             plot_files = os.listdir( test_dir )
 
-            reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
-            reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
-            reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
-            reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
-            reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
+        reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
+        reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
+        reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
+        reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
+        reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
 
-            rl_mean_reward = {'0-500': reward_0 ,
-                              '500-1k': reward_1 ,
-                              '1k-240k': reward_2 ,
-                              '240k-640k': reward_3 ,
-                              '640k-1000k': reward_4}
+        rl_mean_reward = {'0-500': reward_0 ,
+                          '500-1k': reward_1 ,
+                          '1k-240k': reward_2 ,
+                          '240k-640k': reward_3 ,
+                          '640k-1000k': reward_4}
 
-            print(rl_mean_reward)
+        print(rl_mean_reward)
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]

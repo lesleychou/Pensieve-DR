@@ -70,7 +70,7 @@ def entropy_weight_decay_func(epoch):
 
 def learning_rate_decay_func(epoch):
     if epoch < 20000:
-        rate = 0.00005
+        rate = 0.0001
     else:
         rate = 0.00001
 
@@ -224,11 +224,23 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
     reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
 
+    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
+    reward_6 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
+    reward_7 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
+    reward_8 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
+    reward_9 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
+
     rl_mean_reward = {'0-500': reward_0 ,
-                       '500-1k': reward_1 ,
-                       '1k-240k': reward_2 ,
-                       '240k-640k': reward_3 ,
-                       '640k-1000k': reward_4}
+                      '500-1k': reward_1 ,
+                      '1k-240k': reward_2 ,
+                      '240k-640k': reward_3 ,
+                      '640k-1000k': reward_4 ,
+                      '0-150': reward_5 ,
+                      '150-250': reward_6 ,
+                      '250-350': reward_7 ,
+                      '350-450': reward_8 ,
+                      '450-550': reward_9
+                      }
 
     # # step=5, original synthetic generator
     # mpc_mean_reward = {'0-20': -19.80165934207423, '20-40': -15.66196308318172,
@@ -247,7 +259,11 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     # val-cut-big
     mpc_mean_reward={'0-500': 98.2075639651247 ,'500-1k': 137.26127036007622 ,
                      '1k-240k': 127.56456409662302 ,'240k-640k': 126.30795181884987 ,
-                     '640k-1000k': 126.02960891664513}
+                     '640k-1000k': 126.02960891664513,
+                     '0-150': 23.565406029092248 ,'150-250': 75.51386319420457 ,
+                     '250-350': 120.11421779814786 ,'350-450': 130.62077029005073 ,
+                     '450-550': 134.2136881927959
+                     }
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: rl_mean_reward[key] - mpc_mean_reward.get( key ,0 ) for key in rl_mean_reward}
@@ -533,7 +549,7 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
     net_env = env.Environment(all_cooked_time=all_cooked_time,
                               all_cooked_bw=all_cooked_bw,
                               all_file_names=all_file_names,
-                              random_seed=agent_id, fixed=True)
+                              random_seed=agent_id)
 
     with tf.Session() as sess, open(os.path.join(
             args.summary_dir, f'log_agent_{agent_id}'), 'w') as log_file:
