@@ -43,6 +43,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
     SUMMARY_DIR="../DR-results/huge-BW-0-1T-train-cut/"
     python ${SIMULATOR_DIR}/multi_agent.py \
+        --RANDOM_SEED=171 \
         --NUM_AGENT=8\
         --A_DIM=3\
         --S_LEN=6\

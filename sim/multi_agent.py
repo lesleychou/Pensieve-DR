@@ -70,7 +70,7 @@ def entropy_weight_decay_func(epoch):
 
 def learning_rate_decay_func(epoch):
     if epoch < 20000:
-        rate = 0.0001
+        rate = 0.00005
     else:
         rate = 0.00001
 
