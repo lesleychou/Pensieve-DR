@@ -89,23 +89,6 @@ def main():
 
     all_cooked_time, all_cooked_bw, all_file_names = load_traces(
         test_trace_dir)
-    #print(len(all_cooked_bw))
-    #print(min(min(all_cooked_bw)), max(max(all_cooked_bw)))
-    # all_cooked_time, all_cooked_bw = adjust_traces(
-    #     all_cooked_time,
-    #     all_cooked_bw,
-    #     test_trace_dir,
-    #     args.random_seed)
-
-    # adjust_traces_one_random(all_ts, all_bw, random_seed, sample_length = 4):
-    # all_cooked_time, all_cooked_bw = adjust_n_random_traces(
-    #     all_cooked_time,
-    #     all_cooked_bw,
-    #     args.random_seed,
-    #     args.ROBUST_NOISE,
-    #     args.SAMPLE_LENGTH,
-    #     args.NUMBER_PICK)
-
 
     #print(len(all_cooked_time[-1]))
 
@@ -239,6 +222,38 @@ def main():
                     'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
                 log_file = open(log_path, 'w')
 
+            test_dir = summary_dir
+            plot_files = os.listdir( test_dir )
+
+            reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
+            reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
+            reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
+            reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
+            reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
+
+            rl_mean_reward = {'0-500': reward_0 ,
+                              '500-1k': reward_1 ,
+                              '1k-240k': reward_2 ,
+                              '240k-640k': reward_3 ,
+                              '640k-1000k': reward_4}
+
+            print(rl_mean_reward)
+
+def given_string_mean_reward(plot_files ,test_dir ,str):
+    matching = [s for s in plot_files if str in s]
+    reward = []
+    count=0
+    for log_file in matching:
+        count+=1
+        #print(log_file)
+        with open( test_dir +'/'+ log_file ,'r' ) as f:
+            for line in f:
+                parse = line.split()
+                if len( parse ) <= 1:
+                    break
+                reward.append( float( parse[6] ) )
+    print(count)
+    return np.mean( reward[1:] )
 
 if __name__ == '__main__':
     main()
