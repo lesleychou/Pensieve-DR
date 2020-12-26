@@ -6,7 +6,7 @@ set -e
 NOISE=0
 DURATION=1
 TRAIN_TRACE_PATH="../data/generated_traces_huge/train_cut_big"
-VAL_TRACE_PATH="../data/generated_traces_huge/val"
+VAL_TRACE_PATH="../data/generated_traces_huge/val_cut_big"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
 # TEST_TRACE_PATH="../data/exponential_traces/test"

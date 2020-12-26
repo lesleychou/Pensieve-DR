@@ -29,7 +29,7 @@ CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc-huge'
+TEST_RESULT = '../results/mpc-huge-cut-big'
 TEST_TRACE = '../data/generated_traces_huge/train_0-500/'
 
 @jit(nopython=True)
