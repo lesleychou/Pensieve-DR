@@ -29,8 +29,8 @@ CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc-huge-cut-big'
-TEST_TRACE = '../data/generated_traces_huge/train_0-500/'
+TEST_RESULT = '../results/mpc-UDR-val'
+TEST_TRACE = '../data/generated_traces_UDR/val_0_20000/'
 
 @jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
@@ -273,8 +273,9 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
                 if len( parse ) <= 1:
                     break
                 reward.append( float( parse[6] ) )
-    print(count)
-    return np.mean( reward[1:] )
+    #print(count)
+    mean = np.mean( reward[1:] )
+    return round(mean, 2)
 
 
 def main():
@@ -296,17 +297,15 @@ def main():
     #                   '350-450': reward_3 ,
     #                   '450-550': reward_4}
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
-
-    mpc_mean_reward = {'0-500': reward_0 ,
-                      '500-1k': reward_1 ,
-                      '1k-240k': reward_2 ,
-                      '240k-640k': reward_3 ,
-                      '640k-1000k': reward_4}
+    mpc_mean_reward = {}
+    bw_range ,count = 1000000 ,50
+    for i in range( count ):
+        step = bw_range / count
+        low = round( step * i )
+        high = round( step * (i + 1) )
+        dir = str( low ) + '_' + str( high )
+        print( dir )
+        mpc_mean_reward[dir] = given_string_mean_reward( plot_files ,test_dir ,str=dir )
 
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 

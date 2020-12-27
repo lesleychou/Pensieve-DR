@@ -12,7 +12,7 @@ import tensorflow as tf
 import visdom
 import src.config as config
 
-from utils.utils import adjust_traces, load_traces
+from utils.utils import adjust_traces, load_traces_UDR
 from datetime import datetime
 
 
@@ -40,7 +40,7 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
-RLMPC_LOG = '../results/RL-MPC-lesley/'
+RLMPC_LOG = '../results/RL-MPC-UDR/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
 
 def calculate_from_selection(selected, last_bit_rate):
@@ -81,7 +81,7 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     np.random.seed(args.RANDOM_SEED)
     #assert len(VIDEO_BIT_RATE) == args.A_DIM
 
-    all_cooked_time, all_cooked_bw, all_file_names = load_traces(
+    all_cooked_time, all_cooked_bw, all_file_names = load_traces_UDR(
         test_traces_dir)
     # handle the noise and duration variation here
 
@@ -218,56 +218,32 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     test_dir = log_output_dir
     plot_files = os.listdir( test_dir )
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
+    rl_mean_reward = {}
+    bw_range ,count = 1000000, 50
+    for i in range( count ):
+        step = bw_range / count
+        low = round( step * i )
+        high = round( step * (i + 1) )
+        dir = str( low ) + '_' + str( high )
+        print( dir )
+        rl_mean_reward[dir] = given_string_mean_reward( plot_files ,test_dir ,str=dir )
 
-    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
-    reward_6 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
-    reward_7 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
-    reward_8 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
-    reward_9 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
+    mpc_mean_reward={'0_20000': 65.43 ,'20000_40000': 129.64 ,'40000_60000': 128.3 ,'60000_80000': 127.41 ,'80000_100000': 126.26 ,
+     '100000_120000': 126.28 ,'120000_140000': 126.34 ,'140000_160000': 126.54 ,'160000_180000': 126.24 ,
+     '180000_200000': 126.27 ,'200000_220000': 126.15 ,'220000_240000': 126.37 ,'240000_260000': 125.94 ,
+     '260000_280000': 126.15 ,'280000_300000': 126.03 ,'300000_320000': 126.07 ,'320000_340000': 125.96 ,
+     '340000_360000': 126.18 ,'360000_380000': 125.69 ,'380000_400000': 126.0 ,'400000_420000': 126.45 ,
+     '420000_440000': 126.37 ,'440000_460000': 126.03 ,'460000_480000': 126.12 ,'480000_500000': 126.01 ,
+     '500000_520000': 125.88 ,'520000_540000': 126.0 ,'540000_560000': 126.16 ,'560000_580000': 126.31 ,
+     '580000_600000': 125.88 ,'600000_620000': 126.0 ,'620000_640000': 126.0 ,'640000_660000': 126.0 ,
+     '660000_680000': 126.03 ,'680000_700000': 125.88 ,'700000_720000': 125.88 ,'720000_740000': 125.94 ,
+     '740000_760000': 126.0 ,'760000_780000': 125.77 ,'780000_800000': 126.09 ,'800000_820000': 126.03 ,
+     '820000_840000': 125.88 ,'840000_860000': 125.97 ,'860000_880000': 126.07 ,'880000_900000': 125.88 ,
+     '900000_920000': 125.94 ,'920000_940000': 125.88 ,'940000_960000': 125.98 ,'960000_980000': 125.94 ,
+     '980000_1000000': 125.88}
 
-    rl_mean_reward = {'0-500': reward_0 ,
-                      '500-1k': reward_1 ,
-                      '1k-240k': reward_2 ,
-                      '240k-640k': reward_3 ,
-                      '640k-1000k': reward_4 ,
-                      '0-150': reward_5 ,
-                      '150-250': reward_6 ,
-                      '250-350': reward_7 ,
-                      '350-450': reward_8 ,
-                      '450-550': reward_9
-                      }
-
-    # # step=5, original synthetic generator
-    # mpc_mean_reward = {'0-20': -19.80165934207423, '20-40': -15.66196308318172,
-    #                    '40-60': 0.8598232908998139, '60-80': 4.991133928477234,
-    #                    '80-100': 10.59380991105914}
-
-    # mpc_mean_reward={'0-150': 23.565406029092248 ,'150-250': 75.51386319420457 ,
-    #                  '250-350': 120.11421779814786 ,'350-450': 130.62077029005073 ,
-    #                  '450-550': 134.2136881927959}
-
-    # # original huge val set
-    # mpc_mean_reward={'0-500': 87.44700326425989 ,'500-1k': 136.37040652153988 ,
-    #                  '1k-240k': 127.59845787433397 , '240k-640k': 126.17706321483502 ,
-    #                  '640k-1000k': 126.01052264416917}
-
-    # val-cut-big
-    mpc_mean_reward={'0-500': 98.2075639651247 ,'500-1k': 137.26127036007622 ,
-                     '1k-240k': 127.56456409662302 ,'240k-640k': 126.30795181884987 ,
-                     '640k-1000k': 126.02960891664513,
-                     '0-150': 23.565406029092248 ,'150-250': 75.51386319420457 ,
-                     '250-350': 120.11421779814786 ,'350-450': 130.62077029005073 ,
-                     '450-550': 134.2136881927959
-                     }
-
-    print( rl_mean_reward ,"-----rl_mean_reward-----" )
+    #print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: rl_mean_reward[key] - mpc_mean_reward.get( key ,0 ) for key in rl_mean_reward}
-
     rl_file.write(str( d3 ) + '\n' )
     print( d3 ,"-----rl - mpc-----" )
 
@@ -285,8 +261,9 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
                 if len( parse ) <= 1:
                     break
                 reward.append( float( parse[6] ) )
-    print(count)
-    return np.mean( reward[1:] )
+    #print(count)
+    mean = np.mean( reward[1:] )
+    return round( mean ,2 )
 
 
 
@@ -737,7 +714,7 @@ def main(args):
                              args=(args, net_params_queues, exp_queues))
     coordinator.start()
 
-    all_cooked_time, all_cooked_bw, all_file_names = load_traces(
+    all_cooked_time, all_cooked_bw, all_file_names = load_traces_UDR(
         args.train_trace_dir)
     agents = []
     for i in range(args.NUM_AGENTS):
