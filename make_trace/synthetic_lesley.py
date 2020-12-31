@@ -38,7 +38,7 @@ def main():
     output_file = args.output_file
     output_writer = csv.writer(open(output_file, 'w', 1), delimiter='\t')
 
-    round_digit = 0
+    round_digit = 2
 
     time = 0
     cnt = 0

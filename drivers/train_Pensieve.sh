@@ -5,7 +5,7 @@ set -e
 
 NOISE=0
 DURATION=1
-TRAIN_TRACE_PATH="../data/generated_traces_huge/train"
+TRAIN_TRACE_PATH="../data/generated_traces_huge/train_0-500"
 VAL_TRACE_PATH="../data/generated_traces_huge/val_cut_big"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
@@ -41,19 +41,19 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../tmp/DR-results/huge-BW-0-1T-train-cut/"
-    python ${SIMULATOR_DIR}/multi_agent.py \
+    SUMMARY_DIR="../DR-results/Pensieve-add-FCC/"
+    python ${SIMULATOR_DIR}/multi_agent_Pensieve.py \
         --RANDOM_SEED=171 \
         --NUM_AGENT=8\
-        --A_DIM=3\
+        --A_DIM=6\
         --S_LEN=6\
         --train_trace_dir ${TRAIN_TRACE_PATH} \
         --val_trace_dir ${VAL_TRACE_PATH} \
         --summary_dir ${SUMMARY_DIR} \
         --noise ${NOISE} \
         --duration ${DURATION} \
-        --description="Pensieve-DR-BW" \
-        --nn_model='../DR-results/huge-BW-0-500-add100moreon-0-300/model_saved/nn_model_ep_20900.ckpt'
+        --description="Pensieve-DR-BW"
+        #--nn_model='../DR-results/huge-BW-0-1T-train-cut/model_saved/nn_model_ep_2200.ckpt'
 
 
 done

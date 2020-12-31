@@ -40,7 +40,7 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
-RLMPC_LOG = '../results/RL-MPC-lesley/'
+RLMPC_LOG = '../results/RL-MPC-real-world/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
 
 def calculate_from_selection(selected, last_bit_rate):
@@ -229,6 +229,7 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     reward_7 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
     reward_8 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
     reward_9 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
+    reward_10 = given_string_mean_reward(plot_files, test_dir, str='FCC')
 
     rl_mean_reward = {'0-500': reward_0 ,
                       '500-1k': reward_1 ,
@@ -239,7 +240,8 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
                       '150-250': reward_6 ,
                       '250-350': reward_7 ,
                       '350-450': reward_8 ,
-                      '450-550': reward_9
+                      '450-550': reward_9,
+                      'FCC': reward_10
                       }
 
     # # step=5, original synthetic generator
@@ -257,12 +259,12 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     #                  '640k-1000k': 126.01052264416917}
 
     # val-cut-big
-    mpc_mean_reward={'0-500': 98.2075639651247 ,'500-1k': 137.26127036007622 ,
-                     '1k-240k': 127.56456409662302 ,'240k-640k': 126.30795181884987 ,
-                     '640k-1000k': 126.02960891664513,
-                     '0-150': 23.565406029092248 ,'150-250': 75.51386319420457 ,
-                     '250-350': 120.11421779814786 ,'350-450': 130.62077029005073 ,
-                     '450-550': 134.2136881927959
+    mpc_mean_reward={'0-500': 98.20 ,'500-1k': 137.26 ,
+                     '1k-240k': 127.56 ,'240k-640k': 126.30 ,
+                     '640k-1000k': 126.02,
+                     '0-150': 23.56 ,'150-250': 75.51 ,
+                     '250-350': 120.11 ,'350-450': 130.62 ,
+                     '450-550': 134.21, 'FCC': -4.69
                      }
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )

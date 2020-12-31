@@ -39,33 +39,14 @@ DEFAULT_QUALITY = 1  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
-# SUMMARY_DIR = f'../results/Lesley_more_traces_for_pensieve/results_noise{NOISE}'
-# SUMMARY_DIR = f'../results/entropy_weight_exp/results_noise{NOISE}'
-# SUMMARY_DIR = f'../results/lr_exp/results_noise{NOISE}'
-# SUMMARY_DIR = '../results/results_duration_quarter'  # .format(DURATION)
-# SUMMARY_DIR = '../results/results_duration_quarter'  # .format(DURATION)
-# SUMMARY_DIR = './results_noise-1'
-# TEST_LOG_FOLDER = os.path.join(SUMMARY_DIR, 'test_results')
-# TRAIN_TRACES = './cooked_traces/'  # original trace location
-# TRAIN_TRACES = './train_sim_traces'
+RLMPC_LOG = '../results/Pensieve-real-world/'
+os.makedirs(RLMPC_LOG ,exist_ok=True )
 
-# TRAIN_TRACES = '../data/train'
-# VAL_TRACES = '../data/val/'
-# TEST_TRACES = '../data/test'
-# NN_MODEL = './results/pretrain_linear_reward.ckpt'
-# NN_MODEL = None
-
-
-# def entropy_weight_decay_func(epoch):
-#     # linear decay
-#     return np.maximum(-0.05/(10**4) * epoch + 0.5, 0.1)
 
 def entropy_weight_decay_func(epoch):
     # linear decay
     entropy = 1
     return entropy
-
-
 
 def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     np.random.seed(args.RANDOM_SEED)
@@ -79,7 +60,7 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     #     args.RANDOM_SEED, duration_factor=duration)
 
     net_env = env.Environment(all_cooked_time=all_cooked_time,
-                              all_cooked_bw=all_cooked_bw)
+                              all_cooked_bw=all_cooked_bw,fixed=True)
 
     log_path = os.path.join(log_output_dir, 'log_sim_rl_{}'.format(
                             all_file_names[net_env.trace_idx]))
@@ -194,6 +175,69 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
                 log_output_dir,
                 'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
             log_file = open(log_path, 'w')
+    rl_path = os.path.join( RLMPC_LOG ,'RL_MPC_log' )
+    rl_file = open( rl_path ,'a' ,1 )
+
+    test_dir = log_output_dir
+    plot_files = os.listdir( test_dir )
+
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
+
+    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
+    reward_6 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
+    reward_7 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
+    reward_8 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
+    reward_9 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
+    reward_10 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
+
+    rl_mean_reward = {'0-500': reward_0 ,
+                      '500-1k': reward_1 ,
+                      '1k-240k': reward_2 ,
+                      '240k-640k': reward_3 ,
+                      '640k-1000k': reward_4 ,
+                      '0-150': reward_5 ,
+                      '150-250': reward_6 ,
+                      '250-350': reward_7 ,
+                      '350-450': reward_8 ,
+                      '450-550': reward_9 ,
+                      'FCC': reward_10
+                      }
+
+    # val-cut-big
+    mpc_mean_reward = {'0-500': 98.20 ,'500-1k': 137.26 ,
+                       '1k-240k': 127.56 ,'240k-640k': 126.30 ,
+                       '640k-1000k': 126.02 ,
+                       '0-150': 23.56 ,'150-250': 75.51 ,
+                       '250-350': 120.11 ,'350-450': 130.62 ,
+                       '450-550': 134.21 ,'FCC': -4.69
+                       }
+
+    print( rl_mean_reward ,"-----rl_mean_reward-----" )
+    d3 = {key: rl_mean_reward[key] - mpc_mean_reward.get( key ,0 ) for key in rl_mean_reward}
+
+    rl_file.write( str( d3 ) + '\n' )
+    print( d3 ,"-----rl - mpc-----" )
+
+def given_string_mean_reward(plot_files ,test_dir ,str):
+    matching = [s for s in plot_files if str in s]
+    reward = []
+    count=0
+    for log_file in matching:
+        count+=1
+        #print(log_file)
+        with open( test_dir +'/'+ log_file ,'r' ) as f:
+            for line in f:
+                parse = line.split()
+                if len( parse ) <= 1:
+                    break
+                reward.append( float( parse[6] ) )
+    print(count)
+    return np.mean( reward[1:] )
+
 
 
 def testing(args, epoch, actor, log_file, trace_dir, test_log_folder, noise, duration):
@@ -436,13 +480,13 @@ def central_agent(args, net_params_queues, exp_queues):
                 vis._send(
                     {'data': [trace], 'layout': layout, 'win': 'Pensieve_training_mean_entropy_' + args.start_time})
 
-                avg_val_reward = testing(
-                    args, epoch, actor, val_log_file, args.val_trace_dir,
-                    os.path.join(args.summary_dir, 'test_results'),
-                    args.noise, args.duration)
+                # avg_val_reward = testing(
+                #     args, epoch, actor, val_log_file, args.val_trace_dir,
+                #     os.path.join(args.summary_dir, 'test_results'),
+                #     args.noise, args.duration)
 
-                if max_avg_reward is None or avg_val_reward > max_avg_reward:
-                    max_avg_reward = avg_val_reward
+                if max_avg_reward is None or test_mean_reward > max_avg_reward:
+                    max_avg_reward = test_mean_reward
                     # Save the neural net parameters to disk.
                     save_path = saver.save(sess,
                                            os.path.join(args.summary_dir+"/model_saved/", f"nn_model_ep_{epoch}.ckpt"))
