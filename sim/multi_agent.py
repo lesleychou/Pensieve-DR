@@ -40,7 +40,7 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
-RLMPC_LOG = '../results/RL-MPC-ts-float/'
+RLMPC_LOG = '../results/TS-float/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
 
 def calculate_from_selection(selected, last_bit_rate):
@@ -218,32 +218,19 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     test_dir = log_output_dir
     plot_files = os.listdir( test_dir )
 
-    # reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-500' )
-    # reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_500-1k' )
-    # reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_1k-240k' )
-    # reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_240k-640k' )
-    # reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_640k-1000k' )
-    #
-    # reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
-    # reward_6 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
-    # reward_7 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
-    # reward_8 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
-    # reward_9 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
-    reward_10 = given_string_mean_reward(plot_files, test_dir, str='FCC')
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
 
-    # rl_mean_reward = {'0-500': reward_0 ,
-    #                   '500-1k': reward_1 ,
-    #                   '1k-240k': reward_2 ,
-    #                   '240k-640k': reward_3 ,
-    #                   '640k-1000k': reward_4 ,
-    #                   '0-150': reward_5 ,
-    #                   '150-250': reward_6 ,
-    #                   '250-350': reward_7 ,
-    #                   '350-450': reward_8 ,
-    #                   '450-550': reward_9,
-    #                   'FCC': reward_10
-    #                   }
-    rl_mean_reward ={'FCC': reward_10}
+    rl_mean_reward = {'0-5': reward_0 ,
+                       '5-100': reward_1 ,
+                       '100-250': reward_2 ,
+                       '250-450': reward_3 ,
+                       '450-1050': reward_4}
+
+
     # val-cut-big
     # mpc_mean_reward={'0-500': 98.20 ,'500-1k': 137.26 ,
     #                  '1k-240k': 127.56 ,'240k-640k': 126.30 ,
@@ -253,7 +240,9 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     #                  '450-550': 134.21, 'FCC': -4.69
     #                  }
 
-    mpc_mean_reward = {'FCC': -4.69}
+    mpc_mean_reward = {'0-5': -17.918770989059876, '5-100': 17.3287314980698,
+                       '100-250': 66.47100259018036, '250-450': 126.40666137890435,
+                       '450-1050': 136.02513767823524}
 
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
