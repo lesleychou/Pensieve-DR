@@ -47,18 +47,20 @@ def main():
     while time < time_length:
         if cnt <= 0:
             bw_val = round( np.random.uniform( min_tp ,max_tp ) ,round_digit )
-            #cnt = np.random.randint(1, T_s+1)
-            cnt=5
+            cnt = np.random.randint(1, T_s+1)
+            #cnt=5
         elif cnt >= 1:
             bw_val = last_val
         else:
             bw_val = round(np.random.uniform(min_tp, max_tp), round_digit)
 
         cnt -= 1
+        time = round(time, 2)
         output_writer.writerow([time, bw_val])
 
         last_val = bw_val
-        time += 1
+        time_noise = random.uniform(0.1, 3.5)
+        time += time_noise
 
 
 if __name__ == "__main__":

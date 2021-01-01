@@ -5,8 +5,8 @@ set -e
 
 NOISE=0
 DURATION=1
-TRAIN_TRACE_PATH="../data/generated_traces_huge/train_0-500"
-VAL_TRACE_PATH="../data/generated_traces_huge/val_cut_big"
+TRAIN_TRACE_PATH="../data/generated_traces_ts_float"
+VAL_TRACE_PATH="../data/val-FCC"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
 # TEST_TRACE_PATH="../data/exponential_traces/test"
@@ -41,7 +41,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../DR-results/Pensieve-add-FCC/"
+    SUMMARY_DIR="../tmp/Pensieve_new_ts_val_FCC/"
     python ${SIMULATOR_DIR}/multi_agent_Pensieve.py \
         --RANDOM_SEED=171 \
         --NUM_AGENT=8\
