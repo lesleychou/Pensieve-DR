@@ -24,8 +24,8 @@ LOG_FILES=( '1')
 NN_MODELS="../DR-results/TS-float/model_saved/nn_model_ep_15800.ckpt"
 
 
-TRACE_PATH="../data/val-huge-1000k"
-SUMMARY_DIR="../results/TS-float-1000k"
+TRACE_PATH="../data/val-FCC"
+SUMMARY_DIR="../results/TS-float-double-check-FCC"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do

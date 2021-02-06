@@ -44,8 +44,8 @@ RLMPC_LOG = '../results/TS-float/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
 
 def calculate_from_selection(selected, last_bit_rate):
-    # selected_action is 0-5
     # naive step implementation
+    # action=0, bitrate-1; action=1, bitrate stay; action=2, bitrate+1
     if selected == 1:
         bit_rate = last_bit_rate
     elif selected == 2:
@@ -58,7 +58,6 @@ def calculate_from_selection(selected, last_bit_rate):
     if bit_rate > 5:
         bit_rate = 5
 
-    #print(bit_rate)
     return bit_rate
 
 
@@ -588,7 +587,6 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
 
 
             r_batch.append(reward)
-
             last_bit_rate = bit_rate
 
             # retrieve previous state

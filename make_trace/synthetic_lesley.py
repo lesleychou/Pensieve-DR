@@ -39,7 +39,6 @@ def main():
     output_writer = csv.writer(open(output_file, 'w', 1), delimiter='\t')
 
     round_digit = 2
-
     time = 0
     cnt = 0
     last_val = round(np.random.uniform(min_tp, max_tp), round_digit)
