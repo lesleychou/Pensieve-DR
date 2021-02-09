@@ -119,7 +119,7 @@ class TraceConfig:
         self.duration = 250
         self.step = 0
         self.min_throughput = 0.2
-        self.num_traces = 100
+        self.num_traces = 50
 
 def example_trace_config(args):
     return TraceConfig(args.test_trace_dir, max_throughput=args.CURRENT_PARAM)
