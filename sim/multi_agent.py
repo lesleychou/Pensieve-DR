@@ -43,9 +43,6 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
-RLMPC_LOG = '../new-DR-results/sanity-check-2/'
-os.makedirs(RLMPC_LOG ,exist_ok=True )
-
 def calculate_from_selection(selected, last_bit_rate):
     # naive step implementation
     # action=0, bitrate-1; action=1, bitrate stay; action=2, bitrate+1
@@ -214,7 +211,7 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
                 'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
             log_file = open(log_path, 'w')
 
-    rl_path = os.path.join( RLMPC_LOG ,'RL_MPC_log' )
+    rl_path = os.path.join( args.summary_dir ,'RL_MPC_log' )
     rl_file = open( rl_path ,'a' ,1 )
 
     test_dir = log_output_dir
@@ -723,6 +720,7 @@ def generate_traces_with(config):
     # print(output)
 
 def main(args):
+    tf.logging.set_verbosity( tf.logging.ERROR )
 
     start_time = datetime.now()
     start_time_string = start_time.strftime("%Y%m%d_%H%M%S")
