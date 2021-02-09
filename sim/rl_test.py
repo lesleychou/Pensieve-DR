@@ -6,6 +6,7 @@ import a3c
 import env
 import numpy as np
 import tensorflow as tf
+import subprocess
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
@@ -48,7 +49,9 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Pensieve testing script.")
     parser.add_argument("--test_trace_dir", type=str,
-                        required=True, help='dir to all test traces.')
+                        # optional now because we have a default example
+                        # required=True,
+                        help='dir to all test traces.')
     parser.add_argument("--summary_dir", type=str,
                         required=True, help='output path.')
     parser.add_argument("--model_path", type=str, required=True,
@@ -84,18 +87,69 @@ def calculate_from_selection(selected, last_bit_rate):
     #print(bit_rate)
     return bit_rate
 
+def given_string_mean_reward(plot_files ,test_dir ,str):
+    matching = [s for s in plot_files if str in s]
+    reward = []
+    count=0
+    for log_file in matching:
+        count+=1
+        #print(log_file)
+        with open( test_dir +'/'+ log_file ,'r' ) as f:
+            for line in f:
+                parse = line.split()
+                if len( parse ) <= 1:
+                    break
+                reward.append( float( parse[6] ) )
+    print(count)
+    return np.mean( reward[1:] )
+
+class TraceConfig:
+    def __init__(self,
+                 trace_dir,                 
+                 max_throughput=10):
+        self.trace_dir = trace_dir
+        self.max_throughput = max_throughput
+        self.T_l = 0
+        self.T_s = 3
+        self.cov = 3
+        self.duration = 250
+        self.step = 0
+        self.min_throughput = 0.2
+        self.num_traces = 100
+
+def example_trace_config():
+    return TraceConfig("../data/example_traces/")
+        
+def generate_traces_with(config):
+    """
+    Generates traces based on the config
+    """
+    script = "trace_generator.py"
+    command = "python {script} \"{config}\"".format(script=script, config=vars(config))
+    # alternatively call with os.system, but it doesn't print the result that way
+    print(command)
+    os.system(command)    
+    #output = subprocess.check_output(command, shell=True, text=True).strip()
+    # print(output)
+
 def main():
     args = parse_args()
     summary_dir = args.summary_dir
     nn_model = args.model_path
-    test_trace_dir = args.test_trace_dir
+
+    # generate test traces 
+    # test_trace_dir = args.test_trace_dir
+
+    # Just manually load the example .... as an example...
+    trace_config = example_trace_config()
+    generate_traces_with(trace_config)
+    
     os.makedirs(summary_dir, exist_ok=True)
     #np.random.seed(args.random_seed)
 
     #assert len(VIDEO_BIT_RATE) == A_DIM
 
-    all_cooked_time, all_cooked_bw, all_file_names = load_traces(
-        test_trace_dir)
+    all_cooked_time, all_cooked_bw, all_file_names = load_traces(trace_config.trace_dir)
 
     #print(len(all_cooked_time[-1]))
 
@@ -237,7 +291,7 @@ def main():
         # reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
         # reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
         # reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
-        reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
+        reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='' )
 
         # rl_mean_reward = {'0-5': reward_0 ,
         #                   '5-100': reward_1 ,
@@ -248,22 +302,6 @@ def main():
         rl_mean_reward = {'FCC': reward_5}
 
         print(rl_mean_reward)
-
-def given_string_mean_reward(plot_files ,test_dir ,str):
-    matching = [s for s in plot_files if str in s]
-    reward = []
-    count=0
-    for log_file in matching:
-        count+=1
-        #print(log_file)
-        with open( test_dir +'/'+ log_file ,'r' ) as f:
-            for line in f:
-                parse = line.split()
-                if len( parse ) <= 1:
-                    break
-                reward.append( float( parse[6] ) )
-    print(count)
-    return np.mean( reward[1:] )
 
 if __name__ == '__main__':
     main()
