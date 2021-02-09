@@ -284,18 +284,6 @@ def main():
     test_dir = TEST_RESULT
     plot_files = os.listdir( test_dir )
 
-    # reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
-    # reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
-    # reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
-    # reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
-    # reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
-    #
-    # mpc_mean_reward = {'0-150': reward_0 ,
-    #                   '150-250': reward_1 ,
-    #                   '250-350': reward_2 ,
-    #                   '350-450': reward_3 ,
-    #                   '450-550': reward_4}
-
     reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
     reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
     reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )

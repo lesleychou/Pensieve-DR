@@ -28,10 +28,6 @@ Example:
 ```
 cd sim
 python rl_test.py \
-       --summary_dir "../../results/seed_1" \
-       --model_path "../data/sanity-check-3/model_saved/nn_model_ep_5200.ckpt" \
-       --random_seed=1 \
-       --ROBUST_NOISE=0 \
-       --SAMPLE_LENGTH=0 \
-       --NUMBER_PICK=0
+       --summary_dir "../MPC_RL_test_results/" \
+       --model_path "../new-DR-results/sanity-check-3/model_saved/nn_model_ep_5200.ckpt"        
 ```
