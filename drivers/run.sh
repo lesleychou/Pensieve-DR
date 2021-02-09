@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# This file runs rl_test.py on a specified model.
+
 # immediately exit the bash if an error encountered
 set -e
 
@@ -21,7 +23,7 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../new-DR-results/sanity-check-3/model_saved/nn_model_ep_5200.ckpt"
+NN_MODELS="../data/sanity-check-3/model_saved/nn_model_ep_5200.ckpt"
 
 
 TRACE_PATH="../data/val-FCC"
