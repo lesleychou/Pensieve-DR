@@ -21,11 +21,13 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../DR-results/TS-float/model_saved/nn_model_ep_15800.ckpt"
+NN_MODELS="../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt"
 
 
-TRACE_PATH="../data/val-FCC"
-SUMMARY_DIR="../results/TS-float-double-check-FCC"
+TRACE_PATH="../data/puffer-val-data"
+SUMMARY_DIR="../BO-test-results/rl_test"
+MPC_SUMMARY_DIR="../BO-test-results/mpc_test"
+
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
@@ -33,34 +35,9 @@ SUMMARY_DIR="../results/TS-float-double-check-FCC"
 #        SUMMARY_DIR="../results/pensieve-mpc-lesley-test-3/test-on-${i_folder}"
 
         #for ((i=0;i<${#NN_MODELS[@]};++i)); do
-python ${SIMULATOR_DIR}/rl_test.py \
+python ${SIMULATOR_DIR}/bo_reward.py \
                    --test_trace_dir ${TRACE_PATH} \
-                   --summary_dir ${SUMMARY_DIR}/seed_1\
-                   --model_path ${NN_MODELS} \
-                   --random_seed=1 \
-                   --ROBUST_NOISE=0 \
-                   --SAMPLE_LENGTH=0 \
-                   --NUMBER_PICK=0 \
-                   --duration ${DURATION} &
-##
-#            python ${SIMULATOR_DIR}/rl_test_pensieve.py \
-#                   --test_trace_dir ${TRACE_PATH} \
-#                   --summary_dir ${SUMMARY_DIR}/seed_1\
-#                   --model_path ${NN_MODELS} \
-#                   --random_seed=1 \
-#                   --ROBUST_NOISE=0 \
-#                   --SAMPLE_LENGTH=0 \
-#                   --NUMBER_PICK=0 \
-#                   --duration ${DURATION} &
-####
-            python ${SIMULATOR_DIR}/mpc.py \
-                 --test_trace_dir ${TRACE_PATH} \
-                   --summary_dir ${SUMMARY_DIR}/seed_1\
-                 --random_seed=1  \
-                 --ROBUST_NOISE=0 \
-                 --SAMPLE_LENGTH=0 \
-                 --NUMBER_PICK=0 \
-                 --duration ${DURATION}
-##          #done
-
+                   --summary_dir ${SUMMARY_DIR} \
+                   --mpc_summary_dir ${MPC_SUMMARY_DIR} \
+                   --model_path ${NN_MODELS}
 #done

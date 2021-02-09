@@ -12,6 +12,7 @@ import numpy as np
 
 from utils.utils import load_traces
 
+
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
 A_DIM = 6

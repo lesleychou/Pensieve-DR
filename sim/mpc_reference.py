@@ -8,6 +8,8 @@ from numba import jit
 import env as env
 import numpy as np
 from utils.utils import load_traces
+from statistics import mean
+
 
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
@@ -301,14 +303,20 @@ def main():
     reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
     reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
     reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
 
     mpc_mean_reward = {'0-5': reward_0 ,
                       '5-100': reward_1 ,
                       '100-250': reward_2 ,
                       '250-450': reward_3 ,
-                      '450-1050': reward_4}
+                      '450-1050': reward_4 ,
+                      'FCC': reward_5}
+    #print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 
-    print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
+    mean_of_dict = mean( mpc_mean_reward[k] for k in mpc_mean_reward )
+
+    print( mean_of_dict )
+
 
 
 if __name__ == '__main__':

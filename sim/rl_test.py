@@ -6,6 +6,7 @@ import a3c
 import env
 import numpy as np
 import tensorflow as tf
+from statistics import mean
 
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
@@ -44,12 +45,7 @@ def parse_args():
                         required=True, help='output path.')
     parser.add_argument("--model_path", type=str, required=True,
                         help='model path')
-    parser.add_argument("--random_seed", type=int, default=11)
-    parser.add_argument("--duration", type=float, default=1.0)
-    parser.add_argument( '--ROBUST_NOISE', type=float, default='0.1', help='' )
 
-    parser.add_argument( '--SAMPLE_LENGTH', type=int, default='4', help='' )
-    parser.add_argument( '--NUMBER_PICK', type=int, default='1', help='' )
     parser.add_argument( '--A_DIM', type=int, default='3', help='' )
     parser.add_argument( '--BITRATE_DIM', type=int, default='6', help='' )
     parser.add_argument( '--S_LEN', type=int, default='6', help='' )
@@ -225,19 +221,24 @@ def main():
             test_dir = summary_dir
             plot_files = os.listdir( test_dir )
 
-        reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
-        reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
-        reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
-        reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
-        reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
+        reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
+        reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
+        reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
+        reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
+        reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+        reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
 
-        rl_mean_reward = {'0-500': reward_0 ,
-                          '500-1k': reward_1 ,
-                          '1k-240k': reward_2 ,
-                          '240k-640k': reward_3 ,
-                          '640k-1000k': reward_4}
+        rl_mean_reward = {'0-5': reward_0 ,
+                          '5-100': reward_1 ,
+                          '100-250': reward_2 ,
+                          '250-450': reward_3 ,
+                          '450-1050': reward_4 ,
+                          'FCC': reward_5}
 
-        print(rl_mean_reward)
+        mean_of_dict = mean( rl_mean_reward[k] for k in rl_mean_reward )
+
+        print(mean_of_dict)
+
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]

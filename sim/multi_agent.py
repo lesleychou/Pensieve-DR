@@ -40,7 +40,7 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
-RLMPC_LOG = '../new-DR-results/sanity-check-2/'
+RLMPC_LOG = '../new-DR-results/sanity-check-3/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
 
 def calculate_from_selection(selected, last_bit_rate):
@@ -244,7 +244,7 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
 
     mpc_mean_reward = {'0-5': -17.918770989059876, '5-100': 17.3287314980698,
                        '100-250': 66.47100259018036, '250-450': 126.40666137890435,
-                       '450-1050': 136.02513767823524, 'FCC': -4.69}
+                       '450-1050': 136.02513767823524, 'FCC': -9.29}
 
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
@@ -434,14 +434,7 @@ def central_agent(args, net_params_queues, exp_queues):
             # compute aggregated gradient
             assert args.NUM_AGENTS == len(actor_gradient_batch)
             assert len(actor_gradient_batch) == len(critic_gradient_batch)
-            # assembled_actor_gradient = actor_gradient_batch[0]
-            # assembled_critic_gradient = critic_gradient_batch[0]
-            # for i in range(len(actor_gradient_batch) - 1):
-            #     for j in range(len(assembled_actor_gradient)):
-            #             assembled_actor_gradient[j] += actor_gradient_batch[i][j]
-            #             assembled_critic_gradient[j] += critic_gradient_batch[i][j]
-            # actor.apply_gradients(assembled_actor_gradient)
-            # critic.apply_gradients(assembled_critic_gradient)
+
             for i in range(len(actor_gradient_batch)):
                 actor.apply_gradients(actor_gradient_batch[i], current_learning_rate)
                 critic.apply_gradients(critic_gradient_batch[i])
