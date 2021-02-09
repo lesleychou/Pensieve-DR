@@ -58,7 +58,7 @@ def parse_args():
     parser.add_argument("--test_trace_dir", type=str,
                         # optional now because we have a default example
                         # required=True,
-                        help='dir to all test traces.')
+                        help='dir to generate all test traces.')
     parser.add_argument("--summary_dir", type=str,
                         required=True, help='output path.')
     parser.add_argument("--model_path", type=str, required=True,
@@ -67,6 +67,9 @@ def parse_args():
     parser.add_argument( '--A_DIM', type=int, default='3', help='' )
     parser.add_argument( '--BITRATE_DIM', type=int, default='6', help='' )
     parser.add_argument( '--S_LEN', type=int, default='6', help='' )
+
+    parser.add_argument( '--CURRENT_PARAM', type=float, default='10', help='the max-BW param BO input' )
+
 
 
     return parser.parse_args()
@@ -118,8 +121,8 @@ class TraceConfig:
         self.min_throughput = 0.2
         self.num_traces = 100
 
-def example_trace_config():
-    return TraceConfig("../data/example_traces/")
+def example_trace_config(args):
+    return TraceConfig(args.test_trace_dir, max_throughput=args.CURRENT_PARAM)
         
 def generate_traces_with(config):
     """
