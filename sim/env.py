@@ -1,19 +1,19 @@
 import numpy as np
+from utils.constants import (B_IN_MB, S_INFO, S_LEN, DEFAULT_QUALITY, M_IN_K,
+                                MILLISECONDS_IN_SECOND, VIDEO_BIT_RATE,
+                                VIDEO_CHUNK_LEN, REBUF_PENALTY, SMOOTH_PENALTY,
+                                BITS_IN_BYTE, VIDEO_CHUNK_LEN, BITRATE_LEVELS,TOTAL_VIDEO_CHUNK,
+                                PACKET_SIZE,NOISE_LOW, NOISE_HIGH, BUFFER_NORM_FACTOR,CHUNK_TIL_VIDEO_END_CAP)
 
-MILLISECONDS_IN_SECOND = 1000.0
-B_IN_MB = 1000000.0
-BITS_IN_BYTE = 8.0
+
 RANDOM_SEED = 42
-VIDEO_CHUNCK_LEN = 4000.0  # millisec, every time add this amount to buffer
-BITRATE_LEVELS = 6
-TOTAL_VIDEO_CHUNCK = 48
+
 BUFFER_THRESH = 60.0 * MILLISECONDS_IN_SECOND  # millisec, max buffer limit
 DRAIN_BUFFER_SLEEP_TIME = 500.0  # millisec
 PACKET_PAYLOAD_PORTION = 0.95
 LINK_RTT = 80  # millisec
-PACKET_SIZE = 1500  # bytes
-NOISE_LOW = 0.9
-NOISE_HIGH = 1.1
+
+
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 
 
@@ -49,12 +49,20 @@ class Environment:
                 for line in f:
                     self.video_size[bitrate].append(int(line.split()[0]))
 
-    def get_video_chunk(self, quality):
+        # new init for BO-link
+        self.state = np.zeros((1, S_INFO, S_LEN))
+        self.last_bitrate = DEFAULT_QUALITY
 
-        assert quality >= 0
-        assert quality < BITRATE_LEVELS
+    # def trace_file_name(self):
+    #     trace = self.traces[self.trace_idx]
+    #     return trace.filename
 
-        video_chunk_size = self.video_size[quality][self.video_chunk_counter]
+    def get_video_chunk(self, bitrate):
+
+        assert bitrate >= 0
+        assert bitrate < BITRATE_LEVELS
+
+        video_chunk_size = self.video_size[bitrate][self.video_chunk_counter]
         #print(video_chunk_size, "----video_chunk_size---")
 
         # use the delivery opportunity in mahimahi
@@ -111,7 +119,7 @@ class Environment:
         self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
 
         # add in the new chunk
-        self.buffer_size += VIDEO_CHUNCK_LEN
+        self.buffer_size += VIDEO_CHUNK_LEN
 
         # sleep if buffer gets too large
         sleep_time = 0
@@ -147,10 +155,10 @@ class Environment:
         return_buffer_size = self.buffer_size
 
         self.video_chunk_counter += 1
-        video_chunk_remain = TOTAL_VIDEO_CHUNCK - self.video_chunk_counter
+        video_chunk_remain = TOTAL_VIDEO_CHUNK - self.video_chunk_counter
 
         end_of_video = False
-        if self.video_chunk_counter >= TOTAL_VIDEO_CHUNCK:
+        if self.video_chunk_counter >= TOTAL_VIDEO_CHUNK:
             end_of_video = True
             self.buffer_size = 0
             self.video_chunk_counter = 0
@@ -174,11 +182,32 @@ class Environment:
         for i in range(BITRATE_LEVELS):
             next_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter])
 
-        return delay, \
-            sleep_time, \
-            return_buffer_size / MILLISECONDS_IN_SECOND, \
-            rebuf / MILLISECONDS_IN_SECOND, \
-            video_chunk_size, \
-            next_video_chunk_sizes, \
-            end_of_video, \
-            video_chunk_remain
+
+        reward = VIDEO_BIT_RATE[bitrate] / M_IN_K \
+                 - REBUF_PENALTY * rebuf \
+                 - SMOOTH_PENALTY * np.abs( VIDEO_BIT_RATE[bitrate] -
+                                            VIDEO_BIT_RATE[self.last_bitrate] ) / M_IN_K
+
+        self.last_bitrate = bitrate
+        # dequeue history record
+        self.state = np.roll( self.state ,-1 ,axis=1 )
+
+        # this should be S_INFO number of terms
+        self.state[0 ,0 ,-1] = VIDEO_BIT_RATE[bitrate] / np.max( VIDEO_BIT_RATE )
+        self.state[0 ,1 ,-1] = return_buffer_size / MILLISECONDS_IN_SECOND / \
+                               BUFFER_NORM_FACTOR
+        self.state[0 ,2 ,-1] = video_chunk_size / delay / M_IN_K  # kbyte/ms
+        self.state[0 ,3 ,-1] = delay / M_IN_K / BUFFER_NORM_FACTOR  # 10 sec
+        self.state[0 ,4 ,:6] = np.array(
+            next_video_chunk_sizes ) / M_IN_K / M_IN_K
+        self.state[0 ,5 ,-1] = video_chunk_remain / TOTAL_VIDEO_CHUNK
+
+        debug_info = {'delay': delay ,
+                      'sleep_time': sleep_time ,
+                      'buffer_size': return_buffer_size / MILLISECONDS_IN_SECOND ,
+                      'rebuf': rebuf ,
+                      'video_chunk_size': video_chunk_size ,
+                      'next_video_chunk_sizes': next_video_chunk_sizes ,
+                      'video_chunk_remain': video_chunk_remain}
+
+        return self.state, reward, end_of_video, debug_info

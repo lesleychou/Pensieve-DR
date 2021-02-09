@@ -21,10 +21,10 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt"
+NN_MODELS="../new-DR-results/sanity-check-3/model_saved/nn_model_ep_5200.ckpt"
 
 
-TRACE_PATH="../data/puffer-val-data"
+TRACE_PATH="../data/val-FCC"
 SUMMARY_DIR="../BO-test-results/rl_test"
 MPC_SUMMARY_DIR="../BO-test-results/mpc_test"
 

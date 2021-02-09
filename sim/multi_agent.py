@@ -60,12 +60,10 @@ def calculate_from_selection(selected, last_bit_rate):
 
     return bit_rate
 
-
 def entropy_weight_decay_func(epoch):
     # linear decay
     #return np.maximum(-0.05/(10**4) * epoch + 0.5, 0.1)
     return 0.5
-
 
 def learning_rate_decay_func(epoch):
     if epoch < 20000:
