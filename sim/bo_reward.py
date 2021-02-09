@@ -6,6 +6,7 @@ import a3c
 import env
 import numpy as np
 import tensorflow as tf
+from mpc_policy import RobustMPC
 from statistics import mean
 import itertools
 from numba import jit
@@ -163,7 +164,7 @@ def main():
             #     end_of_video, video_chunk_remain = \
             #     net_env.get_video_chunk(bit_rate)
             #
-            state ,reward ,end_of_video ,info = net_env. get_video_chunk( bit_rate )
+            state ,reward ,end_of_video ,info = net_env.get_video_chunk( bit_rate )
 
             time_stamp += info['delay']  # in ms
             time_stamp += info['sleep_time']  # in ms
@@ -174,14 +175,14 @@ def main():
                              info['video_chunk_size'] ,info['delay'] ,reward] )
 
             ### log the results:
-            log_file.write( str( time_stamp / M_IN_K ) + '\t' +
-                            str( VIDEO_BIT_RATE[bit_rate] ) + '\t' +
-                            str(info['buffer_size']) + '\t' +
-                            str(info['rebuf']) + '\t' +
-                            str(info['video_chunk_size'])  + '\t' +
-                            str(info['delay']) + '\t' +
-                            str( reward ) + '\n' )
-            log_file.flush()
+            # log_file.write( str( time_stamp / M_IN_K ) + '\t' +
+            #                 str( VIDEO_BIT_RATE[bit_rate] ) + '\t' +
+            #                 str(info['buffer_size']) + '\t' +
+            #                 str(info['rebuf']) + '\t' +
+            #                 str(info['video_chunk_size'])  + '\t' +
+            #                 str(info['delay']) + '\t' +
+            #                 str( reward ) + '\n' )
+            # log_file.flush()
 
 
             # retrieve previous state
@@ -221,10 +222,10 @@ def main():
                 if video_count >= len(all_file_names):
                     break
 
-                log_path = os.path.join(
-                    summary_dir,
-                    'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
-                log_file = open(log_path, 'w')
+                # log_path = os.path.join(
+                #     summary_dir,
+                #     'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
+                # log_file = open(log_path, 'w')
 
             test_dir = summary_dir
             plot_files = os.listdir( test_dir )
@@ -237,14 +238,24 @@ def main():
 
         print(rl_avg_chunk_reward)
 
-        # MPC = MPC_ref( test_result_dir=args.mpc_summary_dir ,test_trace_dir=args.test_trace_dir )
-        # MPC.run()
-        #
-        # test_dir = args.mpc_summary_dir
-        # plot_files_mpc = os.listdir( test_dir )
-        # mpc_mean_reward = given_string_mean_reward( plot_files_mpc ,test_dir ,str='' )
-        #
-        # print( mpc_mean_reward-rl_mean_reward )
+    all_cooked_time ,all_cooked_bw ,all_file_names = load_traces(
+        test_trace_dir )
+
+    net_env_mpc = env.Environment( all_cooked_time=all_cooked_time ,
+                               all_cooked_bw=all_cooked_bw ,fixed=True )
+
+    mpc_abr = RobustMPC()
+    mpc_results = mpc_abr.evaluate( net_env_mpc, all_file_names )
+    print(mpc_results, "---mpc")
+
+    # MPC = MPC_ref( test_result_dir=args.mpc_summary_dir ,test_trace_dir=args.test_trace_dir )
+    # MPC.run()
+    #
+    # test_dir = args.mpc_summary_dir
+    # plot_files_mpc = os.listdir( test_dir )
+    # mpc_mean_reward = given_string_mean_reward( plot_files_mpc ,test_dir ,str='' )
+    #
+    # print( mpc_mean_reward-rl_mean_reward )
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]
@@ -252,7 +263,6 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
     count = 0
     for log_file in matching:
         count += 1
-        print(log_file)
         with open( test_dir +'/'+ log_file ,'r' ) as f:
             for line in f:
                 parse = line.split()

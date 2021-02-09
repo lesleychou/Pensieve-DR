@@ -49,6 +49,8 @@ class Environment:
                 for line in f:
                     self.video_size[bitrate].append(int(line.split()[0]))
 
+        self.total_video_chunk = len(self.video_size[0]) - 1
+
         # new init for BO-link
         self.state = np.zeros((1, S_INFO, S_LEN))
         self.last_bitrate = DEFAULT_QUALITY
@@ -56,6 +58,17 @@ class Environment:
     # def trace_file_name(self):
     #     trace = self.traces[self.trace_idx]
     #     return trace.filename
+
+    def reset(self, **kwargs):
+        """Reset the environment state to default values."""
+        self.trace_idx = 0
+        self.mahimahi_ptr = 1
+        self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
+        self.video_chunk_counter = 0
+        self.buffer_size = 0
+        self.last_bitrate = DEFAULT_QUALITY
+        self.state = np.zeros((1, S_INFO, S_LEN))
+
 
     def get_video_chunk(self, bitrate):
 
@@ -155,10 +168,10 @@ class Environment:
         return_buffer_size = self.buffer_size
 
         self.video_chunk_counter += 1
-        video_chunk_remain = TOTAL_VIDEO_CHUNK - self.video_chunk_counter
+        video_chunk_remain = self.total_video_chunk - self.video_chunk_counter
 
         end_of_video = False
-        if self.video_chunk_counter >= TOTAL_VIDEO_CHUNK:
+        if self.video_chunk_counter >= self.total_video_chunk:
             end_of_video = True
             self.buffer_size = 0
             self.video_chunk_counter = 0
@@ -200,7 +213,7 @@ class Environment:
         self.state[0 ,3 ,-1] = delay / M_IN_K / BUFFER_NORM_FACTOR  # 10 sec
         self.state[0 ,4 ,:6] = np.array(
             next_video_chunk_sizes ) / M_IN_K / M_IN_K
-        self.state[0 ,5 ,-1] = video_chunk_remain / TOTAL_VIDEO_CHUNK
+        self.state[0 ,5 ,-1] = video_chunk_remain / self.total_video_chunk
 
         debug_info = {'delay': delay ,
                       'sleep_time': sleep_time ,
