@@ -1,3 +1,6 @@
+"""
+This is just an example of how to generate some random traces....
+"""
 import subprocess
 
 class TraceConfig:

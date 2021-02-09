@@ -7,7 +7,6 @@ import env
 import numpy as np
 import tensorflow as tf
 
-
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -34,6 +33,16 @@ RAND_RANGE = 1000
 # TEST_TRACES = '../data/val/'
 # log in format of time_stamp bit_rate buffer_size rebuffer_time chunk_size download_time reward
 
+# Strategy:
+
+# Input for RL Testing should be:
+#
+# 1. a configuration from which test traces are generated
+#   - load the configuration from json and create a TraceConfig to generate traces (later)
+#   - create the traces from a configuration (refer to example) (priority)
+#
+# 2. a model checkpoint file to load and test against the traces (DONE)
+# 3. Move TraceConfig outside of this file so it can be used elsewhere too. (later)
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -53,8 +62,6 @@ def parse_args():
     parser.add_argument( '--A_DIM', type=int, default='3', help='' )
     parser.add_argument( '--BITRATE_DIM', type=int, default='6', help='' )
     parser.add_argument( '--S_LEN', type=int, default='6', help='' )
-
-
 
 
     return parser.parse_args()
