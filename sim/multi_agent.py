@@ -3,6 +3,7 @@ import logging
 import multiprocessing as mp
 import os
 import time
+import sys
 
 import a3c
 import env
@@ -378,7 +379,8 @@ def central_agent(args, net_params_queues, exp_queues):
 
         # assemble experiences from agents, compute the gradients
         max_avg_reward = None
-        while True:
+
+        while epoch < args.TOTAL_EPOCH:
             start_t = time.time()
             # synchronize the network parameters of work agent
             actor_net_params = actor.get_network_params()
@@ -726,6 +728,7 @@ def main(args):
 
     # wait unit training is done
     coordinator.join()
+    os._exit(1)
 
 
 if __name__ == '__main__':

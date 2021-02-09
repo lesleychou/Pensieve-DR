@@ -8,7 +8,7 @@ def latest_actor_from(path):
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
     files = list(sorted(os.listdir(path), key=mtime))
     actors = [a for a in files if "nn_model_ep_" in a]
-    actor_path = str(path + '/' +actors[-1])
+    actor_path = str(path + '/' + actors[-1])
     return actor_path
 
 
@@ -47,9 +47,9 @@ optimizer = BayesianOptimization(
 
 optimizer.maximize(
     init_points=1,
-    n_iter=2
-    # kappa=10,
-    # xi=0.1
+    n_iter=1,
+    kappa=10,
+    xi=0.1
 )
 next = optimizer.max
 param = next.get( 'params' ).get( 'x' )

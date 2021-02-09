@@ -2,7 +2,7 @@
 # stopping at intervals to add new training data based on performance
 # (increases generalizability, we hope!)
 import os
-
+import subprocess
 # Inputs:
 #
 # - experiment results directory
@@ -26,11 +26,14 @@ for i in range(2):
     if i > 0:
         print("Running bayesian optimization to get new training data input parameter.")
         print("Run test generation based on BO output and put in training data dir.")
+        command = "python bo.py"
+        new_training_param = float( subprocess.check_output( command ,shell=True ,text=True ).strip() )
+        print("new_training_param:", new_training_param)
 
     print("Check results dir for any saved model file.")
     print("If it exists, take the latest.")
     command = "python multi_agent.py \
-                    --TOTAL_EPOCH=200\
+                    --TOTAL_EPOCH=10\
                     --train_trace_dir={training_dir} \
                     --val_trace_dir='{val_dir}'\
                     --summary_dir={results_dir}\
@@ -41,5 +44,6 @@ for i in range(2):
 
     print("Get the file and pass it to the training script, if it exists.\n")
     print("Running training:", i)
+    i += 1
 
 print("Hooray!")
