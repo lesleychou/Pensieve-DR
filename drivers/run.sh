@@ -21,7 +21,7 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../DR-results/TS-float/model_saved/nn_model_ep_15800.ckpt"
+NN_MODELS="../new-DR-results/sanity-check-3/model_saved/nn_model_ep_5200.ckpt"
 
 
 TRACE_PATH="../data/val-FCC"
@@ -53,14 +53,14 @@ python ${SIMULATOR_DIR}/rl_test.py \
 #                   --NUMBER_PICK=0 \
 #                   --duration ${DURATION} &
 ####
-            python ${SIMULATOR_DIR}/mpc.py \
-                 --test_trace_dir ${TRACE_PATH} \
-                   --summary_dir ${SUMMARY_DIR}/seed_1\
-                 --random_seed=1  \
-                 --ROBUST_NOISE=0 \
-                 --SAMPLE_LENGTH=0 \
-                 --NUMBER_PICK=0 \
-                 --duration ${DURATION}
+#            python ${SIMULATOR_DIR}/mpc.py \
+#                 --test_trace_dir ${TRACE_PATH} \
+#                   --summary_dir ${SUMMARY_DIR}/seed_1\
+#                 --random_seed=1  \
+#                 --ROBUST_NOISE=0 \
+#                 --SAMPLE_LENGTH=0 \
+#                 --NUMBER_PICK=0 \
+#                 --duration ${DURATION}
 ##          #done
 
 #done

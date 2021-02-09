@@ -225,17 +225,20 @@ def main():
             test_dir = summary_dir
             plot_files = os.listdir( test_dir )
 
-        reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
-        reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
-        reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
-        reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
-        reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
+        # reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
+        # reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
+        # reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
+        # reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
+        # reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+        reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
 
-        rl_mean_reward = {'0-500': reward_0 ,
-                          '500-1k': reward_1 ,
-                          '1k-240k': reward_2 ,
-                          '240k-640k': reward_3 ,
-                          '640k-1000k': reward_4}
+        # rl_mean_reward = {'0-5': reward_0 ,
+        #                   '5-100': reward_1 ,
+        #                   '100-250': reward_2 ,
+        #                   '250-450': reward_3 ,
+        #                   '450-1050': reward_4 ,
+        #                   'FCC': reward_5}
+        rl_mean_reward = {'FCC': reward_5}
 
         print(rl_mean_reward)
 
