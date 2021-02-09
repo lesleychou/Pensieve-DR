@@ -40,7 +40,7 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
-RLMPC_LOG = '../results/TS-float/'
+RLMPC_LOG = '../new-DR-results/sanity-check-2/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
 
 def calculate_from_selection(selected, last_bit_rate):
@@ -222,12 +222,15 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
     reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
     reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
+
 
     rl_mean_reward = {'0-5': reward_0 ,
                        '5-100': reward_1 ,
                        '100-250': reward_2 ,
                        '250-450': reward_3 ,
-                       '450-1050': reward_4}
+                       '450-1050': reward_4,
+                        'FCC': reward_5}
 
 
     # val-cut-big
@@ -241,11 +244,11 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
 
     mpc_mean_reward = {'0-5': -17.918770989059876, '5-100': 17.3287314980698,
                        '100-250': 66.47100259018036, '250-450': 126.40666137890435,
-                       '450-1050': 136.02513767823524}
+                       '450-1050': 136.02513767823524, 'FCC': -4.69}
 
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
-    d3 = {key: rl_mean_reward[key] - mpc_mean_reward.get( key ,0 ) for key in rl_mean_reward}
+    d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
 
     rl_file.write(str( d3 ) + '\n' )
     print( d3 ,"-----rl - mpc-----" )
