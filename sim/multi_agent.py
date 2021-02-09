@@ -509,10 +509,6 @@ def central_agent(args, net_params_queues, exp_queues):
                 vis._send(
                     {'data': [trace], 'layout': layout, 'win': 'Pensieve_training_mean_entropy_' + args.start_time})
 
-                # avg_val_reward = testing(
-                #     args, epoch, actor, val_log_file, args.val_trace_dir,
-                #     os.path.join(args.summary_dir, 'test_results'),
-                #     args.noise, args.duration)
                 if max_avg_reward is None or (test_mean_reward > max_avg_reward):
                     max_avg_reward = test_mean_reward
                     # Save the neural net parameters to disk.
@@ -697,7 +693,6 @@ def main(args):
     args.start_time = start_time_string
 
     np.random.seed(args.RANDOM_SEED)
-    #assert len(VIDEO_BIT_RATE) == args.A_DIM
 
     # create result directory
     if not os.path.exists(args.summary_dir):
