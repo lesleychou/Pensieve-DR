@@ -23,11 +23,11 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../data/sanity-check-3/model_saved/nn_model_ep_5200.ckpt"
+NN_MODELS="../new-DR-results/sanity-check-3/model_saved/nn_model_ep_5200.ckpt"
 
 
-TRACE_PATH="../data/val-FCC"
-SUMMARY_DIR="../results/TS-float-double-check-FCC"
+TRACE_PATH="../data/val-Norway"
+SUMMARY_DIR="../results/BO-check-Norway"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
@@ -55,14 +55,14 @@ python ${SIMULATOR_DIR}/rl_test.py \
 #                   --NUMBER_PICK=0 \
 #                   --duration ${DURATION} &
 ####
-#            python ${SIMULATOR_DIR}/mpc.py \
-#                 --test_trace_dir ${TRACE_PATH} \
-#                   --summary_dir ${SUMMARY_DIR}/seed_1\
-#                 --random_seed=1  \
-#                 --ROBUST_NOISE=0 \
-#                 --SAMPLE_LENGTH=0 \
-#                 --NUMBER_PICK=0 \
-#                 --duration ${DURATION}
+            python ${SIMULATOR_DIR}/mpc.py \
+                 --test_trace_dir ${TRACE_PATH} \
+                   --summary_dir ${SUMMARY_DIR}/seed_1\
+                 --random_seed=1  \
+                 --ROBUST_NOISE=0 \
+                 --SAMPLE_LENGTH=0 \
+                 --NUMBER_PICK=0 \
+                 --duration ${DURATION}
 ##          #done
 
 #done

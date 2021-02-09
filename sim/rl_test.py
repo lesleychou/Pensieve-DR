@@ -141,15 +141,15 @@ def main():
     # test_trace_dir = args.test_trace_dir
 
     # Just manually load the example .... as an example...
-    trace_config = example_trace_config()
-    generate_traces_with(trace_config)
+    # trace_config = example_trace_config()
+    # generate_traces_with(trace_config)
     
     os.makedirs(summary_dir, exist_ok=True)
     #np.random.seed(args.random_seed)
 
     #assert len(VIDEO_BIT_RATE) == A_DIM
 
-    all_cooked_time, all_cooked_bw, all_file_names = load_traces(trace_config.trace_dir)
+    all_cooked_time, all_cooked_bw, all_file_names = load_traces(args.test_trace_dir)
 
     #print(len(all_cooked_time[-1]))
 
