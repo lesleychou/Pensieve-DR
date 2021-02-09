@@ -14,7 +14,7 @@ import subprocess
 # Improvement: Probably better if replaced with argparse and passed in (later)
 TOTAL_EPOCHS = 10000
 BAYESIAN_OPTIMIZER_INTERVAL = 1000
-TRAINING_DATA_DIR = "../data/training_default/"
+TRAINING_DATA_DIR = "../data/training_default/train/"
 VAL_TRACE_DIR = '../data/generated_traces_ts_float-BO/val'
 RESULTS_DIR = "../results/bo_example/"
 NN_MODEL='../new-DR-results/sanity-check-1/model_saved/nn_model_ep_3900.ckpt'
@@ -38,8 +38,10 @@ for i in range(2):
                     --val_trace_dir='{val_dir}'\
                     --summary_dir={results_dir}\
                     --description='first-run' \
-                    --nn_model={model_path}" \
-                    .format(training_dir=TRAINING_DATA_DIR, val_dir=VAL_TRACE_DIR, results_dir=RESULTS_DIR, model_path=NN_MODEL)
+                    --nn_model={model_path} \
+                    --CURRENT_PARAM={bo_output_param}"  \
+                    .format(training_dir=TRAINING_DATA_DIR, val_dir=VAL_TRACE_DIR,
+                            results_dir=RESULTS_DIR, model_path=NN_MODEL, bo_output_param=100)
     os.system(command)
 
     print("Get the file and pass it to the training script, if it exists.\n")

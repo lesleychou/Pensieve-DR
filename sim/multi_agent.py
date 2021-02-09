@@ -3,6 +3,8 @@ import logging
 import multiprocessing as mp
 import os
 import time
+from time import strftime, localtime
+
 import sys
 
 import a3c
@@ -688,6 +690,38 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
                 a_batch.append(action_vec)
 
 
+class TraceConfig:
+    def __init__(self ,
+                 trace_dir ,
+                 max_throughput=10):
+        self.trace_dir = trace_dir
+        self.max_throughput = max_throughput
+        self.T_l = 0
+        self.T_s = 3
+        self.cov = 3
+        self.duration = 250
+        self.step = 0
+        self.min_throughput = 0.2
+        self.num_traces = 200
+
+
+def example_trace_config(args):
+    train_trace_dir = os.path.join(args.train_trace_dir,
+                                 strftime("%Y%m%d_%H%M%S/", localtime()))
+    return TraceConfig( train_trace_dir ,max_throughput=args.CURRENT_PARAM )
+
+
+def generate_traces_with(config):
+    """
+    Generates traces based on the config
+    """
+    script = "trace_generator.py"
+    command = "python {script} \"{config}\"".format( script=script ,config=vars( config ) )
+    # alternatively call with os.system, but it doesn't print the result that way
+    os.system( command )
+    # output = subprocess.check_output(command, shell=True, text=True).strip()
+    # print(output)
+
 def main(args):
 
     start_time = datetime.now()
@@ -714,6 +748,9 @@ def main(args):
     coordinator = mp.Process(target=central_agent,
                              args=(args, net_params_queues, exp_queues))
     coordinator.start()
+
+    trace_config = example_trace_config( args )
+    generate_traces_with( trace_config )
 
     all_cooked_time, all_cooked_bw, all_file_names = load_traces(
         args.train_trace_dir)
