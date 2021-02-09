@@ -14,7 +14,7 @@ def parse_args():
     # bit_rate, buffer_size, next_chunk_size, bw_measurement (throughput and time), chunk_til_video_end
     parser.add_argument('--S_INFO', type=int, default='6',
                         help='State info shape. Defaults to 6.')
-    parser.add_argument('--S_LEN', type=int, default='8',
+    parser.add_argument('--S_LEN', type=int, default='6',
                         help='How many frames in the past to consider. Defaults to 8.')
     parser.add_argument('--A_DIM', type=int, default='3',
                         help='Action dimension. Defaults to 3.')
