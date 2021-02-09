@@ -364,7 +364,7 @@ def main():
     # test_trace_dir = args.test_trace_dir
 
     # Just manually load the example .... as an example...
-    trace_config = example_trace_config()
+    trace_config = example_trace_config(args)
     generate_traces_with(trace_config)
     
     np.random.seed(RANDOM_SEED)
