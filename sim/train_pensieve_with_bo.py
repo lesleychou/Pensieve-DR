@@ -14,14 +14,14 @@ from bayes_opt import BayesianOptimization
 
 # Defaults
 # Improvement: Probably better if replaced with argparse and passed in (later)
-TOTAL_EPOCHS = 10000
-BAYESIAN_OPTIMIZER_INTERVAL = 1000
+# TOTAL_EPOCHS = 10000
+# BAYESIAN_OPTIMIZER_INTERVAL = 1000
 TRAINING_DATA_DIR = "../data/training_default/train/"
 VAL_TRACE_DIR = '../data/generated_traces_ts_float-BO/val'
 RESULTS_DIR = "../results/bo_example/"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
 
-num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
+# num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
 
 def latest_actor_from(path):
     """
@@ -59,7 +59,7 @@ def black_box_function(x):
 
 
 # Example Flow:
-for i in range(2):
+for i in range(10):
     # if i > 0:
     pbounds = {'x': (0 ,500)}
     optimizer = BayesianOptimization(
@@ -70,8 +70,8 @@ for i in range(2):
 
     optimizer.maximize(
         init_points=1 ,
-        n_iter=1 ,
-        kappa=20 ,
+        n_iter=20,
+        kappa=20,
         xi=0.1
     )
     next = optimizer.max
@@ -84,7 +84,7 @@ for i in range(2):
     latest_model_path = latest_actor_from( path )
 
     command = "python multi_agent.py \
-                    --TOTAL_EPOCH=100\
+                    --TOTAL_EPOCH=5000\
                     --train_trace_dir={training_dir} \
                     --val_trace_dir='{val_dir}'\
                     --summary_dir={results_dir}\
