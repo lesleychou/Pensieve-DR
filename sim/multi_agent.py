@@ -242,10 +242,8 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     #                  '450-550': 134.21, 'FCC': -4.69
     #                  }
 
-    mpc_mean_reward = {'0-5': -17.918770989059876, '5-100': 17.3287314980698,
-                       '100-250': 66.47100259018036, '250-450': 126.40666137890435,
-                       '450-1050': 136.02513767823524, 'FCC': -4.69}
-
+    mpc_mean_reward = {'0-5': 15.254074139382679 ,'5-100': 13.888522475776997 ,'100-250': 61.469250802399394 ,
+                        '250-450': 129.50364292276853 ,'450-1050': 139.39149283679978 , 'FCC': -22.33428330564747}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
@@ -258,6 +256,7 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]
     reward = []
     count=0
+    each_reward = []
     for log_file in matching:
         count+=1
         #print(log_file)
@@ -267,8 +266,13 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
                 if len( parse ) <= 1:
                     break
                 reward.append( float( parse[6] ) )
-    print(count)
-    return np.mean( reward[1:] )
+        each_reward.append(np.mean(reward[1:]))
+
+    mean = np.mean( each_reward )
+    #std = statistics.stdev(mean)
+    #error_bar = np.std( each_reward )
+    #print(mean, error_bar, "-------mean and std")
+    return mean
 
 
 

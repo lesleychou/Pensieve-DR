@@ -86,8 +86,8 @@ for i in range(10):
     )
 
     optimizer.maximize(
-        init_points=1 ,
-        n_iter=20,
+        init_points=5 ,
+        n_iter=5,
         kappa=20,
         xi=0.1
     )

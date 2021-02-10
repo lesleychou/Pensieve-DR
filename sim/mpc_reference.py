@@ -31,7 +31,7 @@ past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 TEST_RESULT = '../results/mpc-speed-up'
-TEST_TRACE = '../data/generated_traces_huge/train/'
+TEST_TRACE = '../data/generated_traces_ts_float-BO/val/'
 
 CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
                 range(6), repeat=5)])
@@ -267,6 +267,7 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]
     reward = []
     count=0
+    each_reward = []
     for log_file in matching:
         count+=1
         #print(log_file)
@@ -276,8 +277,13 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
                 if len( parse ) <= 1:
                     break
                 reward.append( float( parse[6] ) )
-    #print(count)
-    return np.mean( reward[1:] )
+        each_reward.append(np.mean(reward[1:]))
+
+    mean = np.mean( each_reward )
+    #std = statistics.stdev(mean)
+    #error_bar = np.std( each_reward )
+    #print(mean, error_bar, "-------mean and std")
+    return mean
 
 
 def main():
@@ -292,19 +298,19 @@ def main():
     plot_files = os.listdir( test_dir )
 
     reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-20' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='20-100' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='100-200' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='200-600' )
-    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='600-1000' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
 
 
     mpc_mean_reward = {'0-5': reward_0 ,
-                      '5-20': reward_1 ,
-                      '20-100': reward_2 ,
-                      '100-200': reward_3 ,
-                      '200-600': reward_4,
-                        '600-1000': reward_5}
+                      '5-100': reward_1 ,
+                      '100-250': reward_2 ,
+                      '250-450': reward_3 ,
+                      '450-1050': reward_4,
+                        'FCC': reward_5}
 
     # mpc reward for "data/generated_traces_ts_float-BO/fixed-test-bo"
     # mpc_mean_reward = {'0-5': -17.918352939845935, '5-20': -1.9085310904925308, '20-100': 18.514269294761014,
