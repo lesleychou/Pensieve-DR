@@ -17,7 +17,7 @@ from bayes_opt import BayesianOptimization
 # Improvement: Probably better if replaced with argparse and passed in (later)
 # TOTAL_EPOCHS = 10000
 # BAYESIAN_OPTIMIZER_INTERVAL = 1000
-TRAINING_DATA_DIR = "../data/training_default/train/"
+TRAINING_DATA_DIR = "../data/generated_traces_ts_float-BO/train/"
 VAL_TRACE_DIR = '../data/generated_traces_ts_float-BO/val'
 RESULTS_DIR = "../results/bo_example/"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
@@ -93,7 +93,8 @@ for i in range(10):
     )
     next = optimizer.max
     param = next.get( 'params' ).get( 'x' )
-    bo_best_param = round( param ,2 )
+    #bo_best_param = round( param ,2 )
+    bo_best_param = map_log_to_lin(param)
     print( "BO chose this best param........", bo_best_param )
 
     # Use the new param, add more traces into Pensieve, train more based on before
@@ -101,7 +102,7 @@ for i in range(10):
     latest_model_path = latest_actor_from( path )
 
     command = "python multi_agent.py \
-                    --TOTAL_EPOCH=5000\
+                    --TOTAL_EPOCH=3000\
                     --train_trace_dir={training_dir} \
                     --val_trace_dir='{val_dir}'\
                     --summary_dir={results_dir}\

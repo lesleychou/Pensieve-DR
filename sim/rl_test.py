@@ -113,8 +113,8 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
 
     mean = np.mean( each_reward )
     #std = statistics.stdev(mean)
-    #error_bar = np.std( each_reward )
-    #print(mean, error_bar, "-------mean and std")
+    error_bar = np.std( each_reward )
+    # print(mean, error_bar, "-------mean and std")
     return mean
 
 class TraceConfig:
@@ -129,7 +129,7 @@ class TraceConfig:
         self.duration = 250
         self.step = 0
         self.min_throughput = 0.2
-        self.num_traces = 1000
+        self.num_traces = 500
 
 def example_trace_config(args):
     return TraceConfig(args.test_trace_dir, max_throughput=args.CURRENT_PARAM)
