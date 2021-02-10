@@ -11,6 +11,7 @@ import itertools
 import os
 from numba import jit
 import statistics
+import time
 
 S_INFO_MPC = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
@@ -18,7 +19,6 @@ A_DIM = 6
 MPC_FUTURE_CHUNK_COUNT = 5
 VIDEO_BIT_RATE_MPC = np.array([300, 1200, 2850, 6500, 33000, 165000])  # Kbps
 TOTAL_VIDEO_CHUNKS = 48
-CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
@@ -41,6 +41,8 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 RANDOM_SEED = 42
 RAND_RANGE = 1000
 
+CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
+                range(6), repeat=5)])
 
 # Strategy:
 
@@ -107,15 +109,15 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
                     break
                 reward.append( float( parse[6] ) )
 
-    mean = np.mean( reward[1:] )
-    std = statistics.stdev(reward[1:])
-    print(mean, std, "-------mean and std")
+    # mean = np.mean( reward[1:] )
+    # std = statistics.stdev(reward[1:])
+    #print(mean, std, "-------mean and std")
     return np.mean( reward[1:] )
 
 class TraceConfig:
     def __init__(self,
                  trace_dir,                 
-                 max_throughput=200):
+                 max_throughput=10):
         self.trace_dir = trace_dir
         self.max_throughput = max_throughput
         self.T_l = 0
@@ -124,7 +126,7 @@ class TraceConfig:
         self.duration = 250
         self.step = 0
         self.min_throughput = 0.2
-        self.num_traces = 1000
+        self.num_traces = 500
 
 def example_trace_config(args):
     return TraceConfig(args.test_trace_dir, max_throughput=args.CURRENT_PARAM)
@@ -150,7 +152,7 @@ def get_chunk_size(quality, index, size_video_array):
     return size_video_array[quality, index]
 
 @jit(nopython=True)
-def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_rate, last_index, future_bandwidth, CHUNK_COMBO_OPTIONS):
+def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_rate, last_index, future_bandwidth):
     max_reward = -100000000
     start_buffer = buffer_size
 
@@ -189,7 +191,6 @@ def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_r
             if best_combo.size != 0:  # some combo was good
                 send_data = best_combo[0]
     return send_data
-
 
 class MPC_ref(object):
     def __init__(self, test_result_dir, test_trace_dir):
@@ -239,8 +240,8 @@ class MPC_ref(object):
         video_count = 0
 
         # make chunk combination options
-        for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
-            CHUNK_COMBO_OPTIONS.append(combo)
+        # for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
+        #     CHUNK_COMBO_OPTIONS.append(combo)
 
         while True:  # serve video forever
             # the action is from the last decision
@@ -325,10 +326,10 @@ class MPC_ref(object):
             # all possible combinations of 5 chunk bitrates (9^5 options)
             # iterate over list and for each, compute reward and store max reward combination
             # start = time.time()
-            chunk_combo_options = np.array( CHUNK_COMBO_OPTIONS )
+            #chunk_combo_options = np.array( CHUNK_COMBO_OPTIONS )
 
             bit_rate = calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_rate,
-                                          last_index, future_bandwidth, chunk_combo_options)
+                                          last_index, future_bandwidth)
 
             s_batch.append(state)
 
@@ -518,15 +519,16 @@ def main():
         mpc_summary_dir = summary_dir + '/' + 'mpc_test'
         os.makedirs( mpc_summary_dir ,exist_ok=True )
 
-        # MPC = MPC_ref( test_result_dir= mpc_summary_dir ,test_trace_dir=trace_config.trace_dir )
-        # MPC.run()
-        #
-        # test_dir_mpc = mpc_summary_dir
-        # plot_files_mpc = os.listdir( test_dir_mpc )
-        # reward_0_mpc = given_string_mean_reward( plot_files_mpc ,test_dir_mpc ,str='' )
-        # mpc_mean_reward = reward_0_mpc
-        # bo_reward = mpc_mean_reward - rl_mean_reward
-        # print(bo_reward)
+        MPC = MPC_ref( test_result_dir= mpc_summary_dir ,test_trace_dir=trace_config.trace_dir )
+        MPC.run()
+
+        test_dir_mpc = mpc_summary_dir
+        plot_files_mpc = os.listdir( test_dir_mpc )
+        reward_0_mpc = given_string_mean_reward( plot_files_mpc ,test_dir_mpc ,str='' )
+        mpc_mean_reward = reward_0_mpc
+
+        bo_reward = mpc_mean_reward - rl_mean_reward
+        print(bo_reward)
 
 
 

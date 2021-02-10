@@ -3,7 +3,6 @@ import subprocess
 import os
 from bayes_opt import BayesianOptimization
 
-
 def latest_actor_from(path):
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
     files = list(sorted(os.listdir(path), key=mtime))
@@ -38,7 +37,7 @@ def black_box_function(x):
     print(r)
     return r
 
-pbounds = {'x': (0 ,100)}
+pbounds = {'x': (0 ,1)}
 optimizer = BayesianOptimization(
         f=black_box_function ,
         pbounds=pbounds ,

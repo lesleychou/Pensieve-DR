@@ -5,6 +5,7 @@ from numba import jit
 #from pensieve.trace_generator import TraceGenerator
 
 # TODO: Merge utils.env to Pensieve.env?
+import time
 import env as env
 import numpy as np
 from utils.utils import load_traces
@@ -12,7 +13,7 @@ from utils.utils import load_traces
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
 A_DIM = 6
-MPC_FUTURE_CHUNK_COUNT = 5
+MPC_FUTURE_CHUNK_COUNT = 3
 
 VIDEO_BIT_RATE = np.array([300, 1200, 2850, 6500, 33000, 165000])  # Kbps
 BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
@@ -25,12 +26,15 @@ SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 1  # default video quality without agent
 RANDOM_SEED = 20
 
-CHUNK_COMBO_OPTIONS = []
+#CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc-generated-ts-float-BO'
-TEST_TRACE = '../data/generated_traces_ts_float-BO/fixed-test-bo/'
+TEST_RESULT = '../results/mpc-speed-up'
+TEST_TRACE = '../data/generated_traces_huge/train/'
+
+CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
+                range(6), repeat=5)])
 
 @jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
@@ -41,7 +45,7 @@ def get_chunk_size(quality, index, size_video_array):
     return size_video_array[quality, index]
 
 @jit(nopython=True)
-def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_rate, last_index, future_bandwidth, CHUNK_COMBO_OPTIONS):
+def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_rate, last_index, future_bandwidth):
     max_reward = -100000000
     start_buffer = buffer_size
 
@@ -107,7 +111,7 @@ class MPC_ref(object):
 
         size_video_array = np.array(np.squeeze(size_video_array))
 
-        assert len(VIDEO_BIT_RATE) == A_DIM
+        #assert len(VIDEO_BIT_RATE) == A_DIM
         print(self.test_dir)
 
         # TODO: let TraceGenerator.generate_trace return all_file_names, and write traces out?
@@ -135,9 +139,9 @@ class MPC_ref(object):
 
         video_count = 0
 
-        # make chunk combination options
-        for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
-            CHUNK_COMBO_OPTIONS.append(combo)
+        # # make chunk combination options
+        # for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
+        #     CHUNK_COMBO_OPTIONS.append(combo)
 
         while True:  # serve video forever
             # the action is from the last decision
@@ -155,7 +159,6 @@ class MPC_ref(object):
                 - REBUF_PENALTY * rebuf \
                 - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
                                           VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
-
 
             r_batch.append(reward)
 
@@ -227,7 +230,7 @@ class MPC_ref(object):
             chunk_combo_options = np.array( CHUNK_COMBO_OPTIONS )
 
             bit_rate = calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_rate,
-                                          last_index, future_bandwidth, chunk_combo_options)
+                                          last_index, future_bandwidth)
 
             s_batch.append(state)
 
@@ -266,18 +269,22 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
     count=0
     for log_file in matching:
         count+=1
-        print(log_file)
+        #print(log_file)
         with open( test_dir +'/'+ log_file ,'r' ) as f:
             for line in f:
                 parse = line.split()
                 if len( parse ) <= 1:
                     break
                 reward.append( float( parse[6] ) )
-    print(count)
+    #print(count)
     return np.mean( reward[1:] )
 
 
 def main():
+    start_time = time.time()
+    # make chunk combination options
+    # CHUNK_COMBO_OPTIONS
+
     MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
     MPC.run()
 
@@ -300,10 +307,12 @@ def main():
                         '600-1000': reward_5}
 
     # mpc reward for "data/generated_traces_ts_float-BO/fixed-test-bo"
-    mpc_mean_reward = {'0-5': -17.918352939845935, '5-20': -1.9085310904925308, '20-100': 18.514269294761014,
-                        '100-200': 52.89938304947093, '200-600': 124.52721660104443, '600-1000': 136.25727050809138}
-
+    # mpc_mean_reward = {'0-5': -17.918352939845935, '5-20': -1.9085310904925308, '20-100': 18.514269294761014,
+    #                     '100-200': 52.89938304947093, '200-600': 124.52721660104443, '600-1000': 136.25727050809138}
+    #
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
+
+    print( "--- %s seconds ---" % (time.time() - start_time) )
 
 
 if __name__ == '__main__':

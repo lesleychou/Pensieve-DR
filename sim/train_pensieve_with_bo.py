@@ -3,6 +3,7 @@
 # (increases generalizability, we hope!)
 import sys
 import subprocess
+import numpy as np
 import os
 from bayes_opt import BayesianOptimization
 # Inputs:
@@ -22,6 +23,20 @@ RESULTS_DIR = "../results/bo_example/"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
 
 # num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
+
+MIN_BW = 1
+MAX_BW = 1000
+
+
+def map_lin_to_log(x):
+    x_log = (np.log(x) - np.log(MIN_BW)) / (np.log(MAX_BW) - np.log(MIN_BW))
+    return x_log
+
+
+def map_log_to_lin(x):
+    x_lin = np.exp((np.log(MAX_BW)-np.log(MIN_BW))*x + np.log(MIN_BW))
+    return x_lin
+
 
 def latest_actor_from(path):
     """
@@ -47,12 +62,14 @@ def black_box_function(x):
     latest_model_path = latest_actor_from(path)
     #print(latest_model_path)
 
+    x_map = map_log_to_lin(x)
+
     command = " python rl_test.py  \
                 --CURRENT_PARAM={current_max_tp_param} \
                 --test_trace_dir='../data/example_traces/' \
                 --summary_dir='../MPC_RL_test_results/' \
                 --model_path='{model_path}' \
-                ".format(current_max_tp_param=x, model_path=latest_model_path)
+                ".format(current_max_tp_param=x_map, model_path=latest_model_path)
 
     r = float(subprocess.check_output(command, shell=True, text=True).strip())
     return r
@@ -61,7 +78,7 @@ def black_box_function(x):
 # Example Flow:
 for i in range(10):
     # if i > 0:
-    pbounds = {'x': (0 ,200)}
+    pbounds = {'x': (0 ,1)}
     optimizer = BayesianOptimization(
         f=black_box_function ,
         pbounds=pbounds
