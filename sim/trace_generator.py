@@ -48,7 +48,7 @@ class TraceGenerator(object):
         self.T_s = T_s
         self.duration = duration
         self.min_throughput = min_throughput
-        self.max_throughput_low = max (max_throughput-50, 0)
+        self.max_throughput_low = max (max_throughput-50, 1)
         self.max_throughput = round( random.uniform(self.max_throughput_low ,max_throughput))
 
         # The following vars are unused, but are kept around for backwards compatibility with

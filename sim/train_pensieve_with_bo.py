@@ -61,11 +61,11 @@ def black_box_function(x):
 # Example Flow:
 for i in range(10):
     # if i > 0:
-    pbounds = {'x': (0 ,500)}
+    pbounds = {'x': (0 ,200)}
     optimizer = BayesianOptimization(
         f=black_box_function ,
-        pbounds=pbounds ,
-        random_state=2
+        pbounds=pbounds
+        #random_state=2
     )
 
     optimizer.maximize(
