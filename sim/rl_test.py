@@ -10,6 +10,7 @@ import subprocess
 import itertools
 import os
 from numba import jit
+import statistics
 
 S_INFO_MPC = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
@@ -105,12 +106,16 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
                 if len( parse ) <= 1:
                     break
                 reward.append( float( parse[6] ) )
+
+    mean = np.mean( reward[1:] )
+    std = statistics.stdev(reward[1:])
+    print(mean, std, "-------mean and std")
     return np.mean( reward[1:] )
 
 class TraceConfig:
     def __init__(self,
                  trace_dir,                 
-                 max_throughput=10):
+                 max_throughput=200):
         self.trace_dir = trace_dir
         self.max_throughput = max_throughput
         self.T_l = 0
@@ -119,7 +124,7 @@ class TraceConfig:
         self.duration = 250
         self.step = 0
         self.min_throughput = 0.2
-        self.num_traces = 50
+        self.num_traces = 1000
 
 def example_trace_config(args):
     return TraceConfig(args.test_trace_dir, max_throughput=args.CURRENT_PARAM)
@@ -513,15 +518,15 @@ def main():
         mpc_summary_dir = summary_dir + '/' + 'mpc_test'
         os.makedirs( mpc_summary_dir ,exist_ok=True )
 
-        MPC = MPC_ref( test_result_dir= mpc_summary_dir ,test_trace_dir=trace_config.trace_dir )
-        MPC.run()
-
-        test_dir_mpc = mpc_summary_dir
-        plot_files_mpc = os.listdir( test_dir_mpc )
-        reward_0_mpc = given_string_mean_reward( plot_files_mpc ,test_dir_mpc ,str='' )
-        mpc_mean_reward = reward_0_mpc
-        bo_reward = mpc_mean_reward - rl_mean_reward
-        print(bo_reward)
+        # MPC = MPC_ref( test_result_dir= mpc_summary_dir ,test_trace_dir=trace_config.trace_dir )
+        # MPC.run()
+        #
+        # test_dir_mpc = mpc_summary_dir
+        # plot_files_mpc = os.listdir( test_dir_mpc )
+        # reward_0_mpc = given_string_mean_reward( plot_files_mpc ,test_dir_mpc ,str='' )
+        # mpc_mean_reward = reward_0_mpc
+        # bo_reward = mpc_mean_reward - rl_mean_reward
+        # print(bo_reward)
 
 
 

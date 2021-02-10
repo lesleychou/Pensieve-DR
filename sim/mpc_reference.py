@@ -29,8 +29,8 @@ CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc-ts-float-val'
-TEST_TRACE = '../data/generated_traces_ts_float/val/'
+TEST_RESULT = '../results/mpc-generated-ts-float-BO'
+TEST_TRACE = '../data/generated_traces_ts_float-BO/fixed-test-bo/'
 
 @jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
@@ -285,16 +285,23 @@ def main():
     plot_files = os.listdir( test_dir )
 
     reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-20' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='20-100' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='100-200' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='200-600' )
+    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='600-1000' )
+
 
     mpc_mean_reward = {'0-5': reward_0 ,
-                      '5-100': reward_1 ,
-                      '100-250': reward_2 ,
-                      '250-450': reward_3 ,
-                      '450-1050': reward_4}
+                      '5-20': reward_1 ,
+                      '20-100': reward_2 ,
+                      '100-200': reward_3 ,
+                      '200-600': reward_4,
+                        '600-1000': reward_5}
+
+    # mpc reward for "data/generated_traces_ts_float-BO/fixed-test-bo"
+    mpc_mean_reward = {'0-5': -17.918352939845935, '5-20': -1.9085310904925308, '20-100': 18.514269294761014,
+                        '100-200': 52.89938304947093, '200-600': 124.52721660104443, '600-1000': 136.25727050809138}
 
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 
