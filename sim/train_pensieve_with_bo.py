@@ -17,15 +17,15 @@ from bayes_opt import BayesianOptimization
 # Improvement: Probably better if replaced with argparse and passed in (later)
 # TOTAL_EPOCHS = 10000
 # BAYESIAN_OPTIMIZER_INTERVAL = 1000
-TRAINING_DATA_DIR = "../data/generated_traces_ts_float-BO/train/"
+TRAINING_DATA_DIR = "../data/generated_traces_ts_float-BO/train_2/"
 VAL_TRACE_DIR = '../data/generated_traces_ts_float-BO/val'
-RESULTS_DIR = "../results/bo_example/"
+RESULTS_DIR = "../results/bo_example_2/"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
 
 # num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
 
 MIN_BW = 1
-MAX_BW = 1000
+MAX_BW = 500
 
 
 def map_lin_to_log(x):
@@ -86,8 +86,8 @@ for i in range(10):
     )
 
     optimizer.maximize(
-        init_points=5 ,
-        n_iter=5,
+        init_points=10,
+        n_iter=2,
         kappa=20,
         xi=0.1
     )
@@ -95,7 +95,7 @@ for i in range(10):
     param = next.get( 'params' ).get( 'x' )
     #bo_best_param = round( param ,2 )
     bo_best_param = map_log_to_lin(param)
-    print( "BO chose this best param........", bo_best_param )
+    print( "BO chose this best param........", param, bo_best_param )
 
     # Use the new param, add more traces into Pensieve, train more based on before
     path = os.path.join( RESULTS_DIR ,'model_saved' )
