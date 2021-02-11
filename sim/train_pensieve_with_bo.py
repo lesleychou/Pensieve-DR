@@ -19,7 +19,7 @@ from bayes_opt import BayesianOptimization
 # BAYESIAN_OPTIMIZER_INTERVAL = 1000
 TRAINING_DATA_DIR = "../data/generated_traces_ts_float-BO/train_2/"
 VAL_TRACE_DIR = '../data/generated_traces_ts_float-BO/val'
-RESULTS_DIR = "../results/bo_example_2/"
+RESULTS_DIR = "../results/bo_tmp/"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
 
 # num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
@@ -28,15 +28,17 @@ MIN_BW = 1
 MAX_BW = 500
 
 
-def map_lin_to_log(x):
-    x_log = (np.log(x) - np.log(MIN_BW)) / (np.log(MAX_BW) - np.log(MIN_BW))
-    return x_log
+# def map_lin_to_log(x):
+#     x_log = (np.log(x) - np.log(MIN_BW)) / (np.log(MAX_BW) - np.log(MIN_BW))
+#     return x_log
 
+# def map_log_to_lin(x):
+#     x_lin = np.exp((np.log(MAX_BW)-np.log(MIN_BW))*x + np.log(MIN_BW))
+#     return x_lin
 
 def map_log_to_lin(x):
-    x_lin = np.exp((np.log(MAX_BW)-np.log(MIN_BW))*x + np.log(MIN_BW))
+    x_lin = 2**(10*x)
     return x_lin
-
 
 def latest_actor_from(path):
     """

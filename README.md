@@ -40,3 +40,11 @@ python rl_test.py  \
             --test_trace_dir='../data/example_traces/' \
             --summary_dir='../MPC_RL_test_results/' \
             --model_path='../results/bo_example/model_saved/nn_model_ep_300.ckpt'
+     
+```       
+python rl_test.py  \
+               --CURRENT_PARAM=2 \
+            --test_trace_dir='../data/example_traces/' \
+            --summary_dir='../MPC_RL_test_results/' \
+            --model_path='../results/bo_example_2/model_saved/nn_model_ep_3900.ckpt'
+```

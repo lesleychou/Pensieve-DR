@@ -95,8 +95,11 @@ def calculate_from_selection(selected, last_bit_rate):
     #print(bit_rate)
     return bit_rate
 
-def given_string_mean_reward(plot_files ,test_dir ,str):
-    matching = [s for s in plot_files if str in s]
+RL_PATH = os.path.join('/Users/lesley/Pensieve-DR/sim', 'bo_std_log')
+RL_FILE = open( RL_PATH ,'a' ,1 )
+
+def given_string_mean_reward(plot_files ,test_dir ,str1):
+    matching = [s for s in plot_files if str1 in s]
     reward = []
     count=0
     each_reward = []
@@ -112,9 +115,10 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
         each_reward.append(np.mean(reward[1:]))
 
     mean = np.mean( each_reward )
-    #std = statistics.stdev(mean)
-    error_bar = np.std( each_reward )
-    # print(mean, error_bar, "-------mean and std")
+    error_bar = np.std(each_reward)
+    #print(mean, error_bar, "-------mean and std")
+    RL_FILE.write( str(mean) + ' '+ str(error_bar) + '\n')
+
     return mean
 
 class TraceConfig:
@@ -516,7 +520,7 @@ def main():
             test_dir = rl_summary_dir
             plot_files = os.listdir( test_dir )
 
-        rl_mean_reward = given_string_mean_reward( plot_files ,test_dir ,str='' )
+        rl_mean_reward = given_string_mean_reward( plot_files ,test_dir ,str1='' )
 
         mpc_summary_dir = summary_dir + '/' + 'mpc_test'
         os.makedirs( mpc_summary_dir ,exist_ok=True )
@@ -526,7 +530,7 @@ def main():
 
         test_dir_mpc = mpc_summary_dir
         plot_files_mpc = os.listdir( test_dir_mpc )
-        mpc_mean_reward = given_string_mean_reward( plot_files_mpc ,test_dir_mpc ,str='' )
+        mpc_mean_reward = given_string_mean_reward( plot_files_mpc ,test_dir_mpc ,str1='' )
 
         bo_reward = mpc_mean_reward - rl_mean_reward
         print(bo_reward)
