@@ -517,8 +517,8 @@ def main():
                     'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
                 log_file = open(log_path, 'w')
 
-            test_dir = rl_summary_dir
-            plot_files = os.listdir( test_dir )
+        test_dir = rl_summary_dir
+        plot_files = os.listdir( test_dir )
 
         rl_mean_reward = given_string_mean_reward( plot_files ,test_dir ,str1='' )
 
