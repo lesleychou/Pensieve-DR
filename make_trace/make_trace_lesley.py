@@ -7,7 +7,7 @@ from sympy import N, Symbol, solve
 
 # 68 files with 2000 seconds, 205 files with 320 seconds
 
-TRAIN_TRACE_DIR = "../BO-data/randomize-TS/test-tmp/test_TS_3"
+TRAIN_TRACE_DIR = "../BO-data/randomize-BW-TS/train-bo/train_TS_10_BW_510"
 os.makedirs(TRAIN_TRACE_DIR, exist_ok=True)
 
 #VAL_TRACE_DIR = "../data/generated_traces_huge/val_0-500/val_BW_450-550"
@@ -38,14 +38,14 @@ os.makedirs(TRAIN_TRACE_DIR, exist_ok=True)
 # 640000-1000000
 
 # large range
-T_s = 3
+T_s = 10
 T_l = 5
 cov = 0.01
 duration = 300
 MAX_TASK_CNT = 32
 MIN_THROUGHPUT = 0.2
-MAX_THROUGHPUT_LOW = 1
-MAX_THROUGHPUT_HIGH = 200
+MAX_THROUGHPUT_LOW = 0.5
+MAX_THROUGHPUT_HIGH = 510
 STEPS = 15
 
 cmds = []

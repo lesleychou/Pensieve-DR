@@ -217,23 +217,39 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     test_dir = log_output_dir
     plot_files = os.listdir( test_dir )
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='3' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='6' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='9' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='12' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='Puffer' )
-    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='TS_3_BW_5' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='TS_3_BW_100' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='TS_3_BW_500' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='TS_8_BW_5' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='TS_8_BW_100' )
+    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='TS_8_BW_500' )
+    reward_6 = given_string_mean_reward( plot_files ,test_dir ,str='TS_12_BW_5' )
+    reward_7 = given_string_mean_reward( plot_files ,test_dir ,str='TS_12_BW_100' )
+    reward_8 = given_string_mean_reward( plot_files ,test_dir ,str='TS_12_BW_500' )
+    reward_9 = given_string_mean_reward( plot_files ,test_dir ,str='Puffer' )
+    reward_10 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
 
-    rl_mean_reward = {'3': reward_0 ,
-                       '6': reward_1 ,
-                       '9': reward_2 ,
-                       '12': reward_3 ,
-                       'Puffer': reward_4 ,
-                       'FCC': reward_5}
+    rl_mean_reward = {'TS_3_BW_5': reward_0 ,
+                       'TS_3_BW_100': reward_1 ,
+                       'TS_3_BW_500': reward_2 ,
+                       'TS_8_BW_5': reward_3 ,
+                       'TS_8_BW_100': reward_4 ,
+                       'TS_8_BW_500': reward_5 ,
+                       'TS_12_BW_5': reward_6 ,
+                       'TS_12_BW_100': reward_7 ,
+                       'TS_12_BW_500': reward_8 ,
+                       'Puffer': reward_9 ,
+                       'FCC': reward_10
+                       }
 
-
-    mpc_mean_reward = {'3': 19.05927335498787 ,'6': 15.604856250737258 ,'9': 17.639114034863113 ,
-                       '12': 14.815075998886641 ,'Puffer': 9.854114791799237 ,'FCC': -22.33428330564747}
+    # mpc reward for '../BO-data/randomize-TS/fixed-test-bo/'
+    mpc_mean_reward = {'TS_3_BW_5': 24.479746170593017 ,'TS_3_BW_100': 12.185614801339375 ,
+                       'TS_3_BW_500': 88.49855800102792 ,
+                       'TS_8_BW_5': 25.66653587086103 ,'TS_8_BW_100': 5.254062644826007 ,
+                       'TS_8_BW_500': 79.60610369526904 ,
+                       'TS_12_BW_5': 26.577449857208514 ,'TS_12_BW_100': -1.7281819011917952 ,
+                       'TS_12_BW_500': 79.56715031877874 ,
+                       'Puffer': 9.855609795327897 ,'FCC': -22.334267574707184}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}

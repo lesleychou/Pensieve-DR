@@ -24,7 +24,7 @@ def parse_args():
                         help='Actor learning rate. Defaults to 0.0001.')
     parser.add_argument('--CRITIC_LR_RATE', type=float, default='0.001',
                         help='Critic learning rate. Defaults to 0.001.')
-    parser.add_argument('--NUM_AGENTS', type=int, default='8',
+    parser.add_argument('--NUM_AGENTS', type=int, default='16',
                         help='Num of worker agents. Defaults to 16.')
 
     parser.add_argument('--TRAIN_SEQ_LEN', type=int,
