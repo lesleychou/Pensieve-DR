@@ -17,9 +17,9 @@ from bayes_opt import BayesianOptimization
 # Improvement: Probably better if replaced with argparse and passed in (later)
 # TOTAL_EPOCHS = 10000
 # BAYESIAN_OPTIMIZER_INTERVAL = 1000
-TRAINING_DATA_DIR = "../data/generated_traces_ts_float-BO/train_2/"
-VAL_TRACE_DIR = '../data/generated_traces_ts_float-BO/val'
-RESULTS_DIR = "../results/bo_tmp/"
+TRAINING_DATA_DIR = "../BO-data/randomize-TS/train-bo/"
+VAL_TRACE_DIR = '../BO-data/randomize-TS/fixed-test-bo'
+RESULTS_DIR = "../BO-results/randomize-TS-3rd/"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
 
 # num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
@@ -103,7 +103,7 @@ for i in range(10):
     latest_model_path = latest_actor_from( path )
 
     command = "python multi_agent.py \
-                    --TOTAL_EPOCH=3000\
+                    --TOTAL_EPOCH=10000\
                     --train_trace_dir={training_dir} \
                     --val_trace_dir='{val_dir}'\
                     --summary_dir={results_dir}\

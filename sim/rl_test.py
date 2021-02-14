@@ -130,7 +130,7 @@ class TraceConfig:
         self.T_l = 0
         self.T_s = T_s
         self.cov = 3
-        self.duration = 250
+        self.duration = 300
         self.step = 0
         self.min_throughput = 0.2
         self.num_traces = 500

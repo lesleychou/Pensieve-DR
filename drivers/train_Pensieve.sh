@@ -41,13 +41,13 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../BO-results/randomize-TS-1st/"
+    SUMMARY_DIR="../BO-results/randomize-TS-2nd/"
     python ${SIMULATOR_DIR}/multi_agent.py \
         --train_trace_dir ${TRAIN_TRACE_PATH} \
         --val_trace_dir ${VAL_TRACE_PATH} \
         --summary_dir ${SUMMARY_DIR} \
-        --description="Pensieve-DR-BW"
-        #--nn_model='../new-DR-results/sanity-check-1/model_saved/nn_model_ep_3900.ckpt'
+        --description="Pensieve-DR-BW" \
+        --nn_model='../BO-results/randomize-TS-2nd/model_saved/nn_model_ep_3800.ckpt'
 
 
 done
