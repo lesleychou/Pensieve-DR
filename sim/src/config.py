@@ -24,7 +24,7 @@ def parse_args():
                         help='Actor learning rate. Defaults to 0.0001.')
     parser.add_argument('--CRITIC_LR_RATE', type=float, default='0.001',
                         help='Critic learning rate. Defaults to 0.001.')
-    parser.add_argument('--NUM_AGENTS', type=int, default='16',
+    parser.add_argument('--NUM_AGENTS', type=int, default='8',
                         help='Num of worker agents. Defaults to 16.')
 
     parser.add_argument('--TRAIN_SEQ_LEN', type=int,
@@ -56,8 +56,10 @@ def parse_args():
     parser.add_argument("--duration", type=float, default=1.0)
 
     # args for BO
-    parser.add_argument("--CURRENT_PARAM", type=float, default=10.0,
-                        help='the param BO output,decide what to train on for the next run')
+    parser.add_argument("--CURRENT_PARAM_BW", type=float, default=10.0,
+                        help='max BW the param BO output,decide what to train on for the next run')
+    parser.add_argument( "--CURRENT_PARAM_TS" ,type=float ,default=3.0 ,
+                         help='TS, the param BO output,decide what to train on for the next run' )
 
 
     return parser.parse_args()

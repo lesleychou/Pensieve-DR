@@ -71,7 +71,9 @@ def parse_args():
     parser.add_argument( '--BITRATE_DIM', type=int, default='6', help='' )
     parser.add_argument( '--S_LEN', type=int, default='6', help='' )
 
-    parser.add_argument( '--CURRENT_PARAM', type=float, default='10', help='the max-BW param BO input' )
+    parser.add_argument( '--CURRENT_PARAM_BW', type=float, default='10', help='the max-BW param BO input' )
+    parser.add_argument( '--CURRENT_PARAM_TS', type=float, default='10', help='the TS param BO input' )
+
 
 
 
@@ -123,10 +125,11 @@ def given_string_mean_reward(plot_files ,test_dir ,str1):
 
 class TraceConfig:
     def __init__(self,
-                 trace_dir,                 
+                 trace_dir,
+                 max_bw=10,
                  T_s=3):
         self.trace_dir = trace_dir
-        self.max_throughput = 200
+        self.max_throughput = max_bw
         self.T_l = 0
         self.T_s = T_s
         self.cov = 3
@@ -136,7 +139,7 @@ class TraceConfig:
         self.num_traces = 1000
 
 def example_trace_config(args):
-    return TraceConfig(args.test_trace_dir, T_s=args.CURRENT_PARAM)
+    return TraceConfig(args.test_trace_dir, max_bw=args.CURRENT_PARAM_BW, T_s=args.CURRENT_PARAM_TS)
         
 def generate_traces_with(config):
     """
@@ -378,7 +381,7 @@ def main():
 
     # Just manually load the example .... as an example...
     trace_config = example_trace_config(args)
-    #generate_traces_with(trace_config)
+    generate_traces_with(trace_config)
     
     np.random.seed(RANDOM_SEED)
 

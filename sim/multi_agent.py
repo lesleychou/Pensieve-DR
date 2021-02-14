@@ -700,9 +700,10 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
 class TraceConfig:
     def __init__(self,
                  trace_dir,
+                 max_bw=10,
                  T_s=3):
         self.trace_dir = trace_dir
-        self.max_throughput = 200
+        self.max_throughput = max_bw
         self.T_l = 0
         self.T_s = T_s
         self.cov = 3
@@ -715,7 +716,7 @@ class TraceConfig:
 def example_trace_config(args):
     train_trace_dir = os.path.join(args.train_trace_dir,
                                  strftime("%Y%m%d_%H%M%S/", localtime()))
-    return TraceConfig(train_trace_dir, T_s=args.CURRENT_PARAM)
+    return TraceConfig(train_trace_dir, max_bw=args.CURRENT_PARAM_BW, T_s=args.CURRENT_PARAM_TS)
 
 
 def generate_traces_with(config):
