@@ -24,10 +24,8 @@ RESULTS_DIR = "../results/bo_tmp/"
 
 # num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
 
-MIN_BW = 1
-MAX_BW = 500
-
-
+# MIN_BW = 1
+# MAX_BW = 500
 # def map_lin_to_log(x):
 #     x_log = (np.log(x) - np.log(MIN_BW)) / (np.log(MAX_BW) - np.log(MIN_BW))
 #     return x_log
@@ -64,7 +62,8 @@ def black_box_function(x):
     latest_model_path = latest_actor_from(path)
     #print(latest_model_path)
 
-    x_map = map_log_to_lin(x)
+    #x_map = map_log_to_lin(x)
+    x_map = x
 
     command = " python rl_test.py  \
                 --CURRENT_PARAM={current_max_tp_param} \
@@ -80,7 +79,7 @@ def black_box_function(x):
 # Example Flow:
 for i in range(10):
     # if i > 0:
-    pbounds = {'x': (0 ,1)}
+    pbounds = {'x': (3 ,12)}
     optimizer = BayesianOptimization(
         f=black_box_function ,
         pbounds=pbounds
@@ -95,8 +94,8 @@ for i in range(10):
     )
     next = optimizer.max
     param = next.get( 'params' ).get( 'x' )
-    #bo_best_param = round( param ,2 )
-    bo_best_param = map_log_to_lin(param)
+    bo_best_param = round(param)
+    # bo_best_param = map_log_to_lin(param)
     print( "BO chose this best param........", param, bo_best_param )
 
     # Use the new param, add more traces into Pensieve, train more based on before

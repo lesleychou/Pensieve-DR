@@ -124,19 +124,19 @@ def given_string_mean_reward(plot_files ,test_dir ,str1):
 class TraceConfig:
     def __init__(self,
                  trace_dir,                 
-                 max_throughput=10):
+                 T_s=3):
         self.trace_dir = trace_dir
-        self.max_throughput = max_throughput
+        self.max_throughput = 200
         self.T_l = 0
-        self.T_s = 3
+        self.T_s = T_s
         self.cov = 3
         self.duration = 250
         self.step = 0
         self.min_throughput = 0.2
-        self.num_traces = 1000
+        self.num_traces = 500
 
 def example_trace_config(args):
-    return TraceConfig(args.test_trace_dir, max_throughput=args.CURRENT_PARAM)
+    return TraceConfig(args.test_trace_dir, T_s=args.CURRENT_PARAM)
         
 def generate_traces_with(config):
     """

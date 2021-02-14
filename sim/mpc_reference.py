@@ -30,8 +30,8 @@ RANDOM_SEED = 20
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc-speed-up'
-TEST_TRACE = '../data/generated_traces_ts_float-BO/val/'
+TEST_RESULT = '../results/TS-exp-mpc-on-test'
+TEST_TRACE = '../BO-data/randomize-TS/fixed-test-bo/'
 
 CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
                 range(6), repeat=5)])
@@ -297,25 +297,25 @@ def main():
     test_dir = TEST_RESULT
     plot_files = os.listdir( test_dir )
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='3' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='6' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='9' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='12' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='Puffer' )
     reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
 
 
-    mpc_mean_reward = {'0-5': reward_0 ,
-                      '5-100': reward_1 ,
-                      '100-250': reward_2 ,
-                      '250-450': reward_3 ,
-                      '450-1050': reward_4,
-                        'FCC': reward_5}
+    mpc_mean_reward = {'3': reward_0 ,
+                      '6': reward_1 ,
+                      '9': reward_2 ,
+                      '12': reward_3 ,
+                      'Puffer': reward_4,
+                      'FCC': reward_5}
 
-    # mpc reward for "data/generated_traces_ts_float-BO/fixed-test-bo"
-    # mpc_mean_reward = {'0-5': -17.918352939845935, '5-20': -1.9085310904925308, '20-100': 18.514269294761014,
-    #                     '100-200': 52.89938304947093, '200-600': 124.52721660104443, '600-1000': 136.25727050809138}
-    #
+    # mpc reward for '../BO-data/randomize-TS/fixed-test-bo/'
+    mpc_mean_reward={'3': 19.05927335498787, '6': 15.604856250737258, '9': 17.639114034863113,
+                     '12': 14.815075998886641, 'Puffer': 9.854114791799237, 'FCC': -22.33428330564747}
+
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 
     print( "--- %s seconds ---" % (time.time() - start_time) )

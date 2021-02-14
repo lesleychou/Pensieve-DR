@@ -217,39 +217,29 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     test_dir = log_output_dir
     plot_files = os.listdir( test_dir )
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='3' )
+    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='6' )
+    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='9' )
+    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='12' )
+    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='Puffer' )
     reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
 
+    rl_mean_reward = {'3': reward_0 ,
+                       '6': reward_1 ,
+                       '9': reward_2 ,
+                       '12': reward_3 ,
+                       'Puffer': reward_4 ,
+                       'FCC': reward_5}
 
-    rl_mean_reward = {'0-5': reward_0 ,
-                       '5-100': reward_1 ,
-                       '100-250': reward_2 ,
-                       '250-450': reward_3 ,
-                       '450-1050': reward_4,
-                        'FCC': reward_5}
 
-
-    # val-cut-big
-    # mpc_mean_reward={'0-500': 98.20 ,'500-1k': 137.26 ,
-    #                  '1k-240k': 127.56 ,'240k-640k': 126.30 ,
-    #                  '640k-1000k': 126.02,
-    #                  '0-150': 23.56 ,'150-250': 75.51 ,
-    #                  '250-350': 120.11 ,'350-450': 130.62 ,
-    #                  '450-550': 134.21, 'FCC': -4.69
-    #                  }
-
-    mpc_mean_reward = {'0-5': 15.254074139382679 ,'5-100': 13.888522475776997 ,'100-250': 61.469250802399394 ,
-                        '250-450': 129.50364292276853 ,'450-1050': 139.39149283679978 , 'FCC': -22.33428330564747}
+    mpc_mean_reward = {'3': 19.05927335498787 ,'6': 15.604856250737258 ,'9': 17.639114034863113 ,
+                       '12': 14.815075998886641 ,'Puffer': 9.854114791799237 ,'FCC': -22.33428330564747}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
 
     rl_file.write(str( d3 ) + '\n' )
-    print( d3 ,"-----rl - mpc-----" )
+    print( d3 ,"-----mpc - rl-----" )
 
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
@@ -751,8 +741,8 @@ def main(args):
                              args=(args, net_params_queues, exp_queues))
     coordinator.start()
 
-    trace_config = example_trace_config( args )
-    generate_traces_with( trace_config )
+    # trace_config = example_trace_config( args )
+    # generate_traces_with( trace_config )
 
     all_cooked_time, all_cooked_bw, all_file_names = load_traces(
         args.train_trace_dir)
