@@ -7,7 +7,7 @@ from sympy import N, Symbol, solve
 
 # 68 files with 2000 seconds, 205 files with 320 seconds
 
-TRAIN_TRACE_DIR = "../BO-data/randomize-TS/train-bo/train_TS_3"
+TRAIN_TRACE_DIR = "../BO-data/randomize-TS/test-tmp/test_TS_3"
 os.makedirs(TRAIN_TRACE_DIR, exist_ok=True)
 
 #VAL_TRACE_DIR = "../data/generated_traces_huge/val_0-500/val_BW_450-550"

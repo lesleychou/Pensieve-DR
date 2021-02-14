@@ -19,7 +19,7 @@ from bayes_opt import BayesianOptimization
 # BAYESIAN_OPTIMIZER_INTERVAL = 1000
 TRAINING_DATA_DIR = "../BO-data/randomize-TS/train-bo/"
 VAL_TRACE_DIR = '../BO-data/randomize-TS/fixed-test-bo'
-RESULTS_DIR = "../BO-results/randomize-TS-3rd/"
+RESULTS_DIR = "../BO-results/randomize-TS-4th/"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
 
 # num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
@@ -77,7 +77,7 @@ def black_box_function(x):
 
 
 # Example Flow:
-for i in range(10):
+for i in range(5):
     # if i > 0:
     pbounds = {'x': (3 ,12)}
     optimizer = BayesianOptimization(
@@ -87,8 +87,8 @@ for i in range(10):
     )
 
     optimizer.maximize(
-        init_points=10,
-        n_iter=2,
+        init_points=14,
+        n_iter=1,
         kappa=20,
         xi=0.1
     )
@@ -103,7 +103,7 @@ for i in range(10):
     latest_model_path = latest_actor_from( path )
 
     command = "python multi_agent.py \
-                    --TOTAL_EPOCH=10000\
+                    --TOTAL_EPOCH=5000\
                     --train_trace_dir={training_dir} \
                     --val_trace_dir='{val_dir}'\
                     --summary_dir={results_dir}\

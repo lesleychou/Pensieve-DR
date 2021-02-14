@@ -43,8 +43,8 @@ python rl_test.py  \
      
 ```       
 python rl_test.py  \
-               --CURRENT_PARAM=2 \
-            --test_trace_dir='../data/example_traces/' \
+            --CURRENT_PARAM=2 \
+            --test_trace_dir='../data/puffer-val-data/' \
             --summary_dir='../MPC_RL_test_results/' \
-            --model_path='../results/bo_example_2/model_saved/nn_model_ep_3900.ckpt'
+            --model_path='../BO-results/randomize-TS-4th/model_saved/nn_model_ep_2500.ckpt'
 ```

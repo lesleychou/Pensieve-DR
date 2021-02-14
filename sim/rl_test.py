@@ -133,7 +133,7 @@ class TraceConfig:
         self.duration = 300
         self.step = 0
         self.min_throughput = 0.2
-        self.num_traces = 500
+        self.num_traces = 1000
 
 def example_trace_config(args):
     return TraceConfig(args.test_trace_dir, T_s=args.CURRENT_PARAM)
@@ -378,7 +378,7 @@ def main():
 
     # Just manually load the example .... as an example...
     trace_config = example_trace_config(args)
-    generate_traces_with(trace_config)
+    #generate_traces_with(trace_config)
     
     np.random.seed(RANDOM_SEED)
 
