@@ -280,9 +280,8 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
         each_reward.append(np.mean(reward[1:]))
 
     mean = np.mean( each_reward )
-    #std = statistics.stdev(mean)
+    mean = round( float( mean ) ,2 )
     #error_bar = np.std( each_reward )
-    #print(mean, error_bar, "-------mean and std")
     return mean
 
 

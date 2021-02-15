@@ -117,7 +117,9 @@ def given_string_mean_reward(plot_files ,test_dir ,str1):
         each_reward.append(np.mean(reward[1:]))
 
     mean = np.mean( each_reward )
-    error_bar = np.std(each_reward)
+    error_bar = np.std( each_reward )
+    mean = round( float( mean ) ,2 )
+    error_bar = round( float( error_bar ) ,2 )
     #print(mean, error_bar, "-------mean and std")
     RL_FILE.write( str(mean) + ' '+ str(error_bar) + '\n')
 
