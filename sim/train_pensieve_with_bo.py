@@ -78,7 +78,7 @@ def black_box_function(x, y):
 
 
 # Example Flow:
-for i in range(5):
+for i in range(10):
     # if i > 0:
     pbounds = {'x': (0 ,1), 'y': (3 ,12)}
     optimizer = BayesianOptimization(
@@ -100,7 +100,7 @@ for i in range(5):
     bo_best_param_BW = map_log_to_lin(param_BW)
     bo_best_param_TS = round(param_TS)
 
-    print( "BO chose this best param........", param_BW, bo_best_param_BW, param_TS )
+    print( "BO chose this best param........", param_BW, bo_best_param_BW, bo_best_param_TS )
 
     # Use the new param, add more traces into Pensieve, train more based on before
     path = os.path.join( RESULTS_DIR ,'model_saved' )
@@ -114,10 +114,10 @@ for i in range(5):
                     --description='first-run' \
                     --nn_model={model_path} \
                     --CURRENT_PARAM_BW={bo_output_param_BW} \
-                    --CURRENT_PARAM_TS = {bo_output_param_TS) "  \
-                    .format(training_dir=TRAINING_DATA_DIR, val_dir=VAL_TRACE_DIR,
-                            results_dir=RESULTS_DIR, model_path=latest_model_path,
-                            bo_output_param_BW=bo_best_param_BW, bo_output_param_TS=bo_best_param_TS)
+                    --CURRENT_PARAM_TS={bo_output_param_TS} \
+                    ".format(training_dir=TRAINING_DATA_DIR, val_dir=VAL_TRACE_DIR,
+                             results_dir=RESULTS_DIR, model_path=latest_model_path,
+                             bo_output_param_BW=bo_best_param_BW, bo_output_param_TS=bo_best_param_TS)
     os.system(command)
 
     print("Get the file and pass it to the training script, if it exists.\n")
