@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 10})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../Automatic-BO-results/max-BW-Puffer/seed_1/'
+RESULTS_FOLDER = '../results/BO-max-BW-model-puffer/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0

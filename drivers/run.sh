@@ -23,11 +23,11 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../results/bo_example_2/model_saved/nn_model_ep_2400.ckpt"
+NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"
 
 
-TRACE_PATH="../data/puffer-val-data"
-SUMMARY_DIR="../Automatic-BO-results/max-BW-Puffer"
+TRACE_PATH="../data/generated_traces_random/fixed-test/val_Puffer"
+SUMMARY_DIR="../results/BO-max-BW-model-puffer"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
