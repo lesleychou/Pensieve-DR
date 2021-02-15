@@ -256,16 +256,15 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
                   }
 
     # mpc reward for '../BO-data/randomize-TS/fixed-test-bo/'
-    mpc_mean_reward = {'TS_3_BW_5': 24.47 ,'TS_3_BW_100': 12.18 ,
-                       'TS_3_BW_500': 88.49 ,
-                       'TS_8_BW_5': 25.66 ,'TS_8_BW_100': 5.25 ,
-                       'TS_8_BW_500': 79.60 ,
-                       'TS_12_BW_5': 26.57 ,'TS_12_BW_100': -1.72 ,
-                       'TS_12_BW_500': 79.56 ,
-                       'Puffer': 9.85 ,'FCC': -22.33}
+    mpc_mean_reward = {'TS_3_BW_5': 33.51 ,'TS_3_BW_100': 12.19 ,
+                       'TS_3_BW_500': 84.7 ,'TS_8_BW_5': 25.1 ,
+                       'TS_8_BW_100': 5.25 , 'TS_8_BW_500': 80.7 ,
+                       'TS_12_BW_5': 65.34 ,'TS_12_BW_100': -1.73 ,
+                       'TS_12_BW_500': 73.3 ,'Puffer': 9.86 ,
+                       'FCC': -22.33}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
-    d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
+    d3 = {key: round(mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ), 2) for key in rl_mean_reward}
 
     rl_file.write(str( d3 ) + '\n' )
     rl_file.write(str( rl_mean_err ) + '\n' )
@@ -323,21 +322,21 @@ def testing(args, epoch, actor, log_file, trace_dir, test_log_folder, noise,
 
     rewards = np.array(rewards)
 
-    rewards_min = np.min(rewards)
-    rewards_5per = np.percentile(rewards, 5)
+    # rewards_min = np.min(rewards)
+    # rewards_5per = np.percentile(rewards, 5)
     rewards_mean = np.mean(rewards)
-    rewards_median = np.percentile(rewards, 50)
-    rewards_95per = np.percentile(rewards, 95)
-    rewards_max = np.max(rewards)
-
-    log_file.write(str(epoch) + '\t' +
-                   str(rewards_min) + '\t' +
-                   str(rewards_5per) + '\t' +
-                   str(rewards_mean) + '\t' +
-                   str(rewards_median) + '\t' +
-                   str(rewards_95per) + '\t' +
-                   str(rewards_max) + '\n')
-    log_file.flush()
+    # rewards_median = np.percentile(rewards, 50)
+    # rewards_95per = np.percentile(rewards, 95)
+    # rewards_max = np.max(rewards)
+    #
+    # log_file.write(str(epoch) + '\t' +
+    #                str(rewards_min) + '\t' +
+    #                str(rewards_5per) + '\t' +
+    #                str(rewards_mean) + '\t' +
+    #                str(rewards_median) + '\t' +
+    #                str(rewards_95per) + '\t' +
+    #                str(rewards_max) + '\n')
+    # log_file.flush()
     return rewards_mean
 
 
