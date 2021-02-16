@@ -1,10 +1,10 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 10})
+plt.rcParams.update({'font.size': 14})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../hongzi_vs_ADR_results/hongzi-fcc-used/seed_1/'
+RESULTS_FOLDER = '../hongzi_vs_ADR_results/puffer/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
@@ -219,7 +219,7 @@ def main():
 
     plt.ylabel('CDF')
     plt.xlabel('total reward')
-    plt.title('CDF on real-trace: Norway')
+    plt.title('CDF on real-trace: Puffer traces')
     plt.show()
 
     # plot the Pensieve-MPC
@@ -279,15 +279,17 @@ def main():
             SCHEMES_REW = []
             for scheme in SCHEMES:
                 SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
-            rl_reward = np.sum(raw_reward_all["sim_rl_2d"][l][1:VIDEO_LEN])
+
+            rl_reward = np.sum(raw_reward_all["sim_rl"][l][1:VIDEO_LEN])
+            adr_reward = np.sum(raw_reward_all["sim_adr"][l][1:VIDEO_LEN])
             mpc_reward = np.sum(raw_reward_all["sim_mpc"][l][1:VIDEO_LEN])
 
-            if rl_reward - mpc_reward>0:
+            if adr_reward - mpc_reward < -10:
                 count+=1
-            print(count)
+                # print(l)
 
-            ax.legend(SCHEMES_REW, loc=3, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 2.0)))
-            plt.show()
+            ax.legend(SCHEMES_REW, loc=3, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 3.0)))
+            # plt.show()
 
 
 
