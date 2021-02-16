@@ -28,8 +28,8 @@ LOG_FILES=( '1')
 NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"
 
 
-TRACE_PATH="../data/hongzi_vs_ADR_data/fcc-hongzi-not-used"
-SUMMARY_DIR="../hongzi_vs_ADR_results/hongzi-fcc-not-used"
+TRACE_PATH="../data/hongzi_vs_ADR_data/hongzi_used_fcc"
+SUMMARY_DIR="../hongzi_vs_ADR_results/hongzi-fcc-used"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
@@ -57,14 +57,14 @@ python ${SIMULATOR_DIR}/rl_test.py \
 #                   --NUMBER_PICK=0 \
 #                   --duration ${DURATION} &
 ####
-#            python ${SIMULATOR_DIR}/mpc.py \
-#                 --test_trace_dir ${TRACE_PATH} \
-#                   --summary_dir ${SUMMARY_DIR}/seed_1\
-#                 --random_seed=1  \
-#                 --ROBUST_NOISE=0 \
-#                 --SAMPLE_LENGTH=0 \
-#                 --NUMBER_PICK=0 \
-#                 --duration ${DURATION}
+            python ${SIMULATOR_DIR}/mpc.py \
+                 --test_trace_dir ${TRACE_PATH} \
+                   --summary_dir ${SUMMARY_DIR}/seed_1\
+                 --random_seed=1  \
+                 --ROBUST_NOISE=0 \
+                 --SAMPLE_LENGTH=0 \
+                 --NUMBER_PICK=0 \
+                 --duration ${DURATION}
 ##          #done
 
 #done

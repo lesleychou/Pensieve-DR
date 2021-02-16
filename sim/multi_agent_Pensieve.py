@@ -260,8 +260,8 @@ def central_agent(args, net_params_queues, exp_queues):
 
         actor = a3c.ActorNetwork(sess,
                                  state_dim=[args.S_INFO,
-                                            args.S_LEN], action_dim=args.A_DIM,
-                                 learning_rate=args.ACTOR_LR_RATE)
+                                            args.S_LEN], action_dim=args.A_DIM)
+                                 #learning_rate=args.ACTOR_LR_RATE)
         critic = a3c.CriticNetwork(sess,
                                    state_dim=[args.S_INFO, args.S_LEN],
                                    learning_rate=args.CRITIC_LR_RATE)
@@ -451,8 +451,7 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, net_params_queue,
             args.summary_dir, f'log_agent_{agent_id}'), 'w') as log_file:
         actor = a3c.ActorNetwork(sess,
                                  state_dim=[args.S_INFO,
-                                            args.S_LEN], action_dim=args.A_DIM,
-                                 learning_rate=args.ACTOR_LR_RATE)
+                                            args.S_LEN], action_dim=args.A_DIM)
         critic = a3c.CriticNetwork(sess,
                                    state_dim=[args.S_INFO, args.S_LEN],
                                    learning_rate=args.CRITIC_LR_RATE)

@@ -19,8 +19,8 @@ class ActorNetwork(object):
         self.sess = sess
         self.s_dim = state_dim
         self.a_dim = action_dim
-        #self.lr_rate = learning_rate
-        self.lr_rate = tf.placeholder(tf.float32)
+        self.lr_rate = 1e-4
+        #self.lr_rate = tf.placeholder(tf.float32)
 
 
         # Create the actor network
@@ -135,7 +135,7 @@ class CriticNetwork(object):
         self.sess = sess
         self.s_dim = state_dim
         self.lr_rate = learning_rate
-        self.lr_rate = tf.placeholder(tf.float32)
+        #self.lr_rate = tf.placeholder(tf.float32)
 
 
         # Create the critic network

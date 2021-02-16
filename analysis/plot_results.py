@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 10})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../hongzi_vs_ADR_results/hongzi-fcc-not-used/seed_1/'
+RESULTS_FOLDER = '../hongzi_vs_ADR_results/hongzi-fcc-used/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
