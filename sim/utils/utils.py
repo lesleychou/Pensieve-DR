@@ -1,5 +1,5 @@
 import math
-import os
+import os, glob
 import numpy as np
 
 NAMES = ['timestamp', 'bandwidth']
@@ -12,13 +12,16 @@ def load_traces(cooked_trace_folder):
     all_cooked_time = []
     all_cooked_bw = []
     all_file_names = []
+
+    newest_folder = max( glob.glob( os.path.join( cooked_trace_folder ,'*/' ) ) ,key=os.path.getmtime )
     for subdir ,dirs ,files in os.walk( cooked_trace_folder ):
         files = [f for f in files if not f[0] == '.']
-        print(len(files))
         dirs[:] = [d for d in dirs if not d[0] == '.']
-        # sample 0.6*original files out
-        random_files = np.random.choice( files ,int( len( files ) * .6 ) )
-        print(len(random_files))
+        if subdir + '/' != newest_folder:
+            # sample 0.6*original files out
+            random_files = np.random.choice( files ,int( len( files ) * .6 ) )
+        else:
+            random_files = files
 
         for file in random_files:
             # print os.path.join(subdir, file)
