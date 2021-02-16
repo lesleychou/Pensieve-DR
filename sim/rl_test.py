@@ -280,7 +280,7 @@ def main():
 
                 log_path = os.path.join(
                     summary_dir,
-                    'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
+                    'log_sim_adr_{}'.format(all_file_names[net_env.trace_idx]))
                 log_file = open(log_path, 'w')
 
             test_dir = summary_dir

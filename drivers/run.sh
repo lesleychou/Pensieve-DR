@@ -23,8 +23,9 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"
+#NN_MODELS="../hongzi-model/pretrain_linear_reward.ckpt"
 #NN_MODELS="../BO-results/BW-TS-best-model/nn_model_ep_900.ckpt"
+NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"
 
 
 TRACE_PATH="../data/hongzi_vs_ADR_data/fcc-hongzi-not-used"
@@ -36,7 +37,7 @@ SUMMARY_DIR="../hongzi_vs_ADR_results/hongzi-fcc-not-used"
 #        SUMMARY_DIR="../results/pensieve-mpc-lesley-test-3/test-on-${i_folder}"
 
         #for ((i=0;i<${#NN_MODELS[@]};++i)); do
-python ${SIMULATOR_DIR}/rl_test_pensieve.py \
+python ${SIMULATOR_DIR}/rl_test.py \
                    --test_trace_dir ${TRACE_PATH} \
                    --summary_dir ${SUMMARY_DIR}/seed_1\
                    --model_path ${NN_MODELS} \

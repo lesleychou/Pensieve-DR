@@ -1,7 +1,7 @@
 import argparse
 import os
 from utils.utils import adjust_traces, load_traces
-import a3c
+import a3c_pensieve as a3c
 # import fixed_env as env
 import env
 import numpy as np
@@ -52,7 +52,7 @@ def parse_args():
     parser.add_argument( '--NUMBER_PICK', type=int, default='1', help='' )
     parser.add_argument( '--A_DIM', type=int, default='6', help='' )
     parser.add_argument( '--BITRATE_DIM', type=int, default='6', help='' )
-    parser.add_argument( '--S_LEN', type=int, default='6', help='' )
+    parser.add_argument( '--S_LEN', type=int, default='8', help='' )
 
 
 
@@ -119,9 +119,7 @@ def main():
     with tf.Session() as sess:
 
         actor = a3c.ActorNetwork(sess,
-                                 state_dim=[S_INFO, args.S_LEN], action_dim=args.A_DIM,
-                                 bitrate_dim=args.BITRATE_DIM
-                                 )
+                                 state_dim=[S_INFO, args.S_LEN], action_dim=args.A_DIM)
 
         sess.run(tf.global_variables_initializer())
         saver = tf.train.Saver()  # save neural net parameters

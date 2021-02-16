@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 10})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../results/BO-max-BW-model-FCC/seed_1/'
+RESULTS_FOLDER = '../hongzi_vs_ADR_results/hongzi-fcc-not-used/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
@@ -18,7 +18,7 @@ COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 #SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
 #SCHEMES = ['sim_bb', 'sim_mpc', 'sim_rl_pretrain', 'sim_rl_train_noise001', 'sim_rl_train_noise002', 'sim_rl_train_noise003']
-SCHEMES = ['sim_mpc', 'sim_rl_2d']
+SCHEMES = ['sim_mpc', 'sim_rl', 'sim_adr']
 #SCHEMES = ['sim_rl']
 
 

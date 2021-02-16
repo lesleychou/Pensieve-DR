@@ -39,14 +39,15 @@ RAND_RANGE = 1000000
 # log in format of time_stamp bit_rate buffer_size rebuffer_time chunk_size
 # download_time reward
 
-CHUNK_COMBO_OPTIONS = []
+#CHUNK_COMBO_OPTIONS = []
 
 # past errors in bandwidth
 past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 
-
+CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
+                range(6), repeat=5)])
 
 @jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
@@ -171,8 +172,8 @@ def main():
     video_count = 0
 
     # make chunk combination options
-    for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
-        CHUNK_COMBO_OPTIONS.append(combo)
+    # for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
+    #     CHUNK_COMBO_OPTIONS.append(combo)
 
     while True:  # serve video forever
         # the action is from the last decision

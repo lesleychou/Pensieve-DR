@@ -15,11 +15,13 @@ class ActorNetwork(object):
     Input to the network is the state, output is the distribution
     of all actions.
     """
-    def __init__(self, sess, state_dim, action_dim, learning_rate):
+    def __init__(self, sess, state_dim, action_dim):
         self.sess = sess
         self.s_dim = state_dim
         self.a_dim = action_dim
-        self.lr_rate = learning_rate
+        #self.lr_rate = learning_rate
+        self.lr_rate = tf.placeholder(tf.float32)
+
 
         # Create the actor network
         self.inputs, self.out = self.create_actor_network()
@@ -133,6 +135,8 @@ class CriticNetwork(object):
         self.sess = sess
         self.s_dim = state_dim
         self.lr_rate = learning_rate
+        self.lr_rate = tf.placeholder(tf.float32)
+
 
         # Create the critic network
         self.inputs, self.out = self.create_critic_network()
