@@ -24,10 +24,11 @@ LOG_FILES=( '1')
 
 
 NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"
+#NN_MODELS="../BO-results/BW-TS-best-model/nn_model_ep_900.ckpt"
 
 
-TRACE_PATH="../data/generated_traces_random/fixed-test/val_Puffer"
-SUMMARY_DIR="../results/BO-max-BW-model-puffer"
+TRACE_PATH="../data/hongzi_vs_ADR_data/fcc-hongzi-not-used"
+SUMMARY_DIR="../hongzi_vs_ADR_results/hongzi-fcc-not-used"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
@@ -35,7 +36,7 @@ SUMMARY_DIR="../results/BO-max-BW-model-puffer"
 #        SUMMARY_DIR="../results/pensieve-mpc-lesley-test-3/test-on-${i_folder}"
 
         #for ((i=0;i<${#NN_MODELS[@]};++i)); do
-python ${SIMULATOR_DIR}/rl_test.py \
+python ${SIMULATOR_DIR}/rl_test_pensieve.py \
                    --test_trace_dir ${TRACE_PATH} \
                    --summary_dir ${SUMMARY_DIR}/seed_1\
                    --model_path ${NN_MODELS} \

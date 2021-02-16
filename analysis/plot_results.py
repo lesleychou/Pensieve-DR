@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 10})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../results/BO-max-BW-model-puffer/seed_1/'
+RESULTS_FOLDER = '../results/BO-max-BW-model-FCC/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
@@ -18,7 +18,7 @@ COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 #SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
 #SCHEMES = ['sim_bb', 'sim_mpc', 'sim_rl_pretrain', 'sim_rl_train_noise001', 'sim_rl_train_noise002', 'sim_rl_train_noise003']
-SCHEMES = ['sim_mpc', 'sim_rl']
+SCHEMES = ['sim_mpc', 'sim_rl_2d']
 #SCHEMES = ['sim_rl']
 
 
@@ -219,7 +219,7 @@ def main():
 
     plt.ylabel('CDF')
     plt.xlabel('total reward')
-    plt.title('CDF on real-trace: Puffer')
+    plt.title('CDF on real-trace: Norway')
     plt.show()
 
     # plot the Pensieve-MPC
@@ -240,7 +240,7 @@ def main():
     # ---- ---- ---- ----
     # check each trace
     # ---- ---- ---- ----
-
+    count = 0
     for l in time_all[SCHEMES[0]]:
         schemes_check = True
         for scheme in SCHEMES:
@@ -279,11 +279,12 @@ def main():
             SCHEMES_REW = []
             for scheme in SCHEMES:
                 SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
-            rl_reward=np.sum(raw_reward_all["sim_rl"][l][1:VIDEO_LEN])
-            mpc_reward=np.sum(raw_reward_all["sim_mpc"][l][1:VIDEO_LEN])
+            rl_reward = np.sum(raw_reward_all["sim_rl_2d"][l][1:VIDEO_LEN])
+            mpc_reward = np.sum(raw_reward_all["sim_mpc"][l][1:VIDEO_LEN])
 
-            # if rl_reward/mpc_reward<10:
-            #     print(l)
+            if rl_reward - mpc_reward>0:
+                count+=1
+            print(count)
 
             ax.legend(SCHEMES_REW, loc=3, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 2.0)))
             plt.show()
