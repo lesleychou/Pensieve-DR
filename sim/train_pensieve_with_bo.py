@@ -104,7 +104,7 @@ for i in range(7):
     latest_model_path = latest_actor_from( path )
 
     command = "python multi_agent.py \
-                    --TOTAL_EPOCH=3000\
+                    --TOTAL_EPOCH=5000\
                     --train_trace_dir={training_dir} \
                     --val_trace_dir='{val_dir}'\
                     --summary_dir={results_dir}\

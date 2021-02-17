@@ -15,7 +15,7 @@ import tensorflow as tf
 import visdom
 import src.config as config
 
-from utils.utils import adjust_traces, load_traces
+from utils.utils import adjust_traces, load_traces, load_traces_for_train
 from datetime import datetime
 
 
@@ -754,7 +754,7 @@ def main(args):
     trace_config = example_trace_config( args )
     generate_traces_with( trace_config )
 
-    all_cooked_time, all_cooked_bw, all_file_names = load_traces(
+    all_cooked_time, all_cooked_bw, all_file_names = load_traces_for_train(
         args.train_trace_dir)
     agents = []
     for i in range(args.NUM_AGENTS):
