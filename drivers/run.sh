@@ -23,13 +23,16 @@ LOG_FILES=( '1')
 
 
 
-NN_MODELS="../hongzi-model/pretrain_linear_reward.ckpt"
-#NN_MODELS="../BO-results/BW-TS-best-model/nn_model_ep_900.ckpt"
-#NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"
+#NN_MODELS="../jump-action-claim/hongzi_way/model_saved/nn_model_ep_8200.ckpt"
+NN_MODELS="../jump-action-claim/jump-action-way/model_saved/nn_model_ep_25000.ckpt"
+#NN_MODELS="../BO-results/BW-TS-best-model/nn_model_ep_900.ckpt"  # best model from 2-d-no-discount
+#NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"  # the best model from BW-no-discount
+#NN_MODELS="../BO-results/randomize-BW/model_saved/nn_model_ep_3600.ckpt" # best model from 1-d-discount
 
 
-TRACE_PATH="../data/hongzi_vs_ADR_data/puffer-trace"
-SUMMARY_DIR="../hongzi_vs_ADR_results/puffer"
+
+TRACE_PATH="../data/generated_traces_random/fixed-test/val_Norway"
+SUMMARY_DIR="../jump-action-claim/Norway-test"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
@@ -37,17 +40,7 @@ SUMMARY_DIR="../hongzi_vs_ADR_results/puffer"
 #        SUMMARY_DIR="../results/pensieve-mpc-lesley-test-3/test-on-${i_folder}"
 
         #for ((i=0;i<${#NN_MODELS[@]};++i)); do
-#python ${SIMULATOR_DIR}/rl_test.py \
-#                   --test_trace_dir ${TRACE_PATH} \
-#                   --summary_dir ${SUMMARY_DIR}/seed_1\
-#                   --model_path ${NN_MODELS} \
-#                   --random_seed=1 \
-#                   --ROBUST_NOISE=0 \
-#                   --SAMPLE_LENGTH=0 \
-#                   --NUMBER_PICK=0 \
-#                   --duration ${DURATION} &
-##
-            python ${SIMULATOR_DIR}/rl_test_pensieve.py \
+python ${SIMULATOR_DIR}/rl_test.py \
                    --test_trace_dir ${TRACE_PATH} \
                    --summary_dir ${SUMMARY_DIR}/seed_1\
                    --model_path ${NN_MODELS} \
@@ -56,15 +49,25 @@ SUMMARY_DIR="../hongzi_vs_ADR_results/puffer"
                    --SAMPLE_LENGTH=0 \
                    --NUMBER_PICK=0 \
                    --duration ${DURATION} &
-####
-#            python ${SIMULATOR_DIR}/mpc.py \
-#                 --test_trace_dir ${TRACE_PATH} \
+##
+#            python ${SIMULATOR_DIR}/rl_test_pensieve.py \
+#                   --test_trace_dir ${TRACE_PATH} \
 #                   --summary_dir ${SUMMARY_DIR}/seed_1\
-#                 --random_seed=1  \
-#                 --ROBUST_NOISE=0 \
-#                 --SAMPLE_LENGTH=0 \
-#                 --NUMBER_PICK=0 \
-#                 --duration ${DURATION}
-###          #done
+#                   --model_path ${NN_MODELS} \
+#                   --random_seed=1 \
+#                   --ROBUST_NOISE=0 \
+#                   --SAMPLE_LENGTH=0 \
+#                   --NUMBER_PICK=0 \
+#                   --duration ${DURATION} &
+####
+            python ${SIMULATOR_DIR}/mpc.py \
+                 --test_trace_dir ${TRACE_PATH} \
+                   --summary_dir ${SUMMARY_DIR}/seed_1\
+                 --random_seed=1  \
+                 --ROBUST_NOISE=0 \
+                 --SAMPLE_LENGTH=0 \
+                 --NUMBER_PICK=0 \
+                 --duration ${DURATION}
+####          #done
 
 #done

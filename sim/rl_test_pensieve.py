@@ -18,8 +18,8 @@ S_INFO = 6
 #S_LEN = 11  # take how many frames in the past
 ACTOR_LR_RATE = 0.0001
 CRITIC_LR_RATE = 0.001
-# VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
-VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300]
+VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
+# VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300]
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 M_IN_K = 1000.0
@@ -112,7 +112,7 @@ def main():
     net_env = env.Environment(all_cooked_time=all_cooked_time,
                               all_cooked_bw=all_cooked_bw, fixed=True)
 
-    log_path = os.path.join(summary_dir, 'log_sim_rl_' +
+    log_path = os.path.join(summary_dir, 'log_sim_Pensieve_' +
                             all_file_names[net_env.trace_idx])
     log_file = open(log_path, 'w')
 
@@ -234,7 +234,7 @@ def main():
 
                 log_path = os.path.join(
                     summary_dir,
-                    'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
+                    'log_sim_Pensieve_{}'.format(all_file_names[net_env.trace_idx]))
                 log_file = open(log_path, 'w')
 
 
