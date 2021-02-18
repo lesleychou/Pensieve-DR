@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 14})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../hongzi_vs_ADR_results/hongzi-norway-used-new/seed_1/'
+RESULTS_FOLDER = '../easy-param-results/default_first_2/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
@@ -18,7 +18,7 @@ COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 #SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
 #SCHEMES = ['sim_bb', 'sim_mpc', 'sim_rl_pretrain', 'sim_rl_train_noise001', 'sim_rl_train_noise002', 'sim_rl_train_noise003']
-SCHEMES = ['sim_mpc', 'sim_Pensieve', 'sim_adr']
+SCHEMES = ['sim_mpc', 'sim_adr']
 #SCHEMES = ['sim_rl']
 
 
@@ -166,15 +166,17 @@ def main():
             for scheme in SCHEMES:
                 #print(raw_reward_all[scheme], "----------------------")
                 reward_all[scheme].append(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])/VIDEO_LEN)
-                #print(reward_all[scheme], scheme)
+    #print(reward_all[scheme], scheme)
 
 
     mean_rewards = {}
     error_bar = {}
     for scheme in SCHEMES:
         mean_rewards[scheme] = np.mean(reward_all[scheme])
-        # print(mean_rewards)
+        mean_rewards[scheme] = round(mean_rewards[scheme], 3)
         error_bar[scheme] = np.var(reward_all[scheme])
+        error_bar[scheme] = round(error_bar[scheme], 2)
+
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -185,14 +187,14 @@ def main():
 
     SCHEMES_REW = []
     for scheme in SCHEMES:
-        SCHEMES_REW.append(scheme + ': ' + str(mean_rewards[scheme])) # + '% ' + str(error_bar[scheme])
+        SCHEMES_REW.append(scheme + ': ' + str(mean_rewards[scheme])  + '% ' + str(error_bar[scheme]))
 
     colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
     for i,j in enumerate(ax.lines):
         j.set_color(colors[i])
 
     ax.legend(SCHEMES_REW)
-
+    print(SCHEMES_REW)
     plt.ylabel('Mean reward')
     plt.xlabel('trace index')
     plt.title('Real-trace: Norway')
@@ -280,7 +282,7 @@ def main():
             for scheme in SCHEMES:
                 SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
 
-            rl_reward = np.sum(raw_reward_all["sim_Pensieve"][l][1:VIDEO_LEN])
+            # rl_reward = np.sum(raw_reward_all["sim_Pensieve"][l][1:VIDEO_LEN])
             adr_reward = np.sum(raw_reward_all["sim_adr"][l][1:VIDEO_LEN])
             mpc_reward = np.sum(raw_reward_all["sim_mpc"][l][1:VIDEO_LEN])
 

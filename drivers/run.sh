@@ -25,14 +25,14 @@ LOG_FILES=( '1')
 
 #NN_MODELS="../jump-action-claim/hongzi_way/model_saved/nn_model_ep_8200.ckpt"
 #NN_MODELS="../jump-action-claim/hongzi_way/model_saved/nn_model_ep_3500.ckpt"
-NN_MODELS="../BO-results/BW-TS-best-model/nn_model_ep_900.ckpt"  # best model from 2-d-no-discount
-#NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"  # the best model from BW-no-discount
+#NN_MODELS="../BO-results/BW-TS-best-model/nn_model_ep_900.ckpt"  # best model from 2-d-no-discount
+NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt"  # the best model from BW-no-discount
 #NN_MODELS="../BO-results/randomize-BW/model_saved/nn_model_ep_3600.ckpt" # best model from 1-d-discount
 
 
 
 TRACE_PATH="../data/generated_traces_random/fixed-test/val_Norway"
-SUMMARY_DIR="../hongzi_vs_ADR_results/hongzi-norway-used-new"
+SUMMARY_DIR="../easy-param-results/default_first_2"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
