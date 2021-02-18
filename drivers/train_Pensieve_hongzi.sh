@@ -5,8 +5,8 @@ set -e
 
 NOISE=0
 DURATION=1
-TRAIN_TRACE_PATH="../data/train_FCC"
-VAL_TRACE_PATH="../data/train_FCC"
+TRAIN_TRACE_PATH="../data/MDP_trace_pensieve/train"
+VAL_TRACE_PATH="../data/MDP_trace_pensieve/train"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
 # TEST_TRACE_PATH="../data/exponential_traces/test"
@@ -41,7 +41,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../jump-action-claim/hongzi_way/"
+    SUMMARY_DIR="../jump-action-claim/hongzi_on_MDP_traces/"
     python ${SIMULATOR_DIR}/multi_agent_Pensieve.py \
         --RANDOM_SEED=171 \
         --NUM_AGENT=8\
@@ -52,7 +52,8 @@ for NOISE in 0 ; do
         --summary_dir ${SUMMARY_DIR} \
         --noise ${NOISE} \
         --duration ${DURATION} \
-        --description="Pensieve-hongzi"
+        --description="Pensieve-hongzi" \
+        --nn_model="../jump-action-claim/hongzi_on_MDP_traces/model_saved/nn_model_ep_9300.ckpt"
 
 
 done

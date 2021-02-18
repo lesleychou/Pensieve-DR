@@ -105,9 +105,12 @@ class Environment:
             delay *= np.random.uniform(NOISE_LOW, NOISE_HIGH)
 
         # rebuffer time
+        # if rebuf>8 && 1st video chunk, do maxmimum, else=delay
         rebuf = np.maximum(delay - self.buffer_size, 0.0)
 
         # update the buffer
+        # the initial
+        # if self.buffer_size>8 && 1st video chunk, else pass
         self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
 
         # add in the new chunk

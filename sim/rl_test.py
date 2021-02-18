@@ -156,7 +156,7 @@ def main():
     net_env = env.Environment(all_cooked_time=all_cooked_time,
                               all_cooked_bw=all_cooked_bw, fixed=True)
 
-    log_path = os.path.join(summary_dir, 'log_sim_Jump_' +
+    log_path = os.path.join(summary_dir, 'log_sim_adr_' +
                             all_file_names[net_env.trace_idx])
     log_file = open(log_path, 'w')
 
@@ -280,7 +280,7 @@ def main():
 
                 log_path = os.path.join(
                     summary_dir,
-                    'log_sim_Jump_{}'.format(all_file_names[net_env.trace_idx]))
+                    'log_sim_adr_{}'.format(all_file_names[net_env.trace_idx]))
                 log_file = open(log_path, 'w')
 
             test_dir = summary_dir
