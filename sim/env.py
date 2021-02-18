@@ -15,6 +15,7 @@ PACKET_SIZE = 1500  # bytes
 NOISE_LOW = 0.9
 NOISE_HIGH = 1.1
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
+VIDEO_START_PLAY = 20000.0     # millisec, after this amount, video start
 
 
 class Environment:
@@ -111,7 +112,10 @@ class Environment:
         # update the buffer
         # the initial
         # if self.buffer_size>8 && 1st video chunk, else pass
-        self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
+        if self.buffer_size >= VIDEO_START_PLAY and self.video_chunk_counter > 0:
+            self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
+        else:
+            pass
 
         # add in the new chunk
         self.buffer_size += VIDEO_CHUNCK_LEN
