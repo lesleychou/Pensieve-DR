@@ -53,7 +53,7 @@ for NOISE in 0 ; do
         --noise ${NOISE} \
         --duration ${DURATION} \
         --description="jump-action" \
-        --nn_model='../UDR-results/link-rtt-1/model_saved/nn_model_ep_11900.ckpt'
+        --nn_model='../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt'
 
 
 done
