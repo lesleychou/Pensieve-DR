@@ -10,7 +10,7 @@ TOTAL_VIDEO_CHUNCK = 48
 PACKET_SIZE = 1500  # bytes
 NOISE_LOW = 0.9
 NOISE_HIGH = 1.1
-VIDEO_SIZE_FILE = '../data/video_sizes/video_size_'
+VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 
 # # Env params need to do UDR
 # BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit

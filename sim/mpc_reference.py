@@ -14,20 +14,21 @@ S_LEN = 8  # take how many frames in the past
 A_DIM = 6
 MPC_FUTURE_CHUNK_COUNT = 5
 
-VIDEO_BIT_RATE = np.array([300,750,1200,1850,2850,4300])  # Kbps
+# VIDEO_BIT_RATE = np.array([300,750,1200,1850,2850,4300])  # Kbps
+VIDEO_BIT_RATE = np.array([300, 1200, 2850, 6500, 33000, 165000])
 BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 TOTAL_VIDEO_CHUNKS = 48
 M_IN_K = 1000.0
-REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 165  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 0  # default video quality without agent
 RANDOM_SEED = 20
 
 past_errors = []
 past_bandwidth_ests = []
-VIDEO_SIZE_FILE = '../data/video_sizes/video_size_'
+VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 TEST_RESULT = '../results/rtt-mpc'
 TEST_TRACE = '../data/val-FCC/'
 
@@ -124,8 +125,8 @@ class MPC_ref(object):
 
         net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
                                   drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
-                                  packet_payload_portion=PACKET_PAYLOAD_PORTION,
-                                  link_rtt=320,
+                                  packet_payload_portion=0.15,
+                                  link_rtt=LINK_RTT,
                                   all_cooked_time=all_cooked_time,
                                   all_cooked_bw=all_cooked_bw,
                                   fixed=True)
@@ -273,6 +274,7 @@ class MPC_ref(object):
                 log_file = open(log_path, 'w', 1)
                 #print("mpc test done on", all_file_names[net_env.trace_idx])
 
+
 def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]
     reward = []
@@ -322,6 +324,31 @@ def main():
                        'rtt-80': 0.822 ,
                        'rtt-160': 0.849 ,
                        'rtt-320': 0.760}
+
+    # BUFFER_THRESH = 60000.0
+    mpc_mean_reward = {'buffer-5': 0.322 ,
+                       'buffer-10': 0.599 ,
+                       'buffer-60': 0.822 ,
+                       'buffer-400': 0.822 ,
+                       'buffer-2000': 0.822}
+
+    mpc_mean_reward = {'sleep-10': 0.822 ,
+                       'sleep-100': 0.822 ,
+                       'sleep-500': 0.822 ,
+                       'sleep-2000': 0.822 ,
+                       'sleep-5000': 0.822}
+
+    mpc_mean_reward = {'payload-0.15': -15.57 ,
+                       'payload-0.35': -1.85 ,
+                       'payload-0.55': -0.014,
+                       'payload-0.75': 0.551,
+                       'payload-0.95': 0.822}
+
+    mpc_mean_reward = {'payload-0.15': -610.2 ,
+                       'payload-0.35': -80.92 ,
+                       'payload-0.55': -23.7 ,
+                       'payload-0.75': -9.91 ,
+                       'payload-0.95': -6.73}
 
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 
