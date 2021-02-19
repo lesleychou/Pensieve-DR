@@ -303,26 +303,26 @@ def main():
     rtt_test_range = [20 ,40 ,80 ,160 ,320]
     rtt_test_result = []
 
-    buffer_test_range = [5000.0 ,10000.0 ,60000.0 ,400000.0 ,2000000.0]
+    buffer_test_range = [1000.0, 5000.0, 10000.0, 60000.0, 100000.0]
     buffer_test_result = []
 
-    payload_test_range = [0.15 ,0.35 ,0.55 ,0.75 ,0.95]
-    payload_test_result = []
+    # payload_test_range = [0.15 ,0.35 ,0.55 ,0.75 ,0.95]
+    # payload_test_result = []
 
     params_dict = {'buffer_thresh': BUFFER_THRESH ,
                    'drain_buffer_sleep_time': DRAIN_BUFFER_SLEEP_TIME ,
                    'packet_payload_portion': PACKET_PAYLOAD_PORTION}
 
-    for param_i in payload_test_range:
-        params_dict['packet_payload_portion'] = param_i
+    for param_i in buffer_test_range:
+        params_dict['buffer_thresh'] = param_i
         reward = MPC.run(params_dict)
-        payload_test_result.append( reward )
+        buffer_test_result.append( reward )
 
-    mpc_mean_reward = {'payload-0.15': payload_test_result[0] ,
-                       'payload-0.35': payload_test_result[1] ,
-                       'payload-0.55': payload_test_result[2] ,
-                       'payload-0.75': payload_test_result[3] ,
-                       'payload-0.95': payload_test_result[4]}
+    mpc_mean_reward = {'buffer-1': buffer_test_result[0] ,
+                       'buffer-5': buffer_test_result[1] ,
+                       'buffer-10': buffer_test_result[2] ,
+                       'buffer-60': buffer_test_result[3] ,
+                       'buffer-100': buffer_test_result[4]}
 
     # mpc_mean_reward = {'rtt-20': 0.867 ,
     #                    'rtt-40': 0.84 ,

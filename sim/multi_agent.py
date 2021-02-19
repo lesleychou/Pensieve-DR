@@ -232,7 +232,7 @@ def test(args, test_traces_dir, actor, log_output_dir):
     rtt_test_range = [20, 40, 80, 160, 320]
     rtt_test_result = []
 
-    buffer_test_range = [5000.0, 10000.0, 60000.0, 400000.0, 2000000.0]
+    buffer_test_range = [5000.0, 10000.0, 60000.0, 100000.0, 1000.0]
     buffer_test_result = []
 
     payload_test_range = [0.35, 0.55, 0.75, 0.95, 0.15]
@@ -242,34 +242,34 @@ def test(args, test_traces_dir, actor, log_output_dir):
                    'drain_buffer_sleep_time': DRAIN_BUFFER_SLEEP_TIME,
                    'packet_payload_portion': PACKET_PAYLOAD_PORTION}
 
-    for param_i in payload_test_range:
-        params_dict['packet_payload_portion'] = param_i
+    for param_i in buffer_test_range:
+        params_dict['buffer_thresh'] = param_i
         reward = test_on_env_params(args, params_dict, all_cooked_time, all_cooked_bw, all_file_names, actor, log_output_dir)
-        payload_test_result.append(reward)
+        buffer_test_result.append(reward)
 
-    # rl_mean_reward = {'buffer-5': rtt_test_result[0] ,
-    #                   'buffer-10': rtt_test_result[1] ,
-    #                   'buffer-60': rtt_test_result[2] ,
-    #                   'buffer-400': rtt_test_result[3] ,
-    #                   'buffer-2000': rtt_test_result[4]}
+    rl_mean_reward = {'buffer-1': buffer_test_result[4] ,
+                      'buffer-5': buffer_test_result[0] ,
+                      'buffer-10': buffer_test_result[1] ,
+                      'buffer-60': buffer_test_result[2] ,
+                      'buffer-100': buffer_test_result[3]}
     #
-    # mpc_mean_reward = {'buffer-5': 0.322 ,
-    #                    'buffer-10': 0.599 ,
-    #                    'buffer-60': 0.822 ,
-    #                    'buffer-400': 0.822 ,
-    #                    'buffer-2000': 0.822}
+    mpc_mean_reward = {'buffer-1': -126.83,
+                       'buffer-5': -10.342,
+                       'buffer-10': -8.548,
+                       'buffer-60': -10.224,
+                       'buffer-100': -10.224}
 
-    rl_mean_reward = {'payload-0.15': payload_test_result[4] ,
-                      'payload-0.35': payload_test_result[0] ,
-                      'payload-0.55': payload_test_result[1] ,
-                      'payload-0.75': payload_test_result[2] ,
-                      'payload-0.95': payload_test_result[3]}
-
-    mpc_mean_reward = {'payload-0.15': -796.195 ,
-                       'payload-0.35': -95.436 ,
-                       'payload-0.55': -27.974 ,
-                       'payload-0.75': -13.011 ,
-                       'payload-0.95': -10.224}
+    # rl_mean_reward = {'payload-0.15': payload_test_result[4] ,
+    #                   'payload-0.35': payload_test_result[0] ,
+    #                   'payload-0.55': payload_test_result[1] ,
+    #                   'payload-0.75': payload_test_result[2] ,
+    #                   'payload-0.95': payload_test_result[3]}
+    #
+    # mpc_mean_reward = {'payload-0.15': -796.195 ,
+    #                    'payload-0.35': -95.436 ,
+    #                    'payload-0.55': -27.974 ,
+    #                    'payload-0.75': -13.011 ,
+    #                    'payload-0.95': -10.224}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
@@ -704,10 +704,9 @@ def agent(args, param_list, agent_id, all_cooked_time, all_cooked_bw, all_file_n
                 s_batch.append(np.zeros((args.S_INFO, args.S_LEN)))
                 a_batch.append(action_vec)
                 epoch += 1
-
                 if epoch > 1 and epoch % UPDATE_ENV_INTERVAL == 0:
-                    net_env.packet_payload_portion = param_for_epoch( epoch, param_list )
-                    print( net_env.packet_payload_portion ,"-----net_env.packet_payload_portion" )
+                    net_env.buffer_thresh = param_for_epoch( epoch, param_list )
+                    #print( net_env.buffer_thresh ,"-----net_env.buffer_thresh" )
 
             else:
                 s_batch.append(state)
@@ -740,9 +739,11 @@ def main(args):
     #assert len(VIDEO_BIT_RATE) == args.A_DIM
 
     #rtt_list = np.random.randint(LINK_RTT_MIN, LINK_RTT_MAX, size=100)
-    payload_list = np.round( np.random.uniform( 0.1 ,0.99 ,size=50 ) ,2 )
+    #payload_list = np.round( np.random.uniform( 0.1 ,0.99 ,size=50 ) ,2 )
 
-    param_list = payload_list
+    buffer_thresh_list = np.round( np.random.uniform( 1 ,100 ,size=100 ) ) * 1000
+
+    param_list = buffer_thresh_list
     # create result directory
     if not os.path.exists(args.summary_dir):
         os.makedirs(args.summary_dir)
