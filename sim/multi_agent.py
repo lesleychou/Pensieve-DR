@@ -588,10 +588,6 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
         time_stamp = 0
         epoch = 0
         while True:  # experience video streaming forever
-            if epoch > 1 and epoch % 100 == 0:
-                net_env.link_rtt = np.random.randint(LINK_RTT, LINK_RTT_MAX, size=1)[0]
-                print(net_env.link_rtt, "-----net_env.link_rtt")
-
             # the action is from the last decision
             # this is to make the framework similar to the real
             delay, sleep_time, buffer_size, rebuf, \
@@ -698,6 +694,10 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
                 s_batch.append(np.zeros((args.S_INFO, args.S_LEN)))
                 a_batch.append(action_vec)
                 epoch += 1
+
+                if epoch > 1 and epoch % 100 == 0:
+                    net_env.link_rtt = np.random.randint( LINK_RTT ,LINK_RTT_MAX ,size=1 )[0]
+                    print( net_env.link_rtt ,"-----net_env.link_rtt" )
 
             else:
                 s_batch.append(state)
