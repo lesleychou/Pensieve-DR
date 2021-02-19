@@ -7,7 +7,6 @@ import env
 import numpy as np
 import tensorflow as tf
 import subprocess
-
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -18,7 +17,6 @@ S_INFO = 6
 #S_LEN = 11  # take how many frames in the past
 ACTOR_LR_RATE = 0.0001
 CRITIC_LR_RATE = 0.001
-#VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300, 6500, 9800, 14700, 22050, 33000]  # Kbps
 VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
@@ -28,11 +26,14 @@ SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 0  # default video quality without agent
 #RANDOM_SEED = 42
 RAND_RANGE = 1000
-# LOG_FILE = './test_results/log_sim_rl'
-# TEST_TRACES = './cooked_test_traces/'
-# TEST_TRACES = './test_sim_traces/'
-# TEST_TRACES = '../data/val/'
+
 # log in format of time_stamp bit_rate buffer_size rebuffer_time chunk_size download_time reward
+
+# Env params need to do UDR
+BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
+DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
+PACKET_PAYLOAD_PORTION = 0.95
+LINK_RTT = 80  # millisec
 
 # Strategy:
 
@@ -153,8 +154,13 @@ def main():
 
     #print(len(all_cooked_time[-1]))
 
-    net_env = env.Environment(all_cooked_time=all_cooked_time,
-                              all_cooked_bw=all_cooked_bw, fixed=True)
+    net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
+                              drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
+                              packet_payload_portion=PACKET_PAYLOAD_PORTION,
+                              link_rtt=LINK_RTT,
+                              all_cooked_time=all_cooked_time,
+                              all_cooked_bw=all_cooked_bw,
+                              fixed=True)
 
     log_path = os.path.join(summary_dir, 'log_sim_adr_' +
                             all_file_names[net_env.trace_idx])

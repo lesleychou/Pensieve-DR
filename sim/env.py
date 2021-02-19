@@ -11,20 +11,19 @@ PACKET_SIZE = 1500  # bytes
 NOISE_LOW = 0.9
 NOISE_HIGH = 1.1
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-VIDEO_START_PLAY = 2000.0     # millisec, after this amount, video start
 
-# Env params need to do UDR
-BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
-DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
-PACKET_PAYLOAD_PORTION = 0.95
-LINK_RTT = 80  # millisec
+# # Env params need to do UDR
+# BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
+# DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
+# PACKET_PAYLOAD_PORTION = 0.95
+# LINK_RTT = 80  # millisec
 
 
 class Environment:
-    def __init__(self, all_cooked_time, all_cooked_bw, all_file_names=None,
-                 random_seed=RANDOM_SEED, fixed=False,
-                 buffer_thresh=BUFFER_THRESH, drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
-                 packet_payload_portion=PACKET_PAYLOAD_PORTION, link_rtt=LINK_RTT):
+    def __init__(self, buffer_thresh, drain_buffer_sleep_time,
+                 packet_payload_portion, link_rtt,
+                 all_cooked_time, all_cooked_bw, all_file_names=None,
+                 random_seed=RANDOM_SEED, fixed=False):
 
         assert len(all_cooked_time) == len(all_cooked_bw)
 
@@ -117,16 +116,12 @@ class Environment:
             delay *= np.random.uniform(NOISE_LOW, NOISE_HIGH)
 
         # rebuffer time
-        # if rebuf>8 && 1st video chunk, do maxmimum, else=delay
         rebuf = np.maximum(delay - self.buffer_size, 0.0)
 
         # update the buffer
         # the initial
         # if self.buffer_size>8 && 1st video chunk, else pass
-        if self.buffer_size >= VIDEO_START_PLAY and self.video_chunk_counter > 0:
-            self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
-        else:
-            pass
+        self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
 
         # add in the new chunk
         self.buffer_size += VIDEO_CHUNCK_LEN

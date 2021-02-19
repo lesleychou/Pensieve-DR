@@ -46,6 +46,12 @@ past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 
+# Env params need to do UDR
+BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
+DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
+PACKET_PAYLOAD_PORTION = 0.95
+LINK_RTT = 80  # millisec
+
 CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
                 range(6), repeat=5)])
 
@@ -148,9 +154,13 @@ def main():
     all_cooked_time, all_cooked_bw, all_file_names = load_traces(
         args.test_trace_dir)
 
-
-    net_env = env.Environment(all_cooked_time=all_cooked_time,
-                              all_cooked_bw=all_cooked_bw, fixed=True)
+    net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
+                              drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
+                              packet_payload_portion=PACKET_PAYLOAD_PORTION,
+                              link_rtt=LINK_RTT,
+                              all_cooked_time=all_cooked_time,
+                              all_cooked_bw=all_cooked_bw,
+                              fixed=True)
 
     log_path = os.path.join(
         args.summary_dir, 'log_sim_mpc_' + all_file_names[net_env.trace_idx])
