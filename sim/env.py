@@ -7,19 +7,25 @@ RANDOM_SEED = 42
 VIDEO_CHUNCK_LEN = 4000.0  # millisec, every time add this amount to buffer
 BITRATE_LEVELS = 6
 TOTAL_VIDEO_CHUNCK = 48
-BUFFER_THRESH = 60.0 * MILLISECONDS_IN_SECOND  # millisec, max buffer limit
-DRAIN_BUFFER_SLEEP_TIME = 500.0  # millisec
-PACKET_PAYLOAD_PORTION = 0.95
-LINK_RTT = 80  # millisec
 PACKET_SIZE = 1500  # bytes
 NOISE_LOW = 0.9
 NOISE_HIGH = 1.1
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
+VIDEO_START_PLAY = 2000.0     # millisec, after this amount, video start
+
+# Env params need to do UDR
+BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
+DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
+PACKET_PAYLOAD_PORTION = 0.95
+LINK_RTT = 80  # millisec
 
 
 class Environment:
     def __init__(self, all_cooked_time, all_cooked_bw, all_file_names=None,
-                 random_seed=RANDOM_SEED, fixed=False):
+                 random_seed=RANDOM_SEED, fixed=False,
+                 buffer_thresh=BUFFER_THRESH, drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
+                 packet_payload_portion=PACKET_PAYLOAD_PORTION, link_rtt=LINK_RTT):
+
         assert len(all_cooked_time) == len(all_cooked_bw)
 
         np.random.seed(random_seed)
@@ -49,6 +55,12 @@ class Environment:
                 for line in f:
                     self.video_size[bitrate].append(int(line.split()[0]))
 
+        # all UDR params
+        self.buffer_thresh = buffer_thresh
+        self.drain_buffer_sleep_time = drain_buffer_sleep_time
+        self.packet_payload_portion = packet_payload_portion
+        self.link_rtt = link_rtt
+
     def get_video_chunk(self, quality):
 
         assert quality >= 0
@@ -68,11 +80,11 @@ class Environment:
             duration = self.cooked_time[self.mahimahi_ptr] \
                        - self.last_mahimahi_time
 
-            packet_payload = throughput * duration * PACKET_PAYLOAD_PORTION
+            packet_payload = throughput * duration * self.packet_payload_portion
 
             if video_chunk_counter_sent + packet_payload > video_chunk_size:
                 fractional_time = (video_chunk_size - video_chunk_counter_sent) / \
-                                  throughput / PACKET_PAYLOAD_PORTION
+                                  throughput / self.packet_payload_portion
                 delay += fractional_time
                 #print( delay ,"--------fractional_time------" )
                 self.last_mahimahi_time += fractional_time
@@ -97,7 +109,7 @@ class Environment:
         delay *= MILLISECONDS_IN_SECOND
         #print( delay ,"--------MILLISECONDS_IN_SECOND------" )
 
-        delay += LINK_RTT
+        delay += self.link_rtt
         #print( delay ,"--------RTT------" )
 
         # add a multiplicative noise to the delay
@@ -111,20 +123,23 @@ class Environment:
         # update the buffer
         # the initial
         # if self.buffer_size>8 && 1st video chunk, else pass
-        self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
+        if self.buffer_size >= VIDEO_START_PLAY and self.video_chunk_counter > 0:
+            self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
+        else:
+            pass
 
         # add in the new chunk
         self.buffer_size += VIDEO_CHUNCK_LEN
 
         # sleep if buffer gets too large
         sleep_time = 0
-        if self.buffer_size > BUFFER_THRESH:
+        if self.buffer_size > self.buffer_thresh:
             # exceed the buffer limit
             # we need to skip some network bandwidth here
             # but do not add up the delay
-            drain_buffer_time = self.buffer_size - BUFFER_THRESH
-            sleep_time = np.ceil(drain_buffer_time / DRAIN_BUFFER_SLEEP_TIME) * \
-                         DRAIN_BUFFER_SLEEP_TIME
+            drain_buffer_time = self.buffer_size - self.buffer_thresh
+            sleep_time = np.ceil(drain_buffer_time / self.drain_buffer_sleep_time) * \
+                         self.drain_buffer_sleep_time
             self.buffer_size -= sleep_time
 
             while True:
