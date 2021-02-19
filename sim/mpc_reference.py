@@ -317,11 +317,11 @@ def main():
     reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='' )
     print(reward_0)
 
-    mpc_mean_reward = {'rtt-20': -5.96 ,
-                       'rtt-40': -6.32 ,
-                       'rtt-80': -5.70 ,
-                       'rtt-160': -5.45 ,
-                       'rtt-320': -4.95}
+    mpc_mean_reward = {'rtt-20': 0.867 ,
+                       'rtt-40': 0.84 ,
+                       'rtt-80': 0.822 ,
+                       'rtt-160': 0.849 ,
+                       'rtt-320': 0.760}
 
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 

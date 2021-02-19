@@ -30,11 +30,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # time), chunk_til_video_end
 MODEL_SAVE_INTERVAL = 100
 #VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300, 6500, 9800, 14700, 22050, 33000]  # Kbps
-VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
+VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
 
 HD_REWARD = [1, 2, 3, 12, 15, 20]
 M_IN_K = 1000.0
-REBUF_PENALTY = 165  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
@@ -46,12 +46,10 @@ DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
 PACKET_PAYLOAD_PORTION = 0.95
 LINK_RTT = 80  # millisec
 LINK_RTT_MIN = 10
-LINK_RTT_MAX = 200
+LINK_RTT_MAX = 330
 
-UPDATE_ENV_INTERVAL = 100
+UPDATE_ENV_INTERVAL = 500
 
-RLMPC_LOG = '../new-DR-results/sanity-check-2/'
-os.makedirs(RLMPC_LOG ,exist_ok=True )
 
 def calculate_from_selection(selected, last_bit_rate):
     # naive step implementation
@@ -253,17 +251,17 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     #                  '450-550': 134.21, 'FCC': -4.69
     #                  }
 
-    mpc_mean_reward = {'rtt-20': -5.96 ,
-                       'rtt-40': -6.32 ,
-                       'rtt-80': -5.70 ,
-                       'rtt-160': -5.45 ,
-                       'rtt-320': -4.95}
+    mpc_mean_reward = {'rtt-20': 0.867 ,
+                       'rtt-40': 0.84 ,
+                       'rtt-80': 0.822 ,
+                       'rtt-160': 0.849 ,
+                       'rtt-320': 0.760}
 
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
 
-    rl_path = os.path.join( RLMPC_LOG ,'RL_MPC_log' )
+    rl_path = os.path.join( args.summary_dir ,'RL_MPC_log' )
     rl_file = open( rl_path ,'a' ,1 )
     rl_file.write(str( d3 ) + '\n' )
     print( d3 ,"-----rl - mpc-----" )

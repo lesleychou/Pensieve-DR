@@ -41,7 +41,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../tmp/jump-action-way/"
+    SUMMARY_DIR="../UDR-results/link-rtt-1/"
     python ${SIMULATOR_DIR}/multi_agent.py \
         --RANDOM_SEED=171 \
         --NUM_AGENT=8\
@@ -53,7 +53,7 @@ for NOISE in 0 ; do
         --noise ${NOISE} \
         --duration ${DURATION} \
         --description="jump-action" \
-        --nn_model='../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_model_ep_100.ckpt'
+        --nn_model='../UDR-results/link-rtt-1/model_saved/nn_model_ep_11900.ckpt'
 
 
 done
