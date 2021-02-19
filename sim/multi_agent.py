@@ -49,7 +49,7 @@ LINK_RTT = 80  # millisec
 LINK_RTT_MIN = 10
 LINK_RTT_MAX = 330
 
-UPDATE_ENV_INTERVAL = 500
+UPDATE_ENV_INTERVAL = 1000
 
 
 def calculate_from_selection(selected, last_bit_rate):
@@ -235,7 +235,7 @@ def test(args, test_traces_dir, actor, log_output_dir):
     buffer_test_range = [5000.0, 10000.0, 60000.0, 400000.0, 2000000.0]
     buffer_test_result = []
 
-    payload_test_range = [0.15, 0.35, 0.55, 0.75, 0.95]
+    payload_test_range = [0.35, 0.55, 0.75, 0.95, 0.15]
     payload_test_result = []
 
     params_dict = {'buffer_thresh': BUFFER_THRESH ,
@@ -246,8 +246,6 @@ def test(args, test_traces_dir, actor, log_output_dir):
         params_dict['packet_payload_portion'] = param_i
         reward = test_on_env_params(args, params_dict, all_cooked_time, all_cooked_bw, all_file_names, actor, log_output_dir)
         payload_test_result.append(reward)
-
-    print(payload_test_result, "----rtt test result")
 
     # rl_mean_reward = {'buffer-5': rtt_test_result[0] ,
     #                   'buffer-10': rtt_test_result[1] ,
@@ -261,24 +259,17 @@ def test(args, test_traces_dir, actor, log_output_dir):
     #                    'buffer-400': 0.822 ,
     #                    'buffer-2000': 0.822}
 
-    rl_mean_reward = {'payload-0.15': payload_test_result[0] ,
-                      'payload-0.35': payload_test_result[1] ,
-                      'payload-0.55': payload_test_result[2] ,
-                      'payload-0.75': payload_test_result[3] ,
-                      'payload-0.95': payload_test_result[4]}
+    rl_mean_reward = {'payload-0.15': payload_test_result[4] ,
+                      'payload-0.35': payload_test_result[0] ,
+                      'payload-0.55': payload_test_result[1] ,
+                      'payload-0.75': payload_test_result[2] ,
+                      'payload-0.95': payload_test_result[3]}
 
-    mpc_mean_reward = {'payload-0.15': -610.2 ,
-                       'payload-0.35': -80.92 ,
-                       'payload-0.55': -23.7 ,
-                       'payload-0.75': -9.91 ,
-                       'payload-0.95': -6.73}
-
-    # mpc_mean_reward = {'payload-0.15': -15.57 ,
-    #                    'payload-0.35': -1.85 ,
-    #                    'payload-0.55': -0.014 ,
-    #                    'payload-0.75': 0.551 ,
-    #                    'payload-0.95': 0.822}
-
+    mpc_mean_reward = {'payload-0.15': -796.195 ,
+                       'payload-0.35': -95.436 ,
+                       'payload-0.55': -27.974 ,
+                       'payload-0.75': -13.011 ,
+                       'payload-0.95': -10.224}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
@@ -286,7 +277,7 @@ def test(args, test_traces_dir, actor, log_output_dir):
     rl_path = os.path.join( args.summary_dir ,'RL_MPC_log' )
     rl_file = open( rl_path ,'a' ,1 )
     rl_file.write(str( d3 ) + '\n' )
-    print( d3 ,"-----rl - mpc-----" )
+    print( d3 ,"-----mpc - rl-----" )
 
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
@@ -558,7 +549,7 @@ def central_agent(args, net_params_queues, exp_queues):
             print(f'epoch{epoch-1}: {end_t - start_t}s')
 
 
-def agent(args, rtt_list, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
+def agent(args, param_list, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
           net_params_queue, exp_queue):
 
     net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
@@ -714,9 +705,9 @@ def agent(args, rtt_list, agent_id, all_cooked_time, all_cooked_bw, all_file_nam
                 a_batch.append(action_vec)
                 epoch += 1
 
-                # if epoch > 1 and epoch % UPDATE_ENV_INTERVAL == 0:
-                #     net_env.link_rtt = rtt_for_epoch( epoch ,rtt_list )
-                    #print( net_env.link_rtt ,"-----net_env.link_rtt" )
+                if epoch > 1 and epoch % UPDATE_ENV_INTERVAL == 0:
+                    net_env.packet_payload_portion = param_for_epoch( epoch, param_list )
+                    print( net_env.packet_payload_portion ,"-----net_env.packet_payload_portion" )
 
             else:
                 s_batch.append(state)
@@ -726,7 +717,7 @@ def agent(args, rtt_list, agent_id, all_cooked_time, all_cooked_bw, all_file_nam
                 a_batch.append(action_vec)
 
 
-def rtt_for_epoch(epoch ,rtts):
+def param_for_epoch(epoch ,param_list):
     """
     epoch is epoch 1, 2, 3 ,etc.
     rtts: list of rtt values
@@ -736,8 +727,8 @@ def rtt_for_epoch(epoch ,rtts):
     201 -> 186
     """
     index = epoch // UPDATE_ENV_INTERVAL
-    rtt = rtts[index]
-    return rtt
+    param = param_list[index]
+    return param
 
 def main(args):
 
@@ -748,8 +739,10 @@ def main(args):
     np.random.seed(args.RANDOM_SEED)
     #assert len(VIDEO_BIT_RATE) == args.A_DIM
 
-    rtt_list = np.random.randint(LINK_RTT_MIN, LINK_RTT_MAX, size=100)
+    #rtt_list = np.random.randint(LINK_RTT_MIN, LINK_RTT_MAX, size=100)
+    payload_list = np.round( np.random.uniform( 0.1 ,0.99 ,size=50 ) ,2 )
 
+    param_list = payload_list
     # create result directory
     if not os.path.exists(args.summary_dir):
         os.makedirs(args.summary_dir)
@@ -774,7 +767,7 @@ def main(args):
     agents = []
     for i in range(args.NUM_AGENTS):
         agents.append(mp.Process(target=agent,
-                                 args=(args, rtt_list, i, all_cooked_time, all_cooked_bw,
+                                 args=(args, param_list, i, all_cooked_time, all_cooked_bw,
                                        all_file_names, net_params_queues[i],
                                        exp_queues[i])))
     for i in range(args.NUM_AGENTS):

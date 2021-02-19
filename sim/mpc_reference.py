@@ -30,7 +30,7 @@ past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 TEST_RESULT = '../results/rtt-mpc'
-TEST_TRACE = '../data/val-FCC/'
+TEST_TRACE = '../data/val-Norway/'
 
 # Env params need to do UDR
 BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
