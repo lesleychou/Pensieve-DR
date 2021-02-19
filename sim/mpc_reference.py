@@ -14,23 +14,31 @@ S_LEN = 8  # take how many frames in the past
 A_DIM = 6
 MPC_FUTURE_CHUNK_COUNT = 5
 
-VIDEO_BIT_RATE = np.array([300, 1200, 2850, 6500, 33000, 165000])  # Kbps
+VIDEO_BIT_RATE = np.array([300,750,1200,1850,2850,4300])  # Kbps
 BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 TOTAL_VIDEO_CHUNKS = 48
 M_IN_K = 1000.0
-REBUF_PENALTY = 165  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
-DEFAULT_QUALITY = 1  # default video quality without agent
+DEFAULT_QUALITY = 0  # default video quality without agent
 RANDOM_SEED = 20
 
-CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
-VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
-TEST_RESULT = '../results/mpc-ts-float-val'
-TEST_TRACE = '../data/generated_traces_ts_float/val/'
+VIDEO_SIZE_FILE = '../data/video_sizes/video_size_'
+TEST_RESULT = '../results/rtt-mpc'
+TEST_TRACE = '../data/val-FCC/'
+
+# Env params need to do UDR
+BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
+DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
+PACKET_PAYLOAD_PORTION = 0.95
+LINK_RTT = 80  # millisec
+
+CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
+                range(6), repeat=5)])
 
 @jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
@@ -114,8 +122,13 @@ class MPC_ref(object):
         all_cooked_time ,all_cooked_bw ,all_file_names = load_traces(self.test_dir)
         #all_cooked_time, all_cooked_bw, all_file_names = TraceGenerator.generate_trace()
 
-        net_env = env.Environment(all_cooked_time=all_cooked_time,
-                                  all_cooked_bw=all_cooked_bw, fixed=True)
+        net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
+                                  drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
+                                  packet_payload_portion=PACKET_PAYLOAD_PORTION,
+                                  link_rtt=320,
+                                  all_cooked_time=all_cooked_time,
+                                  all_cooked_bw=all_cooked_bw,
+                                  fixed=True)
 
         log_path = os.path.join(
             summary_dir, 'log_sim_mpc_' + all_file_names[net_env.trace_idx])
@@ -136,8 +149,8 @@ class MPC_ref(object):
         video_count = 0
 
         # make chunk combination options
-        for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
-            CHUNK_COMBO_OPTIONS.append(combo)
+        # for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
+        #     CHUNK_COMBO_OPTIONS.append(combo)
 
         while True:  # serve video forever
             # the action is from the last decision
@@ -265,15 +278,14 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
     reward = []
     count=0
     for log_file in matching:
-        count+=1
-        print(log_file)
+        count += 1
         with open( test_dir +'/'+ log_file ,'r' ) as f:
             for line in f:
                 parse = line.split()
                 if len( parse ) <= 1:
                     break
                 reward.append( float( parse[6] ) )
-    print(count)
+    #print(count)
     return np.mean( reward[1:] )
 
 
@@ -296,17 +308,20 @@ def main():
     #                   '350-450': reward_3 ,
     #                   '450-550': reward_4}
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
+    # reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
+    # reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
+    # reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
+    # reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
+    # reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
 
-    mpc_mean_reward = {'0-5': reward_0 ,
-                      '5-100': reward_1 ,
-                      '100-250': reward_2 ,
-                      '250-450': reward_3 ,
-                      '450-1050': reward_4}
+    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='' )
+    print(reward_0)
+
+    mpc_mean_reward = {'rtt-20': -5.96 ,
+                       'rtt-40': -6.32 ,
+                       'rtt-80': -5.70 ,
+                       'rtt-160': -5.45 ,
+                       'rtt-320': -4.95}
 
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 

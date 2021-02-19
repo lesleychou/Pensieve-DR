@@ -93,162 +93,157 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     all_cooked_time, all_cooked_bw, all_file_names = load_traces(
         test_traces_dir)
     # handle the noise and duration variation here
+    rtt_test_range = [20, 40, 80, 160, 320]
 
-    net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
-                              drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
-                              packet_payload_portion=PACKET_PAYLOAD_PORTION,
-                              link_rtt=LINK_RTT,
-                              all_cooked_time=all_cooked_time,
-                              all_cooked_bw=all_cooked_bw,
-                              all_file_names=all_file_names,
-                              fixed=True
-                              )
+    rtt_test_result = []
 
-    log_path = os.path.join(log_output_dir, 'log_sim_rl_{}'.format(
-                            all_file_names[net_env.trace_idx]))
-    log_file = open(log_path, 'w')
+    for rtt_i in rtt_test_range:
+        net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
+                                  drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
+                                  packet_payload_portion=PACKET_PAYLOAD_PORTION,
+                                  link_rtt=rtt_i,
+                                  all_cooked_time=all_cooked_time,
+                                  all_cooked_bw=all_cooked_bw,
+                                  all_file_names=all_file_names,
+                                  fixed=True
+                                  )
 
-    time_stamp = 0
+        log_path = os.path.join(log_output_dir, 'log_sim_rl_{}'.format(
+                                all_file_names[net_env.trace_idx]))
+        log_file = open(log_path, 'w')
 
-    last_bit_rate = DEFAULT_QUALITY
-    bit_rate = DEFAULT_QUALITY
-    selection=0
+        time_stamp = 0
 
-    #action_vec = np.array( [VIDEO_BIT_RATE[last_bit_rate], VIDEO_BIT_RATE[bit_rate] ,selection] )
-    action_vec = np.zeros( args.A_DIM )
-    action_vec[selection] = 1
+        last_bit_rate = DEFAULT_QUALITY
+        bit_rate = DEFAULT_QUALITY
+        selection=0
 
-    s_batch = [np.zeros((args.S_INFO, args.S_LEN))]
-    a_batch = [action_vec]
-    r_batch = []
-    entropy_record = []
+        #action_vec = np.array( [VIDEO_BIT_RATE[last_bit_rate], VIDEO_BIT_RATE[bit_rate] ,selection] )
+        action_vec = np.zeros( args.A_DIM )
+        action_vec[selection] = 1
 
-    video_count = 0
+        s_batch = [np.zeros((args.S_INFO, args.S_LEN))]
+        a_batch = [action_vec]
+        r_batch = []
+        entropy_record = []
 
-    while True:  # serve video forever
-        # the action is from the last decision
-        # this is to make the framework similar to the real
-        delay, sleep_time, buffer_size, rebuf, \
-            video_chunk_size, next_video_chunk_sizes, \
-            end_of_video, video_chunk_remain = \
-            net_env.get_video_chunk(bit_rate)
+        video_count = 0
 
-        time_stamp += delay  # in ms
-        time_stamp += sleep_time  # in ms
+        while True:  # serve video forever
+            # the action is from the last decision
+            # this is to make the framework similar to the real
+            delay, sleep_time, buffer_size, rebuf, \
+                video_chunk_size, next_video_chunk_sizes, \
+                end_of_video, video_chunk_remain = \
+                net_env.get_video_chunk(bit_rate)
 
-        # reward is video quality - rebuffer penalty - smoothness
-        reward = VIDEO_BIT_RATE[bit_rate] / M_IN_K \
-            - REBUF_PENALTY * rebuf \
-            - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
-                                      VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
+            time_stamp += delay  # in ms
+            time_stamp += sleep_time  # in ms
 
-        r_batch.append(reward)
+            # reward is video quality - rebuffer penalty - smoothness
+            reward = VIDEO_BIT_RATE[bit_rate] / M_IN_K \
+                - REBUF_PENALTY * rebuf \
+                - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
+                                          VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
 
-        last_bit_rate = bit_rate
+            r_batch.append(reward)
 
-        # log time_stamp, bit_rate, buffer_size, reward
-        log_file.write(str(time_stamp / M_IN_K) + '\t' +
-                       str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
-                       str(buffer_size) + '\t' +
-                       str(rebuf) + '\t' +
-                       str(video_chunk_size) + '\t' +
-                       str(delay) + '\t' +
-                       str(reward) + '\n')
-        log_file.flush()
+            last_bit_rate = bit_rate
 
-        # retrieve previous state
-        if len(s_batch) == 0:
-            state = [np.zeros((args.S_INFO, args.S_LEN))]
-        else:
-            state = np.array(s_batch[-1], copy=True)
+            # log time_stamp, bit_rate, buffer_size, reward
+            log_file.write(str(time_stamp / M_IN_K) + '\t' +
+                           str(VIDEO_BIT_RATE[bit_rate]) + '\t' +
+                           str(buffer_size) + '\t' +
+                           str(rebuf) + '\t' +
+                           str(video_chunk_size) + '\t' +
+                           str(delay) + '\t' +
+                           str(reward) + '\n')
+            log_file.flush()
 
-        # dequeue history record
-        state = np.roll(state, -1, axis=1)
+            # retrieve previous state
+            if len(s_batch) == 0:
+                state = [np.zeros((args.S_INFO, args.S_LEN))]
+            else:
+                state = np.array(s_batch[-1], copy=True)
 
-        # this should be args.S_INFO number of terms
-        state[0, -1] = VIDEO_BIT_RATE[bit_rate] / \
-            float(np.max(VIDEO_BIT_RATE))  # last quality
-        # state[0 ,-1] = VIDEO_BIT_RATE[bit_rate] + \
-        #                float( selection )  # last quality
-        # state[0 ,-1] = VIDEO_BIT_RATE[bit_rate] / \
-        #                 VIDEO_BIT_RATE[last_bit_rate]  # last quality
-        state[1, -1] = buffer_size / args.BUFFER_NORM_FACTOR  # 10 sec
-        state[2, -1] = float(video_chunk_size) / \
-            float(delay) / M_IN_K  # kilo byte / ms
-        state[3, -1] = float(delay) / M_IN_K / \
-            args.BUFFER_NORM_FACTOR  # 10 sec
-        state[4, :args.BITRATE_DIM] = np.array(
-            next_video_chunk_sizes) / M_IN_K / M_IN_K  # mega byte
-        state[5, -1] = np.minimum(video_chunk_remain,
-                                  args.CHUNK_TIL_VIDEO_END_CAP) / float(args.CHUNK_TIL_VIDEO_END_CAP)
+            # dequeue history record
+            state = np.roll(state, -1, axis=1)
 
-        action_prob = actor.predict(np.reshape(
-            state, (1, args.S_INFO, args.S_LEN)))
-        action_cumsum = np.cumsum(action_prob)
-        selection = (action_cumsum > np.random.randint(
-             1, args.RAND_RANGE) / float(args.RAND_RANGE)).argmax()
-        # TODO: Zhengxu: Why compute bitrate this way?
-        #selection = action_prob.argmax()
-        bit_rate = calculate_from_selection( selection, last_bit_rate )
-        # Note: we need to discretize the probability into 1/args.RAND_RANGE steps,
-        # because there is an intrinsic discrepancy in passing single state and batch states
+            # this should be args.S_INFO number of terms
+            state[0, -1] = VIDEO_BIT_RATE[bit_rate] / \
+                float(np.max(VIDEO_BIT_RATE))  # last quality
+            # state[0 ,-1] = VIDEO_BIT_RATE[bit_rate] + \
+            #                float( selection )  # last quality
+            # state[0 ,-1] = VIDEO_BIT_RATE[bit_rate] / \
+            #                 VIDEO_BIT_RATE[last_bit_rate]  # last quality
+            state[1, -1] = buffer_size / args.BUFFER_NORM_FACTOR  # 10 sec
+            state[2, -1] = float(video_chunk_size) / \
+                float(delay) / M_IN_K  # kilo byte / ms
+            state[3, -1] = float(delay) / M_IN_K / \
+                args.BUFFER_NORM_FACTOR  # 10 sec
+            state[4, :args.BITRATE_DIM] = np.array(
+                next_video_chunk_sizes) / M_IN_K / M_IN_K  # mega byte
+            state[5, -1] = np.minimum(video_chunk_remain,
+                                      args.CHUNK_TIL_VIDEO_END_CAP) / float(args.CHUNK_TIL_VIDEO_END_CAP)
 
-        s_batch.append(state)
+            action_prob = actor.predict(np.reshape(
+                state, (1, args.S_INFO, args.S_LEN)))
+            action_cumsum = np.cumsum(action_prob)
+            selection = (action_cumsum > np.random.randint(
+                 1, args.RAND_RANGE) / float(args.RAND_RANGE)).argmax()
+            # TODO: Zhengxu: Why compute bitrate this way?
+            #selection = action_prob.argmax()
+            bit_rate = calculate_from_selection( selection, last_bit_rate )
+            # Note: we need to discretize the probability into 1/args.RAND_RANGE steps,
+            # because there is an intrinsic discrepancy in passing single state and batch states
 
-        entropy_record.append(a3c.compute_entropy(action_prob[0]))
+            s_batch.append(state)
 
-        if end_of_video:
-            log_file.write('\n')
-            log_file.close()
+            entropy_record.append(a3c.compute_entropy(action_prob[0]))
 
-            last_bit_rate = DEFAULT_QUALITY
-            bit_rate = DEFAULT_QUALITY  # use the default action here
+            if end_of_video:
+                log_file.write('\n')
+                log_file.close()
 
-            del s_batch[:]
-            del a_batch[:]
-            del r_batch[:]
+                last_bit_rate = DEFAULT_QUALITY
+                bit_rate = DEFAULT_QUALITY  # use the default action here
 
-            #action_vec = np.array( [VIDEO_BIT_RATE[last_bit_rate] ,VIDEO_BIT_RATE[bit_rate] ,selection] )
+                del s_batch[:]
+                del a_batch[:]
+                del r_batch[:]
 
-            action_vec = np.zeros( args.A_DIM )
-            action_vec[selection] = 1
+                #action_vec = np.array( [VIDEO_BIT_RATE[last_bit_rate] ,VIDEO_BIT_RATE[bit_rate] ,selection] )
 
-            s_batch.append(np.zeros((args.S_INFO, args.S_LEN)))
-            a_batch.append(action_vec)
-            entropy_record = []
+                action_vec = np.zeros( args.A_DIM )
+                action_vec[selection] = 1
 
-            video_count += 1
+                s_batch.append(np.zeros((args.S_INFO, args.S_LEN)))
+                a_batch.append(action_vec)
+                entropy_record = []
 
-            if video_count >= len(all_file_names):
-                break
+                video_count += 1
 
-            log_path = os.path.join(
-                log_output_dir,
-                'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
-            log_file = open(log_path, 'w')
+                if video_count >= len(all_file_names):
+                    break
 
-    rl_path = os.path.join( RLMPC_LOG ,'RL_MPC_log' )
-    rl_file = open( rl_path ,'a' ,1 )
+                log_path = os.path.join(
+                    log_output_dir,
+                    'log_sim_rl_{}'.format(all_file_names[net_env.trace_idx]))
+                log_file = open(log_path, 'w')
 
-    test_dir = log_output_dir
-    plot_files = os.listdir( test_dir )
+        test_dir = log_output_dir
+        plot_files = os.listdir( test_dir )
 
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
-    reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
-    reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
-    reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
-    reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
-    reward_5 = given_string_mean_reward( plot_files ,test_dir ,str='FCC' )
+        reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='' )
+        rtt_test_result.append(reward_0)
 
+    print(rtt_test_result, "----rtt test result")
 
-    rl_mean_reward = {'0-5': reward_0 ,
-                       '5-100': reward_1 ,
-                       '100-250': reward_2 ,
-                       '250-450': reward_3 ,
-                       '450-1050': reward_4,
-                        'FCC': reward_5}
-
-
+    rl_mean_reward = {'rtt-20': rtt_test_result[0] ,
+                       'rtt-40': rtt_test_result[1] ,
+                       'rtt-80': rtt_test_result[2] ,
+                       'rtt-160': rtt_test_result[3] ,
+                       'rtt-320': rtt_test_result[4]}
     # val-cut-big
     # mpc_mean_reward={'0-500': 98.20 ,'500-1k': 137.26 ,
     #                  '1k-240k': 127.56 ,'240k-640k': 126.30 ,
@@ -258,14 +253,18 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
     #                  '450-550': 134.21, 'FCC': -4.69
     #                  }
 
-    mpc_mean_reward = {'0-5': -17.918770989059876, '5-100': 17.3287314980698,
-                       '100-250': 66.47100259018036, '250-450': 126.40666137890435,
-                       '450-1050': 136.02513767823524, 'FCC': -4.69}
+    mpc_mean_reward = {'rtt-20': -5.96 ,
+                       'rtt-40': -6.32 ,
+                       'rtt-80': -5.70 ,
+                       'rtt-160': -5.45 ,
+                       'rtt-320': -4.95}
 
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
 
+    rl_path = os.path.join( RLMPC_LOG ,'RL_MPC_log' )
+    rl_file = open( rl_path ,'a' ,1 )
     rl_file.write(str( d3 ) + '\n' )
     print( d3 ,"-----rl - mpc-----" )
 
@@ -699,7 +698,7 @@ def agent(args, rtt_list, agent_id, all_cooked_time, all_cooked_bw, all_file_nam
 
                 if epoch > 1 and epoch % UPDATE_ENV_INTERVAL == 0:
                     net_env.link_rtt = rtt_for_epoch( epoch ,rtt_list )
-                    print( net_env.link_rtt ,"-----net_env.link_rtt" )
+                    #print( net_env.link_rtt ,"-----net_env.link_rtt" )
 
             else:
                 s_batch.append(state)
