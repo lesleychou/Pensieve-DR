@@ -45,6 +45,10 @@ BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
 DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
 PACKET_PAYLOAD_PORTION = 0.95
 LINK_RTT = 80  # millisec
+LINK_RTT_MIN = 10
+LINK_RTT_MAX = 200
+
+UPDATE_ENV_INTERVAL = 100
 
 RLMPC_LOG = '../new-DR-results/sanity-check-2/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
@@ -537,7 +541,7 @@ def central_agent(args, net_params_queues, exp_queues):
             print(f'epoch{epoch-1}: {end_t - start_t}s')
 
 
-def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
+def agent(args, rtt_list, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
           net_params_queue, exp_queue):
 
     net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
@@ -586,7 +590,6 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
         time_stamp = 0
         epoch = 0
         while True:  # experience video streaming forever
-
             # the action is from the last decision
             # this is to make the framework similar to the real
             delay, sleep_time, buffer_size, rebuf, \
@@ -694,17 +697,30 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
                 a_batch.append(action_vec)
                 epoch += 1
 
+                if epoch > 1 and epoch % UPDATE_ENV_INTERVAL == 0:
+                    net_env.link_rtt = rtt_for_epoch( epoch ,rtt_list )
+                    print( net_env.link_rtt ,"-----net_env.link_rtt" )
+
             else:
                 s_batch.append(state)
-
-                #print(bit_rate)
-                #action_vec = np.zeros(args.A_DIM)
-                #action_vec = np.array( [VIDEO_BIT_RATE[last_bit_rate] ,VIDEO_BIT_RATE[bit_rate] ,selection] )
                 action_vec = np.zeros( args.A_DIM )
                 action_vec[selection] = 1
                 #print(action_vec)
                 a_batch.append(action_vec)
 
+
+def rtt_for_epoch(epoch ,rtts):
+    """
+    epoch is epoch 1, 2, 3 ,etc.
+    rtts: list of rtt values
+    returns a value from the list for the epoch
+    1 -> 123
+    200 -> 186
+    201 -> 186
+    """
+    index = epoch // UPDATE_ENV_INTERVAL
+    rtt = rtts[index]
+    return rtt
 
 def main(args):
 
@@ -714,6 +730,8 @@ def main(args):
 
     np.random.seed(args.RANDOM_SEED)
     #assert len(VIDEO_BIT_RATE) == args.A_DIM
+
+    rtt_list = np.random.randint(LINK_RTT_MIN, LINK_RTT_MAX, size=100)
 
     # create result directory
     if not os.path.exists(args.summary_dir):
@@ -739,7 +757,7 @@ def main(args):
     agents = []
     for i in range(args.NUM_AGENTS):
         agents.append(mp.Process(target=agent,
-                                 args=(args, i, all_cooked_time, all_cooked_bw,
+                                 args=(args, rtt_list, i, all_cooked_time, all_cooked_bw,
                                        all_file_names, net_params_queues[i],
                                        exp_queues[i])))
     for i in range(args.NUM_AGENTS):

@@ -61,6 +61,7 @@ class Environment:
         self.link_rtt = link_rtt
 
     def get_video_chunk(self, quality):
+        #print(self.link_rtt, "------link rtt")
 
         assert quality >= 0
         assert quality < BITRATE_LEVELS
