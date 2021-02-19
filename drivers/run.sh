@@ -32,7 +32,7 @@ NN_MODELS="../BO-results/BW-TS-best-model/nn_model_ep_900.ckpt"  # best model fr
 
 
 TRACE_PATH="../data/generated_traces_random/fixed-test/val_Norway"
-SUMMARY_DIR="../hongzi_vs_ADR_results/hongzi-norway-used-new"
+SUMMARY_DIR="../tmp/tmp"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do

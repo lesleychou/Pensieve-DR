@@ -40,6 +40,12 @@ DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
 DURATION = 1
 
+# Env params need to do UDR
+BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
+DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
+PACKET_PAYLOAD_PORTION = 0.95
+LINK_RTT = 80  # millisec
+
 RLMPC_LOG = '../new-DR-results/sanity-check-2/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
 
@@ -84,9 +90,15 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
         test_traces_dir)
     # handle the noise and duration variation here
 
-    net_env = env.Environment(all_cooked_time=all_cooked_time,
+    net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
+                              drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
+                              packet_payload_portion=PACKET_PAYLOAD_PORTION,
+                              link_rtt=LINK_RTT,
+                              all_cooked_time=all_cooked_time,
                               all_cooked_bw=all_cooked_bw,
-                              all_file_names=all_file_names, fixed=True)
+                              all_file_names=all_file_names,
+                              fixed=True
+                              )
 
     log_path = os.path.join(log_output_dir, 'log_sim_rl_{}'.format(
                             all_file_names[net_env.trace_idx]))
@@ -528,7 +540,11 @@ def central_agent(args, net_params_queues, exp_queues):
 def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
           net_params_queue, exp_queue):
 
-    net_env = env.Environment(all_cooked_time=all_cooked_time,
+    net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
+                              drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
+                              packet_payload_portion=PACKET_PAYLOAD_PORTION,
+                              link_rtt=LINK_RTT,
+                              all_cooked_time=all_cooked_time,
                               all_cooked_bw=all_cooked_bw,
                               all_file_names=all_file_names,
                               random_seed=agent_id)
