@@ -32,7 +32,7 @@ NN_MODELS="../BO-results/randomize-BW-TS-0-with-trained-model/model_saved/nn_mod
 
 
 TRACE_PATH="../data/generated_traces_random/fixed-test/val_Norway"
-SUMMARY_DIR="../easy-param-results/video_start_play_20000"
+SUMMARY_DIR="../tmp/video_start_play_20000"
 
 #for i_folder in 100 200 300 400 500 600 700 800 900; do
 #for (( i_folder=1; i_folder<=20; i_folder++ )); do
