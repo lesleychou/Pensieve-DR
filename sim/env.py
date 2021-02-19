@@ -7,15 +7,17 @@ RANDOM_SEED = 42
 VIDEO_CHUNCK_LEN = 4000.0  # millisec, every time add this amount to buffer
 BITRATE_LEVELS = 6
 TOTAL_VIDEO_CHUNCK = 48
-BUFFER_THRESH = 60.0 * MILLISECONDS_IN_SECOND  # millisec, max buffer limit
-DRAIN_BUFFER_SLEEP_TIME = 500.0  # millisec
-PACKET_PAYLOAD_PORTION = 0.95
-LINK_RTT = 80  # millisec
 PACKET_SIZE = 1500  # bytes
 NOISE_LOW = 0.9
 NOISE_HIGH = 1.1
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 VIDEO_START_PLAY = 20000.0     # millisec, after this amount, video start
+
+# Env params need to do UDR
+BUFFER_THRESH = 60.0 * MILLISECONDS_IN_SECOND  # millisec, max buffer limit
+DRAIN_BUFFER_SLEEP_TIME = 500.0  # millisec
+PACKET_PAYLOAD_PORTION = 0.95
+LINK_RTT = 80  # millisec
 
 
 class Environment:
