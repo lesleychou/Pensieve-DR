@@ -90,6 +90,20 @@ def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_r
                 send_data = best_combo[0]
     return send_data
 
+def given_string_mean_reward(plot_files ,test_dir ,str):
+    matching = [s for s in plot_files if str in s]
+    reward = []
+    count=0
+    for log_file in matching:
+        count += 1
+        with open( test_dir +'/'+ log_file ,'r' ) as f:
+            for line in f:
+                parse = line.split()
+                if len( parse ) <= 1:
+                    break
+                reward.append( float( parse[6] ) )
+    #print(count)
+    return np.mean( reward[1:] )
 
 class MPC_ref(object):
     def __init__(self, test_result_dir, test_trace_dir):
@@ -101,7 +115,7 @@ class MPC_ref(object):
         self.summary_dir = test_result_dir
         self.test_dir = test_trace_dir
 
-    def run(self):
+    def run(self, params_dict):
         summary_dir = self.summary_dir
         os.makedirs(summary_dir, exist_ok=True)
         np.random.seed(RANDOM_SEED)
@@ -117,19 +131,19 @@ class MPC_ref(object):
         size_video_array = np.array(np.squeeze(size_video_array))
 
         assert len(VIDEO_BIT_RATE) == A_DIM
-        print(self.test_dir)
 
         # TODO: let TraceGenerator.generate_trace return all_file_names, and write traces out?
         all_cooked_time ,all_cooked_bw ,all_file_names = load_traces(self.test_dir)
         #all_cooked_time, all_cooked_bw, all_file_names = TraceGenerator.generate_trace()
-
-        net_env = env.Environment(buffer_thresh=BUFFER_THRESH,
-                                  drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME,
-                                  packet_payload_portion=0.15,
-                                  link_rtt=LINK_RTT,
-                                  all_cooked_time=all_cooked_time,
-                                  all_cooked_bw=all_cooked_bw,
-                                  fixed=True)
+        print(params_dict, "---params_dict")
+        net_env = env.Environment( buffer_thresh=params_dict['buffer_thresh'] ,
+                                   drain_buffer_sleep_time=params_dict['drain_buffer_sleep_time'] ,
+                                   packet_payload_portion=params_dict['packet_payload_portion'] ,
+                                   link_rtt=LINK_RTT ,
+                                   all_cooked_time=all_cooked_time ,
+                                   all_cooked_bw=all_cooked_bw ,
+                                   fixed=True
+                                   )
 
         log_path = os.path.join(
             summary_dir, 'log_sim_mpc_' + all_file_names[net_env.trace_idx])
@@ -274,81 +288,72 @@ class MPC_ref(object):
                 log_file = open(log_path, 'w', 1)
                 #print("mpc test done on", all_file_names[net_env.trace_idx])
 
+        test_dir = TEST_RESULT
+        plot_files = os.listdir( test_dir )
+        reward = given_string_mean_reward( plot_files ,test_dir ,str='')
 
-def given_string_mean_reward(plot_files ,test_dir ,str):
-    matching = [s for s in plot_files if str in s]
-    reward = []
-    count=0
-    for log_file in matching:
-        count += 1
-        with open( test_dir +'/'+ log_file ,'r' ) as f:
-            for line in f:
-                parse = line.split()
-                if len( parse ) <= 1:
-                    break
-                reward.append( float( parse[6] ) )
-    #print(count)
-    return np.mean( reward[1:] )
+        reward = round(float(reward), 3)
+        return reward
 
 
 def main():
     MPC = MPC_ref(test_result_dir=TEST_RESULT, test_trace_dir=TEST_TRACE)
-    MPC.run()
 
-    test_dir = TEST_RESULT
-    plot_files = os.listdir( test_dir )
+    # UDR for 3 params
+    rtt_test_range = [20 ,40 ,80 ,160 ,320]
+    rtt_test_result = []
 
-    # reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='BW_0-150' )
-    # reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='BW_150-250' )
-    # reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='BW_250-350' )
-    # reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='BW_350-450' )
-    # reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='BW_450-550' )
+    buffer_test_range = [5000.0 ,10000.0 ,60000.0 ,400000.0 ,2000000.0]
+    buffer_test_result = []
+
+    payload_test_range = [0.15 ,0.35 ,0.55 ,0.75 ,0.95]
+    payload_test_result = []
+
+    params_dict = {'buffer_thresh': BUFFER_THRESH ,
+                   'drain_buffer_sleep_time': DRAIN_BUFFER_SLEEP_TIME ,
+                   'packet_payload_portion': PACKET_PAYLOAD_PORTION}
+
+    for param_i in payload_test_range:
+        params_dict['packet_payload_portion'] = param_i
+        reward = MPC.run(params_dict)
+        payload_test_result.append( reward )
+
+    mpc_mean_reward = {'payload-0.15': payload_test_result[0] ,
+                       'payload-0.35': payload_test_result[1] ,
+                       'payload-0.55': payload_test_result[2] ,
+                       'payload-0.75': payload_test_result[3] ,
+                       'payload-0.95': payload_test_result[4]}
+
+    # mpc_mean_reward = {'rtt-20': 0.867 ,
+    #                    'rtt-40': 0.84 ,
+    #                    'rtt-80': 0.822 ,
+    #                    'rtt-160': 0.849 ,
+    #                    'rtt-320': 0.760}
     #
-    # mpc_mean_reward = {'0-150': reward_0 ,
-    #                   '150-250': reward_1 ,
-    #                   '250-350': reward_2 ,
-    #                   '350-450': reward_3 ,
-    #                   '450-550': reward_4}
-
-    # reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='0-5' )
-    # reward_1 = given_string_mean_reward( plot_files ,test_dir ,str='5-100' )
-    # reward_2 = given_string_mean_reward( plot_files ,test_dir ,str='100-250' )
-    # reward_3 = given_string_mean_reward( plot_files ,test_dir ,str='250-450' )
-    # reward_4 = given_string_mean_reward( plot_files ,test_dir ,str='450-1050' )
-
-    reward_0 = given_string_mean_reward( plot_files ,test_dir ,str='' )
-    print(reward_0)
-
-    mpc_mean_reward = {'rtt-20': 0.867 ,
-                       'rtt-40': 0.84 ,
-                       'rtt-80': 0.822 ,
-                       'rtt-160': 0.849 ,
-                       'rtt-320': 0.760}
-
-    # BUFFER_THRESH = 60000.0
-    mpc_mean_reward = {'buffer-5': 0.322 ,
-                       'buffer-10': 0.599 ,
-                       'buffer-60': 0.822 ,
-                       'buffer-400': 0.822 ,
-                       'buffer-2000': 0.822}
-
-    mpc_mean_reward = {'sleep-10': 0.822 ,
-                       'sleep-100': 0.822 ,
-                       'sleep-500': 0.822 ,
-                       'sleep-2000': 0.822 ,
-                       'sleep-5000': 0.822}
-
-    mpc_mean_reward = {'payload-0.15': -15.57 ,
-                       'payload-0.35': -1.85 ,
-                       'payload-0.55': -0.014,
-                       'payload-0.75': 0.551,
-                       'payload-0.95': 0.822}
-
-    mpc_mean_reward = {'payload-0.15': -610.2 ,
-                       'payload-0.35': -80.92 ,
-                       'payload-0.55': -23.7 ,
-                       'payload-0.75': -9.91 ,
-                       'payload-0.95': -6.73}
+    # # BUFFER_THRESH = 60000.0
+    # mpc_mean_reward = {'buffer-5': 0.322 ,
+    #                    'buffer-10': 0.599 ,
+    #                    'buffer-60': 0.822 ,
+    #                    'buffer-400': 0.822 ,
+    #                    'buffer-2000': 0.822}
+    #
+    # mpc_mean_reward = {'sleep-10': 0.822 ,
+    #                    'sleep-100': 0.822 ,
+    #                    'sleep-500': 0.822 ,
+    #                    'sleep-2000': 0.822 ,
+    #                    'sleep-5000': 0.822}
+    #
+    # mpc_mean_reward = {'payload-0.15': -15.57 ,
+    #                    'payload-0.35': -1.85 ,
+    #                    'payload-0.55': -0.014,
+    #                    'payload-0.75': 0.551,
+    #                    'payload-0.95': 0.822}
+    #
+    # mpc_mean_reward = {'payload-0.15': -610.2 ,
+    #                    'payload-0.35': -80.92 ,
+    #                    'payload-0.55': -23.7 ,
+    #                    'payload-0.75': -9.91 ,
+    #                    'payload-0.95': -6.73}
 
     print( mpc_mean_reward ,"-----mpc_mean_reward-----" )
 

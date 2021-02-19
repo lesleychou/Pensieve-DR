@@ -6,7 +6,7 @@ set -e
 NOISE=0
 DURATION=1
 TRAIN_TRACE_PATH="../data/train_FCC"
-VAL_TRACE_PATH="../data/val-FCC"
+VAL_TRACE_PATH="../data/val-Norway/val-Norway"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
 # TEST_TRACE_PATH="../data/exponential_traces/test"

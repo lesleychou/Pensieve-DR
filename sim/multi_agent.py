@@ -85,10 +85,11 @@ def learning_rate_decay_func(epoch):
     return rate
 
 
-def test_on_one_param(args, param_i, all_cooked_time, all_cooked_bw, all_file_names, actor, log_output_dir):
-    net_env = env.Environment( buffer_thresh=BUFFER_THRESH ,
-                               drain_buffer_sleep_time=DRAIN_BUFFER_SLEEP_TIME ,
-                               packet_payload_portion=param_i,
+def test_on_env_params(args, params_dict, all_cooked_time, all_cooked_bw, all_file_names, actor, log_output_dir):
+    # load env params from the paras_dict
+    net_env = env.Environment( buffer_thresh=params_dict['buffer_thresh'],
+                               drain_buffer_sleep_time=params_dict['drain_buffer_sleep_time'] ,
+                               packet_payload_portion=params_dict['packet_payload_portion'],
                                link_rtt=LINK_RTT ,
                                all_cooked_time=all_cooked_time ,
                                all_cooked_bw=all_cooked_bw ,
@@ -218,6 +219,7 @@ def test_on_one_param(args, param_i, all_cooked_time, all_cooked_bw, all_file_na
     plot_files = os.listdir( test_dir )
 
     reward = given_string_mean_reward( plot_files ,test_dir ,str='' )
+    reward = round( float( reward ) ,3 )
 
     return reward
 
@@ -236,23 +238,17 @@ def test(args, test_traces_dir, actor, log_output_dir):
     payload_test_range = [0.15, 0.35, 0.55, 0.75, 0.95]
     payload_test_result = []
 
+    params_dict = {'buffer_thresh': BUFFER_THRESH ,
+                   'drain_buffer_sleep_time': DRAIN_BUFFER_SLEEP_TIME,
+                   'packet_payload_portion': PACKET_PAYLOAD_PORTION}
+
     for param_i in payload_test_range:
-        reward = test_on_one_param(args, param_i, all_cooked_time, all_cooked_bw, all_file_names, actor, log_output_dir)
+        params_dict['packet_payload_portion'] = param_i
+        reward = test_on_env_params(args, params_dict, all_cooked_time, all_cooked_bw, all_file_names, actor, log_output_dir)
         payload_test_result.append(reward)
 
     print(payload_test_result, "----rtt test result")
 
-    # rl_mean_reward = {'rtt-20': rtt_test_result[0] ,
-    #                    'rtt-40': rtt_test_result[1] ,
-    #                    'rtt-80': rtt_test_result[2] ,
-    #                    'rtt-160': rtt_test_result[3] ,
-    #                    'rtt-320': rtt_test_result[4]}
-
-    # mpc_mean_reward = {'rtt-20': 0.867 ,
-    #                    'rtt-40': 0.84 ,
-    #                    'rtt-80': 0.822 ,
-    #                    'rtt-160': 0.849 ,
-    #                    'rtt-320': 0.760}
     # rl_mean_reward = {'buffer-5': rtt_test_result[0] ,
     #                   'buffer-10': rtt_test_result[1] ,
     #                   'buffer-60': rtt_test_result[2] ,
@@ -276,6 +272,7 @@ def test(args, test_traces_dir, actor, log_output_dir):
                        'payload-0.55': -23.7 ,
                        'payload-0.75': -9.91 ,
                        'payload-0.95': -6.73}
+
     # mpc_mean_reward = {'payload-0.15': -15.57 ,
     #                    'payload-0.35': -1.85 ,
     #                    'payload-0.55': -0.014 ,
