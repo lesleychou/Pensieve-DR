@@ -59,6 +59,7 @@ class Environment:
         self.drain_buffer_sleep_time = drain_buffer_sleep_time
         self.packet_payload_portion = packet_payload_portion
         self.link_rtt = link_rtt
+        print(self.link_rtt, "------link rtt")
 
     def get_video_chunk(self, quality):
 

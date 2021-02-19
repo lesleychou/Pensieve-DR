@@ -45,6 +45,8 @@ BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
 DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
 PACKET_PAYLOAD_PORTION = 0.95
 LINK_RTT = 80  # millisec
+LINK_RTT_MIN = 10
+LINK_RTT_MAX = 500
 
 RLMPC_LOG = '../new-DR-results/sanity-check-2/'
 os.makedirs(RLMPC_LOG ,exist_ok=True )
@@ -586,6 +588,9 @@ def agent(args, agent_id, all_cooked_time, all_cooked_bw, all_file_names,
         time_stamp = 0
         epoch = 0
         while True:  # experience video streaming forever
+            if epoch > 1 and epoch % 100 == 0:
+                net_env.link_rtt = np.random.randint(LINK_RTT, LINK_RTT_MAX, size=1)[0]
+                print(net_env.link_rtt, "-----net_env.link_rtt")
 
             # the action is from the last decision
             # this is to make the framework similar to the real
