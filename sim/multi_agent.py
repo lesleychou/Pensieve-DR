@@ -44,7 +44,7 @@ DURATION = 1
 # Env params need to do UDR
 BUFFER_THRESH = 5000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
 DRAIN_BUFFER_SLEEP_TIME = 500.0    # millisec
-PACKET_PAYLOAD_PORTION = 0.95
+PACKET_PAYLOAD_PORTION = 0.6
 LINK_RTT = 80  # millisec
 LINK_RTT_MIN = 10
 LINK_RTT_MAX = 330
@@ -259,11 +259,9 @@ def test(args, test_traces_dir, actor, log_output_dir):
     #                    'buffer-400': 0.822 ,
     #                    'buffer-2000': 0.822}
 
-    rl_mean_reward = {'payload-0.15': payload_test_result[0] ,
-                      'payload-0.35': payload_test_result[1] ,
-                      'payload-0.55': payload_test_result[2] ,
-                      'payload-0.75': payload_test_result[3] ,
-                      'payload-0.95': payload_test_result[4]}
+    rl_mean_reward = {'payload-0.6': payload_test_result[0] ,
+                      'payload-0.8': payload_test_result[1] ,
+                      'payload-0.95': payload_test_result[2]}
 
     # mpc_mean_reward = {'payload-0.15': -796.195 ,
     #                    'payload-0.35': -95.436 ,
@@ -276,7 +274,7 @@ def test(args, test_traces_dir, actor, log_output_dir):
     #                    'payload-0.55': -92.706 ,
     #                    'payload-0.75': -57.689 ,
     #                     'payload-0.95': -34.273}
-    mpc_mean_reward = {'payload-0.15': -393.37, 'payload-0.35': -155.67, 'payload-0.55': -88.13, 'payload-0.75': -53.65, 'payload-0.95': -31.26}
+    mpc_mean_reward = {'payload-0.6': -80.17, 'payload-0.8': -46.31, 'payload-0.95': -31.48}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}

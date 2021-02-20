@@ -20,15 +20,15 @@ ACTOR_LR_RATE = 0.0001
 CRITIC_LR_RATE = 0.001
 #VIDEO_BIT_RATE = np.array([300, 750, 1200, 1850, 2850, 33000])  # Kbps
 #VIDEO_BIT_RATE = np.array([300, 1200, 2850, 6500,14700,33000])  # Kbps
-VIDEO_BIT_RATE = np.array([300, 1200, 2850, 6500, 33000, 165000])  # Kbps
-
+# VIDEO_BIT_RATE = np.array([300, 1200, 2850, 6500, 33000, 165000])  # Kbps
+VIDEO_BIT_RATE = np.array([300,750,1200,1850,2850,4300])  # Kbps
 
 BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 TOTAL_VIDEO_CHUNKS = 48
 M_IN_K = 1000.0
-REBUF_PENALTY = 165  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 0  # default video quality without agent
 RANDOM_SEED = 42
@@ -44,7 +44,7 @@ RAND_RANGE = 1000000
 # past errors in bandwidth
 past_errors = []
 past_bandwidth_ests = []
-VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
+VIDEO_SIZE_FILE = '../data/video_sizes/video_size_'
 
 # Env params need to do UDR
 BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit

@@ -96,7 +96,6 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
     reward_all = []
     for log_file in matching:
         count+=1
-        #print(log_file)
         with open( test_dir +'/'+ log_file ,'r' ) as f:
             raw_reward_all = []
             for line in f:
@@ -104,7 +103,6 @@ def given_string_mean_reward(plot_files ,test_dir ,str):
                 if len( parse ) <= 1:
                     break
                 raw_reward_all.append( float( parse[6] ) )
-            # print(raw_reward_all, "----raw_reward_all")
             reward_all.append( np.sum( raw_reward_all[1:48] ) / 48 )
 
     mean = np.mean( reward_all )
@@ -315,7 +313,7 @@ def main():
     buffer_test_range = [5000.0 ,10000.0 ,60000.0 ,400000.0 ,2000000.0]
     buffer_test_result = []
 
-    payload_test_range = [0.15 ,0.35 ,0.55 ,0.75 ,0.95]
+    payload_test_range = [0.6, 0.8, 0.95]
     payload_test_result = []
 
     params_dict = {'buffer_thresh': BUFFER_THRESH ,
@@ -327,11 +325,9 @@ def main():
         reward = MPC.run(params_dict)
         payload_test_result.append( reward )
 
-    mpc_mean_reward = {'payload-0.15': payload_test_result[0] ,
-                       'payload-0.35': payload_test_result[1] ,
-                       'payload-0.55': payload_test_result[2] ,
-                       'payload-0.75': payload_test_result[3] ,
-                       'payload-0.95': payload_test_result[4]}
+    mpc_mean_reward = {'payload-0.6': payload_test_result[0] ,
+                       'payload-0.8': payload_test_result[1] ,
+                       'payload-0.95': payload_test_result[2]}
 
     # mpc_mean_reward = {'rtt-20': 0.867 ,
     #                    'rtt-40': 0.84 ,

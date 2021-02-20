@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 14})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../tmp/sanitu-udr-puffer/seed_1/'
+RESULTS_FOLDER = '../tmp/buffer-thr-10-Norway/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
