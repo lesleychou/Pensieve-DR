@@ -30,7 +30,7 @@ past_errors = []
 past_bandwidth_ests = []
 VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
 TEST_RESULT = '../results/rtt-mpc'
-TEST_TRACE = '../data/val-Norway/'
+TEST_TRACE = '../data/generated_traces_random/fixed-test/val_Puffer/'
 
 # Env params need to do UDR
 BUFFER_THRESH = 60000.0     # 60.0 * MILLISECONDS_IN_SECOND, max buffer limit
@@ -92,18 +92,27 @@ def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_r
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]
-    reward = []
     count=0
+    reward_all = []
     for log_file in matching:
-        count += 1
+        count+=1
+        #print(log_file)
         with open( test_dir +'/'+ log_file ,'r' ) as f:
+            raw_reward_all = []
             for line in f:
                 parse = line.split()
                 if len( parse ) <= 1:
                     break
-                reward.append( float( parse[6] ) )
-    #print(count)
-    return np.mean( reward[1:] )
+                raw_reward_all.append( float( parse[6] ) )
+            # print(raw_reward_all, "----raw_reward_all")
+            reward_all.append( np.sum( raw_reward_all[1:48] ) / 48 )
+
+    mean = np.mean( reward_all )
+    #error_bar = np.std( each_reward )
+    mean = round(float(mean), 2)
+    #error_bar = round(float(error_bar), 2)
+
+    return mean
 
 class MPC_ref(object):
     def __init__(self, test_result_dir, test_trace_dir):

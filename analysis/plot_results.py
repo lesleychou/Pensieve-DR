@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 14})
 
 #RESULTS_FOLDER = './results/norway-PPO/'
-RESULTS_FOLDER = '../hongzi_vs_ADR_results/hongzi-norway-used-new/seed_1/'
+RESULTS_FOLDER = '../tmp/sanitu-udr-puffer/seed_1/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
@@ -18,7 +18,7 @@ COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 #SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
 #SCHEMES = ['sim_bb', 'sim_mpc', 'sim_rl_pretrain', 'sim_rl_train_noise001', 'sim_rl_train_noise002', 'sim_rl_train_noise003']
-SCHEMES = ['sim_mpc', 'sim_Pensieve', 'sim_adr']
+SCHEMES = ['sim_mpc', 'sim_adr']
 #SCHEMES = ['sim_rl']
 
 
@@ -280,7 +280,7 @@ def main():
             for scheme in SCHEMES:
                 SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
 
-            rl_reward = np.sum(raw_reward_all["sim_Pensieve"][l][1:VIDEO_LEN])
+            #rl_reward = np.sum(raw_reward_all["sim_Pensieve"][l][1:VIDEO_LEN])
             adr_reward = np.sum(raw_reward_all["sim_adr"][l][1:VIDEO_LEN])
             mpc_reward = np.sum(raw_reward_all["sim_mpc"][l][1:VIDEO_LEN])
 

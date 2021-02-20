@@ -235,7 +235,7 @@ def test(args, test_traces_dir, actor, log_output_dir):
     buffer_test_range = [5000.0, 10000.0, 60000.0, 400000.0, 2000000.0]
     buffer_test_result = []
 
-    payload_test_range = [0.35, 0.55, 0.75, 0.95, 0.15]
+    payload_test_range = [0.15, 0.35, 0.55, 0.75, 0.95]
     payload_test_result = []
 
     params_dict = {'buffer_thresh': BUFFER_THRESH ,
@@ -259,17 +259,24 @@ def test(args, test_traces_dir, actor, log_output_dir):
     #                    'buffer-400': 0.822 ,
     #                    'buffer-2000': 0.822}
 
-    rl_mean_reward = {'payload-0.15': payload_test_result[4] ,
-                      'payload-0.35': payload_test_result[0] ,
-                      'payload-0.55': payload_test_result[1] ,
-                      'payload-0.75': payload_test_result[2] ,
-                      'payload-0.95': payload_test_result[3]}
+    rl_mean_reward = {'payload-0.15': payload_test_result[0] ,
+                      'payload-0.35': payload_test_result[1] ,
+                      'payload-0.55': payload_test_result[2] ,
+                      'payload-0.75': payload_test_result[3] ,
+                      'payload-0.95': payload_test_result[4]}
 
-    mpc_mean_reward = {'payload-0.15': -796.195 ,
-                       'payload-0.35': -95.436 ,
-                       'payload-0.55': -27.974 ,
-                       'payload-0.75': -13.011 ,
-                       'payload-0.95': -10.224}
+    # mpc_mean_reward = {'payload-0.15': -796.195 ,
+    #                    'payload-0.35': -95.436 ,
+    #                    'payload-0.55': -27.974 ,
+    #                    'payload-0.75': -13.011 ,
+    #                    'payload-0.95': -10.224}
+
+    # mpc_mean_reward = {'payload-0.15': -413.933 ,
+    #                    'payload-0.35': -164.961 ,
+    #                    'payload-0.55': -92.706 ,
+    #                    'payload-0.75': -57.689 ,
+    #                     'payload-0.95': -34.273}
+    mpc_mean_reward = {'payload-0.15': -393.37, 'payload-0.35': -155.67, 'payload-0.55': -88.13, 'payload-0.75': -53.65, 'payload-0.95': -31.26}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
@@ -282,20 +289,26 @@ def test(args, test_traces_dir, actor, log_output_dir):
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
     matching = [s for s in plot_files if str in s]
-    reward = []
     count=0
+    reward_all = []
     for log_file in matching:
         count+=1
         #print(log_file)
         with open( test_dir +'/'+ log_file ,'r' ) as f:
+            raw_reward_all = []
             for line in f:
                 parse = line.split()
                 if len( parse ) <= 1:
                     break
-                reward.append( float( parse[6] ) )
-    print(count)
-    return np.mean( reward[1:] )
+                raw_reward_all.append( float( parse[6] ) )
+            reward_all.append( np.sum( raw_reward_all[1:48] ) / 48 )
 
+    mean = np.mean( reward_all )
+    #error_bar = np.std( each_reward )
+    mean = round(float(mean), 2)
+    #error_bar = round(float(error_bar), 2)
+
+    return mean
 
 
 def testing(args, epoch, actor, log_file, trace_dir, test_log_folder):
@@ -705,9 +718,9 @@ def agent(args, param_list, agent_id, all_cooked_time, all_cooked_bw, all_file_n
                 a_batch.append(action_vec)
                 epoch += 1
 
-                if epoch > 1 and epoch % UPDATE_ENV_INTERVAL == 0:
-                    net_env.packet_payload_portion = param_for_epoch( epoch, param_list )
-                    print( net_env.packet_payload_portion ,"-----net_env.packet_payload_portion" )
+                # if epoch > 1 and epoch % UPDATE_ENV_INTERVAL == 0:
+                #     net_env.packet_payload_portion = param_for_epoch( epoch, param_list )
+                #     print( net_env.packet_payload_portion ,"-----net_env.packet_payload_portion" )
 
             else:
                 s_batch.append(state)
