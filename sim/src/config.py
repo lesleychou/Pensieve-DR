@@ -56,7 +56,7 @@ def parse_args():
     parser.add_argument("--duration", type=float, default=1.0)
 
     # args for BO
-    parser.add_argument("--CURRENT_PARAM", type=float, default=10.0,
+    parser.add_argument("--CURRENT_PARAM", type=float, default=0,
                         help='the param BO output,decide what to train on for the next run')
 
 

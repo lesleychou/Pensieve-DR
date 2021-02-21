@@ -17,9 +17,9 @@ from bayes_opt import BayesianOptimization
 # Improvement: Probably better if replaced with argparse and passed in (later)
 # TOTAL_EPOCHS = 10000
 # BAYESIAN_OPTIMIZER_INTERVAL = 1000
-TRAINING_DATA_DIR = "../data/generated_traces_ts_float-BO/train_2/"
+TRAINING_DATA_DIR = "../data/generated_traces_ts_float-BO/train_3/"
 VAL_TRACE_DIR = '../data/generated_traces_ts_float-BO/val'
-RESULTS_DIR = "../BO-results/randomize-BW"
+RESULTS_DIR = "../BO-results/randomize-BW-buffer-10"
 #NN_MODEL='../new-DR-results/sanity-check-2/model_saved/nn_model_ep_33200.ckpt'
 
 # num_training_runs = int(TOTAL_EPOCHS / BAYESIAN_OPTIMIZER_INTERVAL)
@@ -76,9 +76,19 @@ def black_box_function(x):
     r = float(subprocess.check_output(command, shell=True, text=True).strip())
     return r
 
+# the 1st round of training
+command = "python multi_agent.py \
+                    --TOTAL_EPOCH=8000\
+                    --train_trace_dir={training_dir} \
+                    --val_trace_dir='{val_dir}'\
+                    --summary_dir={results_dir}\
+                    --description='first-run'" \
+                    .format(training_dir=TRAINING_DATA_DIR, val_dir=VAL_TRACE_DIR,
+                            results_dir=RESULTS_DIR)
+os.system( command )
 
 # Example Flow:
-for i in range(7):
+for i in range(15):
     # if i > 0:
     pbounds = {'x': (0 ,1)}
     optimizer = BayesianOptimization(

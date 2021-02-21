@@ -239,8 +239,11 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
                    '450-1050_err': err_4 ,
                    'FCC_err': err_5}
 
-    mpc_mean_reward = {'0-5': 15.254074139382679 ,'5-100': 13.888522475776997 ,'100-250': 61.469250802399394 ,
-                       '250-450': 129.50364292276853 ,'450-1050': 139.39149283679978 , 'FCC': -22.33428330564747}
+    # mpc_mean_reward = {'0-5': 15.254074139382679 ,'5-100': 13.888522475776997 ,'100-250': 61.469250802399394 ,
+    #                    '250-450': 129.50364292276853 ,'450-1050': 139.39149283679978 , 'FCC': -22.33428330564747}
+
+    mpc_mean_reward = {'0-5': -18.803721141677848, '5-100': 3.4775864182719984, '100-250': 21.66529335364637,
+                       '250-450': 48.38825969436657, '450-1050': 101.63430962732505, 'FCC': -19.516437401350796}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
@@ -751,8 +754,9 @@ def main(args):
                              args=(args, net_params_queues, exp_queues))
     coordinator.start()
 
-    trace_config = example_trace_config( args )
-    generate_traces_with( trace_config )
+    if args.CURRENT_PARAM > 0:
+        trace_config = example_trace_config( args )
+        generate_traces_with( trace_config )
 
     all_cooked_time, all_cooked_bw, all_file_names = load_traces_for_train(
         args.train_trace_dir)
