@@ -5,7 +5,7 @@ set -e
 
 NOISE=0
 DURATION=1
-TRAIN_TRACE_PATH="../data/generated_traces_ts_float-BO/train_2"
+TRAIN_TRACE_PATH="../data/generated_traces_ts_float-BO/train-2-iter"
 VAL_TRACE_PATH="../data/generated_traces_ts_float-BO/val"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
@@ -41,7 +41,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../tmp/check-rebuf-33/"
+    SUMMARY_DIR="../tmp/check-rebuf-43-original/"
     python ${SIMULATOR_DIR}/multi_agent.py \
         --train_trace_dir ${TRAIN_TRACE_PATH} \
         --val_trace_dir ${VAL_TRACE_PATH} \

@@ -33,11 +33,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # time), chunk_til_video_end
 MODEL_SAVE_INTERVAL = 100
 #VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300, 6500, 9800, 14700, 22050, 33000]  # Kbps
-VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
-
+# VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]  # Kbps
+VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]
 HD_REWARD = [1, 2, 3, 12, 15, 20]
 M_IN_K = 1000.0
-REBUF_PENALTY = 33  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 5  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
@@ -244,8 +244,11 @@ def test(args, test_traces_dir, actor, log_output_dir, noise, duration):
 
     # mpc_mean_reward = {'0-5': -18.803721141677848, '5-100': 3.4775864182719984, '100-250': 21.66529335364637,
     #                    '250-450': 48.38825969436657, '450-1050': 101.63430962732505, 'FCC': -19.516437401350796}
-    mpc_mean_reward ={'0-5': -2.9032165167011668, '5-100': 17.68127140437292, '100-250': 66.54587764097084,
-                      '250-450': 131.20964870296322, '450-1050': 139.77107950847744, 'FCC': -3.6630446968928596}
+    # mpc_mean_reward ={'0-5': -2.9032165167011668, '5-100': 17.68127140437292, '100-250': 66.54587764097084,
+    #                   '250-450': 131.20964870296322, '450-1050': 139.77107950847744, 'FCC': -3.6630446968928596}
+
+    mpc_mean_reward={'0-5': 0.6462445629967531, '5-100': 3.887314719259317, '100-250': 4.087809269515761,
+                     '250-450': 4.121063550200387, '450-1050': 4.115708672620382, 'FCC': 0.5830652713438632}
 
     print( rl_mean_reward ,"-----rl_mean_reward-----" )
     d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}

@@ -15,13 +15,13 @@ S_LEN = 8  # take how many frames in the past
 A_DIM = 6
 MPC_FUTURE_CHUNK_COUNT = 3
 
-VIDEO_BIT_RATE = np.array([300, 1200, 2850, 6500, 33000, 165000])  # Kbps
+VIDEO_BIT_RATE = np.array([300,750,1200,1850,2850,4300])  # Kbps
 BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 TOTAL_VIDEO_CHUNKS = 48
 M_IN_K = 1000.0
-REBUF_PENALTY = 33  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 5  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 1  # default video quality without agent
 RANDOM_SEED = 20
@@ -29,7 +29,7 @@ RANDOM_SEED = 20
 #CHUNK_COMBO_OPTIONS = []
 past_errors = []
 past_bandwidth_ests = []
-VIDEO_SIZE_FILE = '../data/video_size_6_larger/video_size_'
+VIDEO_SIZE_FILE = '../data/video_sizes/video_size_'
 TEST_RESULT = '../results/mpc-speed-up'
 TEST_TRACE = '../data/generated_traces_ts_float-BO/val/'
 
