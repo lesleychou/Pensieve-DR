@@ -9,6 +9,7 @@ import time
 import env as env
 import numpy as np
 from utils.utils import load_traces
+import numba
 
 S_INFO = 5  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
@@ -37,6 +38,33 @@ CHUNK_COMBO_OPTIONS = np.array([combo for combo in itertools.product(
                 range(6), repeat=5)])
 
 @jit(nopython=True)
+def next_possible_bitrates(br):
+    next_brs = [br - 1 ,br ,br + 1]
+    next_brs = [a for a in next_brs if 0 <= a <= 5]
+    return next_brs
+
+@jit(nopython=True)
+def calculate_jump_action_combo(br):
+    all_combos = CHUNK_COMBO_OPTIONS
+    combos = np.empty((0, 5), np.int64)
+    #combos = np.expand_dims( combos ,axis=0 )
+    for combo in all_combos:
+        br1 = combo[0]
+        if br1 in next_possible_bitrates( br ):
+            br2 = combo[1]
+            if br2 in next_possible_bitrates( br1 ):
+                br3 = combo[2]
+                if br3 in next_possible_bitrates( br2 ):
+                    br4 = combo[3]
+                    if br4 in next_possible_bitrates( br3 ):
+                        br5 = combo[4]
+                        if br5 in next_possible_bitrates( br4 ):
+                            combo = np.expand_dims( combo ,axis=0 )
+                            combos = np.append(combos, combo, axis=0)
+
+    return combos
+
+@jit(nopython=True)
 def get_chunk_size(quality, index, size_video_array):
     if (index < 0 or index > 48):
         return 0
@@ -49,7 +77,8 @@ def calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_r
     max_reward = -100000000
     start_buffer = buffer_size
 
-    for full_combo in CHUNK_COMBO_OPTIONS:
+    jump_action_combos = calculate_jump_action_combo(bit_rate)
+    for full_combo in jump_action_combos:
         combo = full_combo[0:future_chunk_length]
         # calculate total rebuffer time for this combination (start with start_buffer and subtract
         # each download time and add 2 seconds in that order)
@@ -227,7 +256,6 @@ class MPC_ref(object):
             # all possible combinations of 5 chunk bitrates (9^5 options)
             # iterate over list and for each, compute reward and store max reward combination
             # start = time.time()
-            chunk_combo_options = np.array( CHUNK_COMBO_OPTIONS )
 
             bit_rate = calculate_rebuffer(size_video_array, future_chunk_length, buffer_size, bit_rate,
                                           last_index, future_bandwidth)
