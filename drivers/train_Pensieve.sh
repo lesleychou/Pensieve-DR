@@ -6,7 +6,7 @@ set -e
 NOISE=0
 DURATION=1
 TRAIN_TRACE_PATH="../data/generated_traces_random/train"
-VAL_TRACE_PATH="../data/generated_traces_random/fixed-test/val_Puffer"
+VAL_TRACE_PATH="../data/generated_traces_random/fixed-test/val_FCC"
 # TRAIN_TRACE_PATH="../data/exponential_traces/train"
 # VAL_TRACE_PATH="../data/exponential_traces/val"
 # TEST_TRACE_PATH="../data/exponential_traces/test"
@@ -41,7 +41,7 @@ for NOISE in 0 ; do
     # SUMMARY_DIR="../results/constant_trace/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e/results_noise_${NOISE}_duration_${DURATION}"
     # SUMMARY_DIR="../results/eval_train_e2e_new/results_noise_${NOISE}_duration_${DURATION}"
-    SUMMARY_DIR="../UDR-results/payload-1-non-UDR/"
+    SUMMARY_DIR="../UDR-results/rtt-UDR/"
     python ${SIMULATOR_DIR}/multi_agent.py \
         --RANDOM_SEED=171 \
         --NUM_AGENT=8\

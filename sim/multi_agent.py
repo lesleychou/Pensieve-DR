@@ -30,12 +30,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # time), chunk_til_video_end
 MODEL_SAVE_INTERVAL = 100
 #VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300, 6500, 9800, 14700, 22050, 33000]  # Kbps
-#VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
-VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]
+VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
+# VIDEO_BIT_RATE = [300, 1200, 2850, 6500, 33000, 165000]
 
 HD_REWARD = [1, 2, 3, 12, 15, 20]
 M_IN_K = 1000.0
-REBUF_PENALTY = 165  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 0  # default video quality without agent
 NOISE = 0
@@ -49,7 +49,7 @@ LINK_RTT = 80  # millisec
 LINK_RTT_MIN = 10
 LINK_RTT_MAX = 330
 
-UPDATE_ENV_INTERVAL = 1000
+UPDATE_ENV_INTERVAL = 3000
 
 
 def calculate_from_selection(selected, last_bit_rate):
@@ -90,15 +90,15 @@ def test_on_env_params(args, params_dict, all_cooked_time, all_cooked_bw, all_fi
     net_env = env.Environment( buffer_thresh=params_dict['buffer_thresh'],
                                drain_buffer_sleep_time=params_dict['drain_buffer_sleep_time'] ,
                                packet_payload_portion=params_dict['packet_payload_portion'],
-                               link_rtt=LINK_RTT ,
+                               link_rtt=params_dict['link_RTT'] ,
                                all_cooked_time=all_cooked_time ,
                                all_cooked_bw=all_cooked_bw ,
                                all_file_names=all_file_names ,
                                fixed=True
                                )
 
-    log_path = os.path.join( log_output_dir ,'log_sim_rl_{}'.format(
-        all_file_names[net_env.trace_idx] ) )
+    log_path = os.path.join( log_output_dir ,'log_sim_rl_{}_rtt_{}'.format(
+        all_file_names[net_env.trace_idx],params_dict['link_RTT']) )
     log_file = open( log_path ,'w' )
 
     time_stamp = 0
@@ -235,17 +235,18 @@ def test(args, test_traces_dir, actor, log_output_dir):
     buffer_test_range = [5000.0, 10000.0, 60000.0, 400000.0, 2000000.0]
     buffer_test_result = []
 
-    payload_test_range = [0.15, 0.35, 0.55, 0.75, 0.95]
-    payload_test_result = []
+    # payload_test_range = [0.15, 0.35, 0.55, 0.75, 0.95]
+    # payload_test_result = []
 
     params_dict = {'buffer_thresh': BUFFER_THRESH ,
                    'drain_buffer_sleep_time': DRAIN_BUFFER_SLEEP_TIME,
-                   'packet_payload_portion': PACKET_PAYLOAD_PORTION}
+                   'packet_payload_portion': PACKET_PAYLOAD_PORTION,
+                   'link_RTT': LINK_RTT,}
 
-    for param_i in payload_test_range:
-        params_dict['packet_payload_portion'] = param_i
+    for param_i in rtt_test_range:
+        params_dict['link_RTT'] = param_i
         reward = test_on_env_params(args, params_dict, all_cooked_time, all_cooked_bw, all_file_names, actor, log_output_dir)
-        payload_test_result.append(reward)
+        rtt_test_result.append(reward)
 
     # rl_mean_reward = {'buffer-5': rtt_test_result[0] ,
     #                   'buffer-10': rtt_test_result[1] ,
@@ -259,9 +260,9 @@ def test(args, test_traces_dir, actor, log_output_dir):
     #                    'buffer-400': 0.822 ,
     #                    'buffer-2000': 0.822}
 
-    rl_mean_reward = {'payload-0.6': payload_test_result[0] ,
-                      'payload-0.8': payload_test_result[1] ,
-                      'payload-0.95': payload_test_result[2]}
+    # rl_mean_reward = {'payload-0.6': payload_test_result[0] ,
+    #                   'payload-0.8': payload_test_result[1] ,
+    #                   'payload-0.95': payload_test_result[2]}
 
     # mpc_mean_reward = {'payload-0.15': -796.195 ,
     #                    'payload-0.35': -95.436 ,
@@ -274,15 +275,15 @@ def test(args, test_traces_dir, actor, log_output_dir):
     #                    'payload-0.55': -92.706 ,
     #                    'payload-0.75': -57.689 ,
     #                     'payload-0.95': -34.273}
-    mpc_mean_reward = {'payload-0.6': -80.17, 'payload-0.8': -46.31, 'payload-0.95': -31.48}
-
-    print( rl_mean_reward ,"-----rl_mean_reward-----" )
-    d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
-
-    rl_path = os.path.join( args.summary_dir ,'RL_MPC_log' )
-    rl_file = open( rl_path ,'a' ,1 )
-    rl_file.write(str( d3 ) + '\n' )
-    print( d3 ,"-----mpc - rl-----" )
+    # mpc_mean_reward = {'payload-0.6': -80.17, 'payload-0.8': -46.31, 'payload-0.95': -31.48}
+    #
+    # print( rl_mean_reward ,"-----rl_mean_reward-----" )
+    # d3 = {key: mpc_mean_reward[key] - rl_mean_reward.get( key ,0 ) for key in rl_mean_reward}
+    #
+    # rl_path = os.path.join( args.summary_dir ,'RL_MPC_log' )
+    # rl_file = open( rl_path ,'a' ,1 )
+    # rl_file.write(str( d3 ) + '\n' )
+    # print( d3 ,"-----mpc - rl-----" )
 
 
 def given_string_mean_reward(plot_files ,test_dir ,str):
@@ -750,10 +751,10 @@ def main(args):
     np.random.seed(args.RANDOM_SEED)
     #assert len(VIDEO_BIT_RATE) == args.A_DIM
 
-    #rtt_list = np.random.randint(LINK_RTT_MIN, LINK_RTT_MAX, size=100)
-    payload_list = np.round( np.random.uniform( 0.1 ,0.99 ,size=50 ) ,2 )
+    rtt_list = np.random.randint(1, 33, size=100)*10
+    #payload_list = np.round( np.random.uniform( 0.1 ,0.99 ,size=50 ) ,2 )
 
-    param_list = payload_list
+    param_list = rtt_list
     # create result directory
     if not os.path.exists(args.summary_dir):
         os.makedirs(args.summary_dir)
